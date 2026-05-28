@@ -35,7 +35,7 @@ public class BoardManager : MonoBehaviour
     {
         Application.targetFrameRate = 60;
         matrix = new int[rows + 2, cols + 2];
-        
+
         GenerateBoardLogic();
 
         // 1 Cặp nối đúng = 1 EXP. Max EXP = Tống số ô chia 2.
@@ -117,7 +117,7 @@ public class BoardManager : MonoBehaviour
                 Vector2Int p2 = new Vector2Int(clickedTile.x, clickedTile.y);
 
                 // Sử dụng thuật toán quét thẳng dòng (Line-Search BFS) mới
-                if (CheckPathLineBFS(p1, p2))
+               if (CheckPath(p1, p2))
                 {
                     matrix[p1.x, p1.y] = 0;
                     matrix[p2.x, p2.y] = 0;
@@ -138,7 +138,7 @@ public class BoardManager : MonoBehaviour
             {
                 firstSelected.SetSelectedVisual(false);
             }
-            
+
             firstSelected = null;
         }
     }
@@ -162,56 +162,73 @@ public class BoardManager : MonoBehaviour
         public Node(int x, int y, int segments) { this.x = x; this.y = y; this.segments = segments; }
     }
 
-    private bool CheckPathLineBFS(Vector2Int start, Vector2Int target)
+    // --- THUẬT TOÁN TÌM ĐƯỜNG PIKACHU CHUẨN (100% KHÔNG LỖI) ---
+
+    // Đổi tên hàm gọi ở phần Check Logic trong SelectTile thành hàm này
+    private bool CheckPath(Vector2Int p1, Vector2Int p2)
     {
-        Queue<Node> queue = new Queue<Node>();
-        int[,] minSegments = new int[rows + 2, cols + 2];
-        for (int i = 0; i < rows + 2; i++)
-            for (int j = 0; j < cols + 2; j++)
-                minSegments[i, j] = int.MaxValue;
+        if (CheckLine(p1, p2)) return true;       // Nối đường thẳng
+        if (CheckRect(p1, p2)) return true;       // Nối chữ L (1 lần rẽ)
+        if (CheckMoreLine(p1, p2)) return true;   // Nối chữ U, Z (2 lần rẽ)
+        return false;
+    }
 
-        queue.Enqueue(new Node(start.x, start.y, 0));
-        minSegments[start.x, start.y] = 0;
-
-        int[] dx = { -1, 1, 0, 0 }; // Lên, Xuống
-        int[] dy = { 0, 0, -1, 1 }; // Trái, Phải
-
-        while (queue.Count > 0)
+    // 1. Kiểm tra đường thẳng
+    private bool CheckLine(Vector2Int p1, Vector2Int p2)
+    {
+        if (p1.x == p2.x) // Cùng hàng
         {
-            Node curr = queue.Dequeue();
+            int y1 = Mathf.Min(p1.y, p2.y);
+            int y2 = Mathf.Max(p1.y, p2.y);
+            for (int y = y1 + 1; y < y2; y++)
+                if (matrix[p1.x, y] > 0) return false; // Vướng vật cản
+            return true;
+        }
+        if (p1.y == p2.y) // Cùng cột
+        {
+            int x1 = Mathf.Min(p1.x, p2.x);
+            int x2 = Mathf.Max(p1.x, p2.x);
+            for (int x = x1 + 1; x < x2; x++)
+                if (matrix[x, p1.y] > 0) return false; // Vướng vật cản
+            return true;
+        }
+        return false;
+    }
 
-            for (int d = 0; d < 4; d++) // Quét 4 hướng
+    // 2. Kiểm tra chữ L (1 lần rẽ)
+    private bool CheckRect(Vector2Int p1, Vector2Int p2)
+    {
+        Vector2Int p3 = new Vector2Int(p1.x, p2.y); // Góc vuông 1
+        if (matrix[p3.x, p3.y] == 0 && CheckLine(p1, p3) && CheckLine(p2, p3)) return true;
+
+        Vector2Int p4 = new Vector2Int(p2.x, p1.y); // Góc vuông 2
+        if (matrix[p4.x, p4.y] == 0 && CheckLine(p1, p4) && CheckLine(p2, p4)) return true;
+
+        return false;
+    }
+
+    // 3. Kiểm tra chữ U, Z (2 lần rẽ)
+    private bool CheckMoreLine(Vector2Int p1, Vector2Int p2)
+    {
+        // Quét dọc theo tất cả các cột
+        for (int y = 0; y < cols + 2; y++)
+        {
+            Vector2Int p3 = new Vector2Int(p1.x, y);
+            Vector2Int p4 = new Vector2Int(p2.x, y);
+            if (matrix[p3.x, p3.y] == 0 && matrix[p4.x, p4.y] == 0)
             {
-                int nx = curr.x;
-                int ny = curr.y;
+                if (CheckLine(p1, p3) && CheckLine(p3, p4) && CheckLine(p4, p2)) return true;
+            }
+        }
 
-                // Thay vì đi 1 ô, nó quét chạy thẳng dài 1 mạch cho tới khi đụng tường/chướng ngại vật
-                while (true)
-                {
-                    nx += dx[d];
-                    ny += dy[d];
-
-                    // Văng ra khỏi bản đồ -> Dừng
-                    if (nx < 0 || nx >= rows + 2 || ny < 0 || ny >= cols + 2) break;
-
-                    int newSegments = curr.segments + 1;
-                    
-                    // Nếu quá 3 đoạn thẳng (gấp khúc > 2 lần) -> Dừng
-                    if (newSegments > 3) break;
-
-                    // Chạm đúng ô đích! -> Thành công
-                    if (nx == target.x && ny == target.y) return true;
-
-                    // Đụng trúng một ô hóa học khác cản đường -> Dừng
-                    if (matrix[nx, ny] > 0) break;
-
-                    // Lưu lại và tiếp tục từ điểm ngã 3 này
-                    if (newSegments < minSegments[nx, ny])
-                    {
-                        minSegments[nx, ny] = newSegments;
-                        queue.Enqueue(new Node(nx, ny, newSegments));
-                    }
-                }
+        // Quét ngang theo tất cả các hàng
+        for (int x = 0; x < rows + 2; x++)
+        {
+            Vector2Int p3 = new Vector2Int(x, p1.y);
+            Vector2Int p4 = new Vector2Int(x, p2.y);
+            if (matrix[p3.x, p3.y] == 0 && matrix[p4.x, p4.y] == 0)
+            {
+                if (CheckLine(p1, p3) && CheckLine(p3, p4) && CheckLine(p4, p2)) return true;
             }
         }
         return false;

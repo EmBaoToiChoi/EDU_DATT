@@ -5,10 +5,10 @@ using System.Collections; // Cần thiết để dùng Coroutine
 
 public class TileController : MonoBehaviour
 {
-    public int x; 
-    public int y; 
+    public int x;
+    public int y;
     public int elementID;
-    
+
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI txtName; // Hiện chữ (có thể bỏ trống nếu chỉ dùng ảnh)
     [SerializeField] private Image iconImage;         // Hiện hình ảnh riêng của chất đó
@@ -53,7 +53,7 @@ public class TileController : MonoBehaviour
 
     IEnumerator DisappearRoutine()
     {
-        float duration = 0.3f; // Thời gian hiệu ứng (0.3 giây)
+        float duration = 0.3f;
         float elapsed = 0f;
         Vector3 startScale = transform.localScale;
 
@@ -61,17 +61,19 @@ public class TileController : MonoBehaviour
         {
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
-            
-            // Thu nhỏ dần về 0
             transform.localScale = Vector3.Lerp(startScale, Vector3.zero, t);
-            
-            // Xoay vòng vòng
             transform.Rotate(0, 0, 15f * Time.deltaTime * 60f);
-            
             yield return null;
         }
 
-        // Xong hiệu ứng thì ẩn hoàn toàn
-        gameObject.SetActive(false);
+        // BỎ DÒNG NÀY: gameObject.SetActive(false);
+        // THAY BẰNG ĐOẠN CODE TÀNG HÌNH DƯỚI ĐÂY:
+
+        CanvasGroup cg = GetComponent<CanvasGroup>();
+        if (cg == null) cg = gameObject.AddComponent<CanvasGroup>();
+
+        cg.alpha = 0f;               // Tàng hình hoàn toàn
+        cg.blocksRaycasts = false;   // Không cản chuột / cảm ứng
+        cg.interactable = false;     // Không cho bấm nữa
     }
 }
