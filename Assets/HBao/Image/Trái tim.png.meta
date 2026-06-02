@@ -1,0 +1,1314 @@
+fileFormatVersion: 2
+guid: cad7883f370dc184aa5b7d6b167246a4
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 2821377003534651465
+    second: "Tr\xE1i tim_0"
+  - first:
+      213: -451267738707824749
+    second: "Tr\xE1i tim_1"
+  - first:
+      213: -7306596521316557996
+    second: "Tr\xE1i tim_2"
+  - first:
+      213: -1268297235868922778
+    second: "Tr\xE1i tim_3"
+  - first:
+      213: 1494863781606466561
+    second: "Tr\xE1i tim_4"
+  - first:
+      213: 4928105673931287565
+    second: "Tr\xE1i tim_5"
+  - first:
+      213: -8462102576957674891
+    second: "Tr\xE1i tim_6"
+  - first:
+      213: 5473667795269879234
+    second: "Tr\xE1i tim_7"
+  - first:
+      213: -5038944884819713532
+    second: "Tr\xE1i tim_8"
+  - first:
+      213: 6743700149188752033
+    second: "Tr\xE1i tim_9"
+  - first:
+      213: -3171656753879911437
+    second: "Tr\xE1i tim_10"
+  - first:
+      213: -7923079334931751903
+    second: "Tr\xE1i tim_11"
+  - first:
+      213: -2803366437276714235
+    second: "Tr\xE1i tim_12"
+  - first:
+      213: -6334353984903326756
+    second: "Tr\xE1i tim_13"
+  - first:
+      213: 3747276774654326580
+    second: "Tr\xE1i tim_14"
+  - first:
+      213: 8451439687459833747
+    second: "Tr\xE1i tim_15"
+  - first:
+      213: 1326797696870507115
+    second: "Tr\xE1i tim_16"
+  - first:
+      213: -9151450336187719187
+    second: "Tr\xE1i tim_17"
+  - first:
+      213: 1263089044443641304
+    second: "Tr\xE1i tim_18"
+  - first:
+      213: -5417028501938543378
+    second: "Tr\xE1i tim_19"
+  - first:
+      213: 5637315718984836962
+    second: "Tr\xE1i tim_20"
+  - first:
+      213: 8646379332392113664
+    second: "Tr\xE1i tim_21"
+  - first:
+      213: 1251259812342804578
+    second: "Tr\xE1i tim_22"
+  - first:
+      213: -3678728523084457351
+    second: "Tr\xE1i tim_23"
+  - first:
+      213: 2637113746059953187
+    second: "Tr\xE1i tim_24"
+  - first:
+      213: -1133151232681773493
+    second: "Tr\xE1i tim_25"
+  - first:
+      213: 1351257429918555864
+    second: "Tr\xE1i tim_26"
+  - first:
+      213: 6524866277097622392
+    second: "Tr\xE1i tim_27"
+  - first:
+      213: -5176444067012544342
+    second: "Tr\xE1i tim_28"
+  - first:
+      213: 8839624317099785295
+    second: "Tr\xE1i tim_29"
+  - first:
+      213: -1180445161564909407
+    second: "Tr\xE1i tim_30"
+  - first:
+      213: 2310875597851209709
+    second: "Tr\xE1i tim_31"
+  - first:
+      213: -5063395006333494229
+    second: "Tr\xE1i tim_32"
+  - first:
+      213: 7362669899391946655
+    second: "Tr\xE1i tim_33"
+  - first:
+      213: 761750229733369900
+    second: "Tr\xE1i tim_34"
+  - first:
+      213: -962930238289135333
+    second: "Tr\xE1i tim_35"
+  - first:
+      213: 1318898533156263702
+    second: "Tr\xE1i tim_36"
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_0"
+      rect:
+        serializedVersion: 2
+        x: 116
+        y: 768
+        width: 142
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9409329bf6b872720800000000000000
+      internalID: 2821377003534651465
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_1"
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 768
+        width: 141
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 39fe9bfe166ccb9f0800000000000000
+      internalID: -451267738707824749
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_2"
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 768
+        width: 144
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45b52d50d21c99a90800000000000000
+      internalID: -7306596521316557996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_3"
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 768
+        width: 140
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 66c4c6a326a166ee0800000000000000
+      internalID: -1268297235868922778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_4"
+      rect:
+        serializedVersion: 2
+        x: 716
+        y: 768
+        width: 143
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 104204270b2deb410800000000000000
+      internalID: 1494863781606466561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_5"
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 768
+        width: 144
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d0ce24e0006246440800000000000000
+      internalID: 4928105673931287565
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_6"
+      rect:
+        serializedVersion: 2
+        x: 1016
+        y: 768
+        width: 141
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57a25875a82909a80800000000000000
+      internalID: -8462102576957674891
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_7"
+      rect:
+        serializedVersion: 2
+        x: 1156
+        y: 836
+        width: 4
+        height: 8
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2c58e8bebdf56fb40800000000000000
+      internalID: 5473667795269879234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_8"
+      rect:
+        serializedVersion: 2
+        x: 1165
+        y: 768
+        width: 142
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 402ac812352121ab0800000000000000
+      internalID: -5038944884819713532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_9"
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 628
+        width: 139
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a2f4285e8f669d50800000000000000
+      internalID: 6743700149188752033
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_10"
+      rect:
+        serializedVersion: 2
+        x: 269
+        y: 628
+        width: 140
+        height: 124
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3f3f48b8cf20cf3d0800000000000000
+      internalID: -3171656753879911437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_11"
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 626
+        width: 144
+        height: 122
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12c972ab2519b0290800000000000000
+      internalID: -7923079334931751903
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_12"
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 628
+        width: 139
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50b7ed204117819d0800000000000000
+      internalID: -2803366437276714235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_13"
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 628
+        width: 142
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd3d1409c9ad718a0800000000000000
+      internalID: -6334353984903326756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_14"
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 628
+        width: 144
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 437b7546f50010430800000000000000
+      internalID: 3747276774654326580
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_15"
+      rect:
+        serializedVersion: 2
+        x: 908
+        y: 747
+        width: 4
+        height: 5
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3978eab3e9b894570800000000000000
+      internalID: 8451439687459833747
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_16"
+      rect:
+        serializedVersion: 2
+        x: 1016
+        y: 628
+        width: 144
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b62e5c2c97bb96210800000000000000
+      internalID: 1326797696870507115
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_17"
+      rect:
+        serializedVersion: 2
+        x: 1164
+        y: 628
+        width: 141
+        height: 119
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: de1e6ebd7648ff080800000000000000
+      internalID: -9151450336187719187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_18"
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 496
+        width: 141
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8d530c53bc4678110800000000000000
+      internalID: 1263089044443641304
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_19"
+      rect:
+        serializedVersion: 2
+        x: 269
+        y: 496
+        width: 140
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee469c33749d2d4b0800000000000000
+      internalID: -5417028501938543378
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_20"
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 494
+        width: 144
+        height: 122
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 26721d457c4cb3e40800000000000000
+      internalID: 5637315718984836962
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_21"
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 496
+        width: 141
+        height: 119
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 006d28c313c1ef770800000000000000
+      internalID: 8646379332392113664
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_22"
+      rect:
+        serializedVersion: 2
+        x: 664
+        y: 612
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2603a6c7b2e5d5110800000000000000
+      internalID: 1251259812342804578
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_23"
+      rect:
+        serializedVersion: 2
+        x: 672
+        y: 612
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 97a147426e782fcc0800000000000000
+      internalID: -3678728523084457351
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_24"
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 496
+        width: 141
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3240432eaf8e89420800000000000000
+      internalID: 2637113746059953187
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_25"
+      rect:
+        serializedVersion: 2
+        x: 868
+        y: 496
+        width: 140
+        height: 119
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b46f43325fc3640f0800000000000000
+      internalID: -1133151232681773493
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_26"
+      rect:
+        serializedVersion: 2
+        x: 958
+        y: 612
+        width: 18
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8de17662971a0c210800000000000000
+      internalID: 1351257429918555864
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_27"
+      rect:
+        serializedVersion: 2
+        x: 1016
+        y: 496
+        width: 141
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87b445d0f4bfc8a50800000000000000
+      internalID: 6524866277097622392
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_28"
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 580
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa8f90a0c839928b0800000000000000
+      internalID: -5176444067012544342
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_29"
+      rect:
+        serializedVersion: 2
+        x: 1200
+        y: 372
+        width: 286
+        height: 232
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f4c33a86b77acaa70800000000000000
+      internalID: 8839624317099785295
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_30"
+      rect:
+        serializedVersion: 2
+        x: 1156
+        y: 568
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1a0581c31673e9fe0800000000000000
+      internalID: -1180445161564909407
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_31"
+      rect:
+        serializedVersion: 2
+        x: 117
+        y: 360
+        width: 140
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: def2a0adc11e11020800000000000000
+      internalID: 2310875597851209709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_32"
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 360
+        width: 138
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b2c510a91153bb9b0800000000000000
+      internalID: -5063395006333494229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_33"
+      rect:
+        serializedVersion: 2
+        x: 416
+        y: 360
+        width: 144
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f9fc7bfa3457d2660800000000000000
+      internalID: 7362669899391946655
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_34"
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 360
+        width: 144
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2864da4cc7429a00800000000000000
+      internalID: 761750229733369900
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_35"
+      rect:
+        serializedVersion: 2
+        x: 718
+        y: 360
+        width: 138
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b193b43dc0cf2a2f0800000000000000
+      internalID: -962930238289135333
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_36"
+      rect:
+        serializedVersion: 2
+        x: 868
+        y: 360
+        width: 140
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61710936a3bad4210800000000000000
+      internalID: 1318898533156263702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_37"
+      rect:
+        serializedVersion: 2
+        x: 1016
+        y: 360
+        width: 142
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 209cc3a0018c88544bcb67b823b60b15
+      internalID: 1798738316
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_38"
+      rect:
+        serializedVersion: 2
+        x: 118
+        y: 228
+        width: 142
+        height: 120
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bcf2574ca8fc6a4da1c7f0814cb52ff
+      internalID: -229643788
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_39"
+      rect:
+        serializedVersion: 2
+        x: 270
+        y: 228
+        width: 140
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 134aec59890083647a788bcc63012967
+      internalID: 1499562360
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_40"
+      rect:
+        serializedVersion: 2
+        x: 420
+        y: 2
+        width: 140
+        height: 342
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bed7a050037cd7c4aaba339abe1295ba
+      internalID: 771191246
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_41"
+      rect:
+        serializedVersion: 2
+        x: 568
+        y: 228
+        width: 140
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 66601f7472ebfe74d8d1cfbc60b80308
+      internalID: -935766242
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_42"
+      rect:
+        serializedVersion: 2
+        x: 717
+        y: 228
+        width: 140
+        height: 118
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ce479701781be5c4e89f67e784f5ce46
+      internalID: 804837813
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_43"
+      rect:
+        serializedVersion: 2
+        x: 870
+        y: 228
+        width: 138
+        height: 116
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a0112ddeff467f345931f7189f619328
+      internalID: -1337954011
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_44"
+      rect:
+        serializedVersion: 2
+        x: 1008
+        y: 300
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1e8b2a9fca9eb574b823c8b6c7410925
+      internalID: -912335886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Tr\xE1i tim_45"
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 288
+        width: 4
+        height: 4
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: a5a7f3bb864480544bf92dfb260d0f3d
+      internalID: 846890028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: c67243389a79d454286a9cf12f7a2e4d
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":64.0,"y":64.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":0,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      "Tr\xE1i tim_0": 2821377003534651465
+      "Tr\xE1i tim_1": -451267738707824749
+      "Tr\xE1i tim_10": -3171656753879911437
+      "Tr\xE1i tim_11": -7923079334931751903
+      "Tr\xE1i tim_12": -2803366437276714235
+      "Tr\xE1i tim_13": -6334353984903326756
+      "Tr\xE1i tim_14": 3747276774654326580
+      "Tr\xE1i tim_15": 8451439687459833747
+      "Tr\xE1i tim_16": 1326797696870507115
+      "Tr\xE1i tim_17": -9151450336187719187
+      "Tr\xE1i tim_18": 1263089044443641304
+      "Tr\xE1i tim_19": -5417028501938543378
+      "Tr\xE1i tim_2": -7306596521316557996
+      "Tr\xE1i tim_20": 5637315718984836962
+      "Tr\xE1i tim_21": 8646379332392113664
+      "Tr\xE1i tim_22": 1251259812342804578
+      "Tr\xE1i tim_23": -3678728523084457351
+      "Tr\xE1i tim_24": 2637113746059953187
+      "Tr\xE1i tim_25": -1133151232681773493
+      "Tr\xE1i tim_26": 1351257429918555864
+      "Tr\xE1i tim_27": 6524866277097622392
+      "Tr\xE1i tim_28": -5176444067012544342
+      "Tr\xE1i tim_29": 8839624317099785295
+      "Tr\xE1i tim_3": -1268297235868922778
+      "Tr\xE1i tim_30": -1180445161564909407
+      "Tr\xE1i tim_31": 2310875597851209709
+      "Tr\xE1i tim_32": -5063395006333494229
+      "Tr\xE1i tim_33": 7362669899391946655
+      "Tr\xE1i tim_34": 761750229733369900
+      "Tr\xE1i tim_35": -962930238289135333
+      "Tr\xE1i tim_36": 1318898533156263702
+      "Tr\xE1i tim_37": 1798738316
+      "Tr\xE1i tim_38": -229643788
+      "Tr\xE1i tim_39": 1499562360
+      "Tr\xE1i tim_4": 1494863781606466561
+      "Tr\xE1i tim_40": 771191246
+      "Tr\xE1i tim_41": -935766242
+      "Tr\xE1i tim_42": 804837813
+      "Tr\xE1i tim_43": -1337954011
+      "Tr\xE1i tim_44": -912335886
+      "Tr\xE1i tim_45": 846890028
+      "Tr\xE1i tim_5": 4928105673931287565
+      "Tr\xE1i tim_6": -8462102576957674891
+      "Tr\xE1i tim_7": 5473667795269879234
+      "Tr\xE1i tim_8": -5038944884819713532
+      "Tr\xE1i tim_9": 6743700149188752033
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
