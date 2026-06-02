@@ -8,10 +8,10 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - BG
   - Water
   - UI
-  - 
+  - Player
   - 
   - 
   - 
@@ -41,7 +41,13 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: New Layer 1
+  - name: BG
+    uniqueID: 3830067861
+    locked: 0
+  - name: Player
+    uniqueID: 3848258429
+    locked: 0
+  - name: UI
     uniqueID: 10954297
     locked: 0
   m_RenderingLayers:
