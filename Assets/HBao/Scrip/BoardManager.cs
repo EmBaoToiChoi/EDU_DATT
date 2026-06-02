@@ -4,14 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro; // Nhập thư viện TMPro để quản lý hiển thị chữ điểm số
 
-// Cấu trúc dữ liệu để gom Tên và Ảnh của 1 chất hóa học
-[System.Serializable]
-public class ElementData
-{
-    public string elementName;
-    public Sprite elementSprite;
-}
-
 public class BoardManager : MonoBehaviour
 {
     [Header("Board Settings")]
@@ -19,11 +11,10 @@ public class BoardManager : MonoBehaviour
     public int cols = 10;
 
     [Header("Element Database")]
-    // Danh sách Tên + Ảnh của các chất (nhập từ Inspector)
-    public ElementData[] elementDatabase;
+    [Tooltip("Danh sách các Prefab chất hóa học tự thiết kế (Cu, Zn, Br, Al...)")]
+    [SerializeField] private GameObject[] elementPrefabs; 
 
     [Header("References")]
-    public GameObject tilePrefab;
     public Transform boardParent;
     public Slider expSlider; // Thanh Kinh Nghiệm
 
@@ -132,8 +123,8 @@ public class BoardManager : MonoBehaviour
         int numPairs = totalPlayableTiles / 2;
         for (int i = 0; i < numPairs; i++)
         {
-            // Lấy ngẫu nhiên ID từ danh sách Database bạn nạp vào
-            int randomID = Random.Range(0, elementDatabase.Length);
+            // Lấy ngẫu nhiên ID từ danh sách Prefab bạn nạp vào
+            int randomID = Random.Range(0, elementPrefabs.Length);
             elementIDs.Add(randomID);
             elementIDs.Add(randomID);
         }
@@ -147,9 +138,131 @@ public class BoardManager : MonoBehaviour
             elementIDs[r] = temp;
         }
 
+        // Lấy các cài đặt từ GridLayoutGroup để dựng lưới
         GridLayoutGroup gridLayout = boardParent.GetComponent<GridLayoutGroup>();
-        gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-        gridLayout.constraintCount = cols;
+        Vector2 cellSize = new Vector2(100f, 100f);
+        Vector2 spacing = Vector2.zero;
+        RectOffset padding = null;
+
+        if (gridLayout != null)
+        {
+            cellSize = gridLayout.cellSize;
+            spacing = gridLayout.spacing;
+            padding = gridLayout.padding;
+            gridLayout.enabled = false; // Tắt layout group tự động để không ghi đè kích thước/tỉ lệ của Prefab
+        }
+
+        // Tự động phát hiện kích thước lớn nhất của các Prefab chất để làm kích thước ô lưới cơ bản.
+        // Điều này giúp lưới tự giãn khoảng cách dựa trên kích thước thật của Prefab mà bạn đã chỉnh,
+        // tránh bị dính liền hay đè lên nhau.
+        if (elementPrefabs != null && elementPrefabs.Length > 0)
+        {
+            float maxW = 0f;
+            float maxH = 0f;
+            foreach (var prefab in elementPrefabs)
+            {
+                if (prefab != null)
+                {
+                    RectTransform rt = prefab.GetComponent<RectTransform>();
+                    if (rt != null)
+                    {
+                        maxW = Mathf.Max(maxW, rt.sizeDelta.x * rt.localScale.x);
+                        maxH = Mathf.Max(maxH, rt.sizeDelta.y * rt.localScale.y);
+                    }
+                }
+            }
+            if (maxW > 0 && maxH > 0)
+            {
+                cellSize = new Vector2(maxW, maxH);
+            }
+        }
+
+        // Tính toán tổng kích thước lưới chưa co giãn để căn chỉnh
+        float totalWidth = cols * cellSize.x + (cols - 1) * spacing.x;
+        float totalHeight = rows * cellSize.y + (rows - 1) * spacing.y;
+
+        float gridScale = 1f;
+        float startX = 0f;
+        float startY = 0f;
+
+        RectTransform parentRect = boardParent as RectTransform;
+        if (parentRect != null && parentRect.rect.width > 0 && parentRect.rect.height > 0)
+        {
+            float parentWidth = parentRect.rect.width;
+            float parentHeight = parentRect.rect.height;
+
+            float padLeft = padding != null ? padding.left : 0f;
+            float padRight = padding != null ? padding.right : 0f;
+            float padTop = padding != null ? padding.top : 0f;
+            float padBottom = padding != null ? padding.bottom : 0f;
+
+            float netParentWidth = parentWidth - padLeft - padRight;
+            float netParentHeight = parentHeight - padTop - padBottom;
+
+            // Đảm bảo không âm hoặc lỗi chia cho 0
+            if (netParentWidth <= 0f) netParentWidth = parentWidth;
+            if (netParentHeight <= 0f) netParentHeight = parentHeight;
+
+            // Tính tỉ lệ thu nhỏ tự động nếu lưới bị tràn ra ngoài vùng chứa
+            if (totalWidth > netParentWidth || totalHeight > netParentHeight)
+            {
+                float scaleX = netParentWidth / totalWidth;
+                float scaleY = netParentHeight / totalHeight;
+                gridScale = Mathf.Min(scaleX, scaleY);
+            }
+
+            // Áp dụng tỉ lệ co giãn vào các kích thước của lưới
+            float scaledCellWidth = cellSize.x * gridScale;
+            float scaledCellHeight = cellSize.y * gridScale;
+            float scaledSpacingX = spacing.x * gridScale;
+            float scaledSpacingY = spacing.y * gridScale;
+
+            float scaledTotalWidth = cols * scaledCellWidth + (cols - 1) * scaledSpacingX;
+            float scaledTotalHeight = rows * scaledCellHeight + (rows - 1) * scaledSpacingY;
+
+            // Xác định vị trí bắt đầu dựa trên childAlignment của Grid ban đầu
+            TextAnchor alignment = gridLayout != null ? gridLayout.childAlignment : TextAnchor.MiddleCenter;
+
+            // Tính startX
+            if (alignment == TextAnchor.UpperLeft || alignment == TextAnchor.MiddleLeft || alignment == TextAnchor.LowerLeft)
+            {
+                startX = -parentWidth / 2f + padLeft + scaledCellWidth / 2f;
+            }
+            else if (alignment == TextAnchor.UpperRight || alignment == TextAnchor.MiddleRight || alignment == TextAnchor.LowerRight)
+            {
+                startX = parentWidth / 2f - padRight - scaledTotalWidth + scaledCellWidth / 2f;
+            }
+            else // MiddleCenter, UpperCenter, LowerCenter
+            {
+                startX = -parentWidth / 2f + padLeft + (netParentWidth - scaledTotalWidth) / 2f + scaledCellWidth / 2f;
+            }
+
+            // Tính startY
+            if (alignment == TextAnchor.UpperLeft || alignment == TextAnchor.UpperCenter || alignment == TextAnchor.UpperRight)
+            {
+                startY = parentHeight / 2f - padTop - scaledCellHeight / 2f;
+            }
+            else if (alignment == TextAnchor.LowerLeft || alignment == TextAnchor.LowerCenter || alignment == TextAnchor.LowerRight)
+            {
+                startY = -parentHeight / 2f + padBottom + scaledTotalHeight - scaledCellHeight / 2f;
+            }
+            else // MiddleLeft, MiddleCenter, MiddleRight
+            {
+                startY = parentHeight / 2f - padTop - (netParentHeight - scaledTotalHeight) / 2f - scaledCellHeight / 2f;
+            }
+        }
+        else
+        {
+            // Dự phòng nếu không có RectTransform hoặc kích thước chưa được khởi tạo
+            startX = -totalWidth / 2f + cellSize.x / 2f;
+            startY = totalHeight / 2f - cellSize.y / 2f;
+        }
+
+        // Cập nhật lại các khoảng cách và cell size theo tỉ lệ gridScale
+        float finalCellWidth = cellSize.x * gridScale;
+        float finalCellHeight = cellSize.y * gridScale;
+        float finalSpacingX = spacing.x * gridScale;
+        float finalSpacingY = spacing.y * gridScale;
 
         int index = 0;
         for (int r = 1; r <= rows; r++)
@@ -159,10 +272,41 @@ public class BoardManager : MonoBehaviour
                 int id = elementIDs[index];
                 matrix[r, c] = id + 1; // +1 để phân biệt với 0 (ô trống)
 
-                GameObject go = Instantiate(tilePrefab, boardParent);
+                // Tạo ra prefab tương ứng với ID chất đó
+                GameObject go = Instantiate(elementPrefabs[id], boardParent);
+                
+                // Đảm bảo giữ nguyên kích thước (sizeDelta) và áp dụng tỉ lệ thu nhỏ của lưới lên scale
+                RectTransform goRect = go.GetComponent<RectTransform>();
+                RectTransform prefabRect = elementPrefabs[id].GetComponent<RectTransform>();
+                if (goRect != null && prefabRect != null)
+                {
+                    Vector2 originalSize = prefabRect.sizeDelta;
+                    Vector3 originalScale = prefabRect.localScale;
+                    Vector2 originalPivot = prefabRect.pivot;
+
+                    // Đặt neo ở chính giữa để tính toán vị trí dễ dàng
+                    goRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    goRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    goRect.pivot = originalPivot;
+                    goRect.sizeDelta = originalSize;
+                    
+                    // Nhân tỉ lệ gốc của prefab với tỉ lệ co giãn của lưới
+                    Vector3 targetScale = new Vector3(originalScale.x * gridScale, originalScale.y * gridScale, originalScale.z * gridScale);
+                    goRect.localScale = targetScale;
+
+                    // Tính vị trí tâm ô (r, c)
+                    float posX = startX + (c - 1) * (finalCellWidth + finalSpacingX);
+                    float posY = startY - (r - 1) * (finalCellHeight + finalSpacingY);
+
+                    // Điều chỉnh vị trí theo Pivot của prefab (sử dụng targetScale mới để không bị lệch)
+                    float offsetX = (originalPivot.x - 0.5f) * originalSize.x * targetScale.x;
+                    float offsetY = (originalPivot.y - 0.5f) * originalSize.y * targetScale.y;
+
+                    goRect.anchoredPosition = new Vector2(posX + offsetX, posY + offsetY);
+                }
+
                 TileController tile = go.GetComponent<TileController>();
-                // Gửi dữ liệu Tên + Ảnh vào ô
-                tile.SetupTile(r, c, id + 1, elementDatabase[id], this);
+                tile.SetupTile(r, c, id + 1, this);
 
                 index++;
             }
@@ -557,10 +701,17 @@ public class BoardManager : MonoBehaviour
     {
         float delayBetween = 0.2f;
 
-        // Khởi tạo scale của các nút về 0
+        // Lưu lại scale gốc của từng nút thiết lập từ Editor
+        Vector3[] originalScales = new Vector3[buttons.Length];
         for (int i = 0; i < buttons.Length; i++)
         {
-            if (buttons[i] != null) buttons[i].transform.localScale = Vector3.zero;
+            if (buttons[i] != null)
+            {
+                originalScales[i] = buttons[i].transform.localScale;
+                if (originalScales[i] == Vector3.zero) originalScales[i] = Vector3.one;
+                
+                buttons[i].transform.localScale = Vector3.zero;
+            }
         }
 
         // Cho từng nút xuất hiện tuần tự
@@ -568,13 +719,13 @@ public class BoardManager : MonoBehaviour
         {
             if (buttons[i] != null)
             {
-                StartCoroutine(AnimateButtonEntrance(buttons[i].GetComponent<RectTransform>()));
+                StartCoroutine(AnimateButtonEntrance(buttons[i].GetComponent<RectTransform>(), originalScales[i]));
                 yield return new WaitForSeconds(delayBetween);
             }
         }
     }
 
-    private IEnumerator AnimateButtonEntrance(RectTransform btnTransform)
+    private IEnumerator AnimateButtonEntrance(RectTransform btnTransform, Vector3 targetScale)
     {
         btnTransform.localScale = Vector3.zero;
         btnTransform.gameObject.SetActive(true);
@@ -584,14 +735,18 @@ public class BoardManager : MonoBehaviour
 
         while (elapsed < duration)
         {
+            // Thoát coroutine nếu game bị reset đột ngột
+            if (!isGameOver || btnTransform == null || !btnTransform.gameObject.activeInHierarchy)
+                yield break;
+
             elapsed += Time.deltaTime;
             float t = Mathf.Clamp01(elapsed / duration);
-            float scale = EaseOutBack(t);
-            btnTransform.localScale = new Vector3(scale, scale, 1f);
+            float scaleMultiplier = EaseOutBack(t);
+            btnTransform.localScale = new Vector3(targetScale.x * scaleMultiplier, targetScale.y * scaleMultiplier, targetScale.z);
             yield return null;
         }
 
-        btnTransform.localScale = Vector3.one;
+        if (btnTransform != null) btnTransform.localScale = targetScale;
     }
 
     // Hàm EaseOutBack tạo chuyển động nảy nhẹ cho nút bấm và hình ảnh
