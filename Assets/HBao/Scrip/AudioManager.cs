@@ -12,11 +12,21 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip backgroundMusic;
     [SerializeField] private AudioClip clickSound;
 
+    [Header("Default Volumes")]
+    [Range(0f, 1f)] [SerializeField] private float defaultMusicVolume = 0.15f; // Giảm nhạc nền mặc định xuống 15% cho dịu hơn
+    [Range(0f, 1f)] [SerializeField] private float defaultSFXVolume = 0.8f;    // Âm lượng click mặc định (80%)
+
     private const string BGM_VOL_KEY = "BGMVolume";
     private const string SFX_VOL_KEY = "SFXVolume";
 
     void Awake()
     {
+        // Kiểm tra xem có gán nhầm trùng AudioSource không
+        if (musicSource != null && sfxSource != null && musicSource == sfxSource)
+        {
+            Debug.LogError("WARNING: Cả Music Source và Sfx Source của AudioManager đang trỏ chung vào 1 AudioSource! Hãy tạo và gán 2 AudioSource khác nhau nhé.");
+        }
+
         // Cấu hình Singleton
         if (Instance == null)
         {
@@ -47,9 +57,9 @@ public class AudioManager : MonoBehaviour
             sfxSource.playOnAwake = false;
         }
 
-        // Tải âm lượng từ PlayerPrefs (mặc định là 0.75 nếu chưa lưu lần nào)
-        float savedBGM = PlayerPrefs.GetFloat(BGM_VOL_KEY, 0.75f);
-        float savedSFX = PlayerPrefs.GetFloat(SFX_VOL_KEY, 0.75f);
+        // Tải âm lượng từ PlayerPrefs (mặc định từ biến cấu hình nếu chưa lưu lần nào)
+        float savedBGM = PlayerPrefs.GetFloat(BGM_VOL_KEY, defaultMusicVolume);
+        float savedSFX = PlayerPrefs.GetFloat(SFX_VOL_KEY, defaultSFXVolume);
 
         SetMusicVolume(savedBGM);
         SetSFXVolume(savedSFX);
@@ -83,7 +93,8 @@ public class AudioManager : MonoBehaviour
         volume = Mathf.Clamp01(volume);
         if (musicSource != null)
         {
-            musicSource.volume = volume;
+            // Áp dụng bình phương để tạo cảm nhận âm lượng tuyến tính theo tai người (logarithmic curve)
+            musicSource.volume = volume * volume;
         }
         PlayerPrefs.SetFloat(BGM_VOL_KEY, volume);
         PlayerPrefs.Save();
@@ -94,7 +105,8 @@ public class AudioManager : MonoBehaviour
         volume = Mathf.Clamp01(volume);
         if (sfxSource != null)
         {
-            sfxSource.volume = volume;
+            // Áp dụng tương tự cho SFX
+            sfxSource.volume = volume * volume;
         }
         PlayerPrefs.SetFloat(SFX_VOL_KEY, volume);
         PlayerPrefs.Save();
@@ -102,11 +114,12 @@ public class AudioManager : MonoBehaviour
 
     public float GetMusicVolume()
     {
-        return musicSource != null ? musicSource.volume : PlayerPrefs.GetFloat(BGM_VOL_KEY, 0.75f);
+        // Trả về giá trị tuyến tính gốc để Slider hiển thị chính xác
+        return PlayerPrefs.GetFloat(BGM_VOL_KEY, defaultMusicVolume);
     }
 
     public float GetSFXVolume()
     {
-        return sfxSource != null ? sfxSource.volume : PlayerPrefs.GetFloat(SFX_VOL_KEY, 0.75f);
+        return PlayerPrefs.GetFloat(SFX_VOL_KEY, defaultSFXVolume);
     }
 }

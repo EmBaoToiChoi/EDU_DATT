@@ -21,6 +21,7 @@ public class LobbyMenuManager : MonoBehaviour
     [SerializeField] private Button settingsButton;
     [SerializeField] private Button exitButton;
     [SerializeField] private Button closeSettingsButton;    // Nút đóng cài đặt (X hoặc Back)
+    [SerializeField] private Button gameplaySettingsButton; // Nút cài đặt trong màn chơi (mới thêm)
 
     private bool isScrolling = false;
 
@@ -47,6 +48,7 @@ public class LobbyMenuManager : MonoBehaviour
         if (settingsButton != null) settingsButton.onClick.AddListener(OnSettingsClicked);
         if (exitButton != null) exitButton.onClick.AddListener(OnExitClicked);
         if (closeSettingsButton != null) closeSettingsButton.onClick.AddListener(OnCloseSettingsClicked);
+        if (gameplaySettingsButton != null) gameplaySettingsButton.onClick.AddListener(OnSettingsClicked);
 
         // 3. Bắt đầu cuộn camera từ trái sang phải
         if (targetCamera != null)
@@ -112,8 +114,24 @@ public class LobbyMenuManager : MonoBehaviour
     {
         if (isScrolling) return;
 
-        // Bật UI cài đặt đè lên
-        if (settingsUI != null) settingsUI.SetActive(true);
+        Debug.Log("LobbyMenuManager: Nút cài đặt đã được click!");
+        
+        if (settingsUI != null)
+        {
+            settingsUI.SetActive(true);
+            
+            // Log chẩn đoán kiểm tra phân cấp UI
+            Debug.Log($"LobbyMenuManager: Bật SettingsUI. Active Self: {settingsUI.activeSelf}, Active In Hierarchy (Có thực sự hiển thị): {settingsUI.activeInHierarchy}");
+            
+            if (!settingsUI.activeInHierarchy)
+            {
+                Debug.LogWarning("CẢNH BÁO: SettingsUI đã được SetActive(true) nhưng không hiển thị! Có thể do cha của nó (ví dụ: LobbyMenuUI) đang bị ẩn. Hãy kéo SettingsUI ra làm con trực tiếp của Canvas chính (ngang hàng với LobbyMenuUI và GamePlayCanvas).");
+            }
+        }
+        else
+        {
+            Debug.LogError("LobbyMenuManager: Chưa gán SettingsUI trong Inspector của GameMenuManager!");
+        }
     }
 
     private void OnCloseSettingsClicked()
