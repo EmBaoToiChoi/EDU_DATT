@@ -17,18 +17,18 @@ public class TileController : MonoBehaviour
     private BoardManager boardManager;
     private Button btn;
 
-    public void SetupTile(int x, int y, int id, ElementData data, BoardManager manager)
+    public void SetupTile(int x, int y, int id, BoardManager manager)
     {
         this.x = x; this.y = y;
         this.elementID = id;
         this.boardManager = manager;
 
-        // Gán Tên và Hình ảnh từ Database
-        if (txtName != null) txtName.text = data.elementName;
-        if (iconImage != null && data.elementSprite != null) iconImage.sprite = data.elementSprite;
-
         btn = GetComponent<Button>();
-        btn.onClick.AddListener(OnTileClicked);
+        if (btn != null)
+        {
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(OnTileClicked);
+        }
     }
 
     void OnTileClicked()

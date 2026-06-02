@@ -41,8 +41,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: New Layer 1
-    uniqueID: 10954297
+  - name: Menu
+    uniqueID: 2038883849
+    locked: 0
+  - name: Gameplay
+    uniqueID: 2247486947
+    locked: 0
+  - name: Setting
+    uniqueID: 420596079
     locked: 0
   m_RenderingLayers:
   - Default
