@@ -1,14 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-
-// Cấu trúc dữ liệu để gom Tên và Ảnh của 1 chất hóa học
-[System.Serializable]
-public class ElementData
-{
-    public string elementName;
-    public Sprite elementSprite;
-}
+using TMPro; // Nhập thư viện TMPro để quản lý hiển thị chữ điểm số
 
 public class BoardManager : MonoBehaviour
 {
@@ -17,19 +11,55 @@ public class BoardManager : MonoBehaviour
     public int cols = 10;
 
     [Header("Element Database")]
-    // Danh sách Tên + Ảnh của các chất (nhập từ Inspector)
-    public ElementData[] elementDatabase;
+    [Tooltip("Danh sách các Prefab chất hóa học tự thiết kế (Cu, Zn, Br, Al...)")]
+    [SerializeField] private GameObject[] elementPrefabs; 
 
     [Header("References")]
-    public GameObject tilePrefab;
     public Transform boardParent;
     public Slider expSlider; // Thanh Kinh Nghiệm
+
+    [Header("Hearts Settings")]
+    [SerializeField] private HeartUI[] heartIcons;       // Mảng 3 trái tim UI
+    [SerializeField] private GameObject gameOverPanel;   // Panel khi thua cuộc
+    [SerializeField] private Button replayButton;        // Nút chơi lại trên Panel Thua (mới)
+    [SerializeField] private Button exitButton;          // Nút thoát trên Panel Thua (mới)
+    [SerializeField] private GameObject lobbyMenuUI;     // Menu Lobby (để quay lại nếu nhấn thoát trong game)
+    [SerializeField] private GameObject winPanel;        // Panel khi chiến thắng (mới)
+    [SerializeField] private Button winReplayButton;     // Nút chơi lại trên Panel Thắng (mới)
+    [SerializeField] private Button winExitButton;       // Nút thoát trên Panel Thắng (mới)
+
+    [Header("Gameplay Audio Clips")]
+    [SerializeField] private AudioClip matchSound;       // Âm thanh khi nối đúng
+    [SerializeField] private AudioClip errorSound;       // Âm thanh khi chọn sai / mất mạng
+    [SerializeField] private AudioClip gameOverSound;    // Âm thanh khi thua cuộc
+    [SerializeField] private AudioClip winSound;         // Âm thanh khi chiến thắng (mới)
+
+    [Header("Score Settings")]
+    [SerializeField] private TextMeshProUGUI gameplayScoreText; // Text điểm hiển thị trong màn chơi
+    [SerializeField] private TextMeshProUGUI winScoreText;      // Text điểm hiển thị trên Panel Thắng
+    [SerializeField] private TextMeshProUGUI loseScoreText;     // Text điểm hiển thị trên Panel Thua
+
+    [Header("Combo Settings")]
+    [SerializeField] private float comboThreshold = 3.0f;       // Zeit tối đa giữa 2 lần ghép để tính combo (giây)
+    [SerializeField] private Image comboImage;                  // Image UI hiển thị hình ảnh Combo
+    [SerializeField] private Sprite comboSprite;                // Hình ảnh Combo x2 duy nhất
+    [SerializeField] private AudioClip comboSound;              // Âm thanh hiệu ứng Combo duy nhất
 
     private int[,] matrix;
     private TileController firstSelected = null;
     private int currentExp = 0;
     private int maxExp = 0;
     private bool isGameOver = false;
+
+    private int currentScore = 0; // Điểm số hiện tại của màn chơi
+    private float lastMatchTime = -100f; // Thời điểm ghép đúng trước đó
+    private int currentCombo = 0; // Cấp combo hiện tại (0 -> base, 1 -> combo x2, 2 -> combo x3)
+    private Coroutine comboCoroutine;
+    private Vector3 comboOriginalScale = Vector3.one; // Lưu tỷ lệ RectTransform gốc từ Editor (mới)
+
+    private int currentHearts = 3;
+    private Vector2[] heartStartPositions;
+    private Color heartOriginalColor;
 
     void Start()
     {
@@ -46,6 +76,43 @@ public class BoardManager : MonoBehaviour
             expSlider.maxValue = maxExp;
             expSlider.value = 0;
         }
+
+        // Lưu vị trí và màu sắc ban đầu của các trái tim để reset khi chơi lại
+        currentHearts = 3;
+        if (heartIcons != null && heartIcons.Length > 0)
+        {
+            heartStartPositions = new Vector2[heartIcons.Length];
+            if (heartIcons[0] != null)
+            {
+                Image heartImg = heartIcons[0].GetComponent<Image>();
+                if (heartImg != null) heartOriginalColor = heartImg.color;
+            }
+            for (int i = 0; i < heartIcons.Length; i++)
+            {
+                if (heartIcons[i] != null)
+                {
+                    heartStartPositions[i] = heartIcons[i].GetComponent<RectTransform>().anchoredPosition;
+                }
+            }
+        }
+
+        // Đăng ký sự kiện click cho các nút trên Panel Thua cuộc
+        if (replayButton != null) replayButton.onClick.AddListener(ResetGame);
+        if (exitButton != null) exitButton.onClick.AddListener(OnExitClicked);
+
+        // Đăng ký sự kiện click cho các nút trên Panel Chiến thắng
+        if (winReplayButton != null) winReplayButton.onClick.AddListener(ResetGame);
+        if (winExitButton != null) winExitButton.onClick.AddListener(OnExitClicked);
+
+        // Khởi tạo điểm ban đầu
+        currentScore = 0;
+        UpdateScoreUI();
+
+        // Lưu tỷ lệ (Scale) gốc của Combo Image được thiết lập từ Editor
+        if (comboImage != null)
+        {
+            comboOriginalScale = comboImage.transform.localScale;
+        }
     }
 
     void GenerateBoardLogic()
@@ -56,8 +123,8 @@ public class BoardManager : MonoBehaviour
         int numPairs = totalPlayableTiles / 2;
         for (int i = 0; i < numPairs; i++)
         {
-            // Lấy ngẫu nhiên ID từ danh sách Database bạn nạp vào
-            int randomID = Random.Range(0, elementDatabase.Length);
+            // Lấy ngẫu nhiên ID từ danh sách Prefab bạn nạp vào
+            int randomID = Random.Range(0, elementPrefabs.Length);
             elementIDs.Add(randomID);
             elementIDs.Add(randomID);
         }
@@ -71,9 +138,131 @@ public class BoardManager : MonoBehaviour
             elementIDs[r] = temp;
         }
 
+        // Lấy các cài đặt từ GridLayoutGroup để dựng lưới
         GridLayoutGroup gridLayout = boardParent.GetComponent<GridLayoutGroup>();
-        gridLayout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-        gridLayout.constraintCount = cols;
+        Vector2 cellSize = new Vector2(100f, 100f);
+        Vector2 spacing = Vector2.zero;
+        RectOffset padding = null;
+
+        if (gridLayout != null)
+        {
+            cellSize = gridLayout.cellSize;
+            spacing = gridLayout.spacing;
+            padding = gridLayout.padding;
+            gridLayout.enabled = false; // Tắt layout group tự động để không ghi đè kích thước/tỉ lệ của Prefab
+        }
+
+        // Tự động phát hiện kích thước lớn nhất của các Prefab chất để làm kích thước ô lưới cơ bản.
+        // Điều này giúp lưới tự giãn khoảng cách dựa trên kích thước thật của Prefab mà bạn đã chỉnh,
+        // tránh bị dính liền hay đè lên nhau.
+        if (elementPrefabs != null && elementPrefabs.Length > 0)
+        {
+            float maxW = 0f;
+            float maxH = 0f;
+            foreach (var prefab in elementPrefabs)
+            {
+                if (prefab != null)
+                {
+                    RectTransform rt = prefab.GetComponent<RectTransform>();
+                    if (rt != null)
+                    {
+                        maxW = Mathf.Max(maxW, rt.sizeDelta.x * rt.localScale.x);
+                        maxH = Mathf.Max(maxH, rt.sizeDelta.y * rt.localScale.y);
+                    }
+                }
+            }
+            if (maxW > 0 && maxH > 0)
+            {
+                cellSize = new Vector2(maxW, maxH);
+            }
+        }
+
+        // Tính toán tổng kích thước lưới chưa co giãn để căn chỉnh
+        float totalWidth = cols * cellSize.x + (cols - 1) * spacing.x;
+        float totalHeight = rows * cellSize.y + (rows - 1) * spacing.y;
+
+        float gridScale = 1f;
+        float startX = 0f;
+        float startY = 0f;
+
+        RectTransform parentRect = boardParent as RectTransform;
+        if (parentRect != null && parentRect.rect.width > 0 && parentRect.rect.height > 0)
+        {
+            float parentWidth = parentRect.rect.width;
+            float parentHeight = parentRect.rect.height;
+
+            float padLeft = padding != null ? padding.left : 0f;
+            float padRight = padding != null ? padding.right : 0f;
+            float padTop = padding != null ? padding.top : 0f;
+            float padBottom = padding != null ? padding.bottom : 0f;
+
+            float netParentWidth = parentWidth - padLeft - padRight;
+            float netParentHeight = parentHeight - padTop - padBottom;
+
+            // Đảm bảo không âm hoặc lỗi chia cho 0
+            if (netParentWidth <= 0f) netParentWidth = parentWidth;
+            if (netParentHeight <= 0f) netParentHeight = parentHeight;
+
+            // Tính tỉ lệ thu nhỏ tự động nếu lưới bị tràn ra ngoài vùng chứa
+            if (totalWidth > netParentWidth || totalHeight > netParentHeight)
+            {
+                float scaleX = netParentWidth / totalWidth;
+                float scaleY = netParentHeight / totalHeight;
+                gridScale = Mathf.Min(scaleX, scaleY);
+            }
+
+            // Áp dụng tỉ lệ co giãn vào các kích thước của lưới
+            float scaledCellWidth = cellSize.x * gridScale;
+            float scaledCellHeight = cellSize.y * gridScale;
+            float scaledSpacingX = spacing.x * gridScale;
+            float scaledSpacingY = spacing.y * gridScale;
+
+            float scaledTotalWidth = cols * scaledCellWidth + (cols - 1) * scaledSpacingX;
+            float scaledTotalHeight = rows * scaledCellHeight + (rows - 1) * scaledSpacingY;
+
+            // Xác định vị trí bắt đầu dựa trên childAlignment của Grid ban đầu
+            TextAnchor alignment = gridLayout != null ? gridLayout.childAlignment : TextAnchor.MiddleCenter;
+
+            // Tính startX
+            if (alignment == TextAnchor.UpperLeft || alignment == TextAnchor.MiddleLeft || alignment == TextAnchor.LowerLeft)
+            {
+                startX = -parentWidth / 2f + padLeft + scaledCellWidth / 2f;
+            }
+            else if (alignment == TextAnchor.UpperRight || alignment == TextAnchor.MiddleRight || alignment == TextAnchor.LowerRight)
+            {
+                startX = parentWidth / 2f - padRight - scaledTotalWidth + scaledCellWidth / 2f;
+            }
+            else // MiddleCenter, UpperCenter, LowerCenter
+            {
+                startX = -parentWidth / 2f + padLeft + (netParentWidth - scaledTotalWidth) / 2f + scaledCellWidth / 2f;
+            }
+
+            // Tính startY
+            if (alignment == TextAnchor.UpperLeft || alignment == TextAnchor.UpperCenter || alignment == TextAnchor.UpperRight)
+            {
+                startY = parentHeight / 2f - padTop - scaledCellHeight / 2f;
+            }
+            else if (alignment == TextAnchor.LowerLeft || alignment == TextAnchor.LowerCenter || alignment == TextAnchor.LowerRight)
+            {
+                startY = -parentHeight / 2f + padBottom + scaledTotalHeight - scaledCellHeight / 2f;
+            }
+            else // MiddleLeft, MiddleCenter, MiddleRight
+            {
+                startY = parentHeight / 2f - padTop - (netParentHeight - scaledTotalHeight) / 2f - scaledCellHeight / 2f;
+            }
+        }
+        else
+        {
+            // Dự phòng nếu không có RectTransform hoặc kích thước chưa được khởi tạo
+            startX = -totalWidth / 2f + cellSize.x / 2f;
+            startY = totalHeight / 2f - cellSize.y / 2f;
+        }
+
+        // Cập nhật lại các khoảng cách và cell size theo tỉ lệ gridScale
+        float finalCellWidth = cellSize.x * gridScale;
+        float finalCellHeight = cellSize.y * gridScale;
+        float finalSpacingX = spacing.x * gridScale;
+        float finalSpacingY = spacing.y * gridScale;
 
         int index = 0;
         for (int r = 1; r <= rows; r++)
@@ -83,10 +272,41 @@ public class BoardManager : MonoBehaviour
                 int id = elementIDs[index];
                 matrix[r, c] = id + 1; // +1 để phân biệt với 0 (ô trống)
 
-                GameObject go = Instantiate(tilePrefab, boardParent);
+                // Tạo ra prefab tương ứng với ID chất đó
+                GameObject go = Instantiate(elementPrefabs[id], boardParent);
+                
+                // Đảm bảo giữ nguyên kích thước (sizeDelta) và áp dụng tỉ lệ thu nhỏ của lưới lên scale
+                RectTransform goRect = go.GetComponent<RectTransform>();
+                RectTransform prefabRect = elementPrefabs[id].GetComponent<RectTransform>();
+                if (goRect != null && prefabRect != null)
+                {
+                    Vector2 originalSize = prefabRect.sizeDelta;
+                    Vector3 originalScale = prefabRect.localScale;
+                    Vector2 originalPivot = prefabRect.pivot;
+
+                    // Đặt neo ở chính giữa để tính toán vị trí dễ dàng
+                    goRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    goRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    goRect.pivot = originalPivot;
+                    goRect.sizeDelta = originalSize;
+                    
+                    // Nhân tỉ lệ gốc của prefab với tỉ lệ co giãn của lưới
+                    Vector3 targetScale = new Vector3(originalScale.x * gridScale, originalScale.y * gridScale, originalScale.z * gridScale);
+                    goRect.localScale = targetScale;
+
+                    // Tính vị trí tâm ô (r, c)
+                    float posX = startX + (c - 1) * (finalCellWidth + finalSpacingX);
+                    float posY = startY - (r - 1) * (finalCellHeight + finalSpacingY);
+
+                    // Điều chỉnh vị trí theo Pivot của prefab (sử dụng targetScale mới để không bị lệch)
+                    float offsetX = (originalPivot.x - 0.5f) * originalSize.x * targetScale.x;
+                    float offsetY = (originalPivot.y - 0.5f) * originalSize.y * targetScale.y;
+
+                    goRect.anchoredPosition = new Vector2(posX + offsetX, posY + offsetY);
+                }
+
                 TileController tile = go.GetComponent<TileController>();
-                // Gửi dữ liệu Tên + Ảnh vào ô
-                tile.SetupTile(r, c, id + 1, elementDatabase[id], this);
+                tile.SetupTile(r, c, id + 1, this);
 
                 index++;
             }
@@ -111,14 +331,17 @@ public class BoardManager : MonoBehaviour
         }
         else
         {
+            bool isMatch = false;
+
             if (firstSelected.elementID == clickedTile.elementID)
             {
                 Vector2Int p1 = new Vector2Int(firstSelected.x, firstSelected.y);
                 Vector2Int p2 = new Vector2Int(clickedTile.x, clickedTile.y);
 
                 // Sử dụng thuật toán quét thẳng dòng (Line-Search BFS) mới
-               if (CheckPath(p1, p2))
+                if (CheckPath(p1, p2))
                 {
+                    isMatch = true;
                     matrix[p1.x, p1.y] = 0;
                     matrix[p2.x, p2.y] = 0;
 
@@ -126,17 +349,22 @@ public class BoardManager : MonoBehaviour
                     firstSelected.PlayMatchEffect();
                     clickedTile.PlayMatchEffect();
 
+                    // Phát âm thanh ghép đúng
+                    if (AudioManager.Instance != null && matchSound != null)
+                    {
+                        AudioManager.Instance.PlaySFX(matchSound);
+                    }
+
                     // Tăng cấp độ
                     GainExp();
                 }
-                else
-                {
-                    firstSelected.SetSelectedVisual(false);
-                }
             }
-            else
+
+            if (!isMatch)
             {
+                // Chọn sai hoặc không tìm được đường đi nối 2 ô -> Trừ tim
                 firstSelected.SetSelectedVisual(false);
+                DeductHeart();
             }
 
             firstSelected = null;
@@ -148,10 +376,30 @@ public class BoardManager : MonoBehaviour
         currentExp++;
         if (expSlider != null) expSlider.value = currentExp;
 
+        // Tính toán combo dựa trên khoảng thời gian với lần ghép đúng trước đó
+        float timeSinceLastMatch = Time.time - lastMatchTime;
+        int pointsAdded = 1;
+
+        if (timeSinceLastMatch <= comboThreshold)
+        {
+            // Ghép nhanh -> Đạt combo, cộng 2 điểm (+2 điểm là cao nhất)
+            pointsAdded = 2;
+        }
+        else
+        {
+            // Quá thời gian -> Nhận 1 điểm cơ bản
+            pointsAdded = 1;
+        }
+        lastMatchTime = Time.time;
+
+        currentScore += pointsAdded;
+
+        UpdateScoreUI();
+        UpdateComboUI(pointsAdded);
+
         if (currentExp >= maxExp)
         {
-            isGameOver = true;
-            Debug.Log("LEVEL UP! Chúc mừng hoàn thành bài học!");
+            TriggerGameOver(true);
         }
     }
 
@@ -232,5 +480,280 @@ public class BoardManager : MonoBehaviour
             }
         }
         return false;
+    }
+
+    private void DeductHeart()
+    {
+        if (isGameOver) return;
+
+        currentHearts--;
+
+        // Kích hoạt hiệu ứng rơi tim tương ứng
+        int heartIndex = currentHearts;
+        if (heartIcons != null && heartIndex >= 0 && heartIndex < heartIcons.Length)
+        {
+            if (heartIcons[heartIndex] != null)
+            {
+                heartIcons[heartIndex].PlayFallEffect();
+            }
+        }
+
+        // Phát âm thanh khi chọn sai
+        if (AudioManager.Instance != null && errorSound != null)
+        {
+            AudioManager.Instance.PlaySFX(errorSound);
+        }
+
+        // Kiểm tra điều kiện thua cuộc
+        if (currentHearts <= 0)
+        {
+            TriggerGameOver(false);
+        }
+    }
+
+    private void TriggerGameOver(bool isWin)
+    {
+        isGameOver = true;
+
+        if (isWin)
+        {
+            Debug.Log("LEVEL UP! Chúc mừng hoàn thành bài học!");
+            if (winPanel != null)
+            {
+                winPanel.SetActive(true);
+                // Hiệu ứng hiện các nút của Panel Thắng tuần tự
+                StartCoroutine(AnimatePanelButtons(new Button[] { winReplayButton, winExitButton }));
+            }
+            if (AudioManager.Instance != null && winSound != null)
+            {
+                AudioManager.Instance.PlaySFX(winSound);
+            }
+        }
+        else
+        {
+            Debug.Log("GAME OVER! Bạn đã hết mạng chơi.");
+            if (gameOverPanel != null)
+            {
+                gameOverPanel.SetActive(true);
+                // Hiệu ứng hiện các nút của Panel Thua tuần tự
+                StartCoroutine(AnimatePanelButtons(new Button[] { replayButton, exitButton }));
+            }
+            if (AudioManager.Instance != null && gameOverSound != null)
+            {
+                AudioManager.Instance.PlaySFX(gameOverSound);
+            }
+        }
+    }
+
+    // Reset lại game (gọi khi bấm chơi lại)
+    public void ResetGame()
+    {
+        // 1. Hủy toàn bộ các ô cũ trên bàn chơi
+        if (boardParent != null)
+        {
+            foreach (Transform child in boardParent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        // 2. Tạo ma trận mới và sinh bảng chơi mới
+        matrix = new int[rows + 2, cols + 2];
+        GenerateBoardLogic();
+
+        // 3. Khôi phục các trạng thái ban đầu
+        currentHearts = 3;
+        isGameOver = false;
+        currentExp = 0;
+        currentScore = 0; // Reset điểm về 0
+        currentCombo = 0; // Reset combo về 0
+        lastMatchTime = -100f;
+        firstSelected = null;
+        if (expSlider != null) expSlider.value = 0;
+        UpdateScoreUI();
+
+        if (comboImage != null)
+        {
+            comboImage.gameObject.SetActive(false); // Ẩn hình combo
+        }
+
+        // 4. Reset hiển thị 3 quả tim
+        if (heartIcons != null)
+        {
+            for (int i = 0; i < heartIcons.Length; i++)
+            {
+                if (heartIcons[i] != null)
+                {
+                    heartIcons[i].ResetHeart(heartOriginalColor, heartStartPositions[i]);
+                }
+            }
+        }
+
+        // 5. Ẩn Panel Thua & Thắng
+        if (gameOverPanel != null) gameOverPanel.SetActive(false);
+        if (winPanel != null) winPanel.SetActive(false);
+    }
+
+    private void OnExitClicked()
+    {
+        // Nếu có gán lobbyMenuUI thì quay về Lobby Menu, ngược lại sẽ thoát ứng dụng
+        if (lobbyMenuUI != null)
+        {
+            if (gameOverPanel != null) gameOverPanel.SetActive(false);
+            if (winPanel != null) winPanel.SetActive(false);
+            gameObject.SetActive(false); // Ẩn Canvas chơi game hiện tại (nếu script nằm trên Canvas này)
+            lobbyMenuUI.SetActive(true); // Hiện Menu Lobby
+        }
+        else
+        {
+            Debug.Log("BoardManager: Thoát game!");
+            Application.Quit();
+        }
+    }
+
+    private void UpdateScoreUI()
+    {
+        if (gameplayScoreText != null) gameplayScoreText.text = "Điểm: " + currentScore;
+        if (winScoreText != null) winScoreText.text = "Điểm: " + currentScore;
+        if (loseScoreText != null) loseScoreText.text = "Điểm: " + currentScore;
+    }
+
+    private void UpdateComboUI(int pointsAdded)
+    {
+        if (comboImage != null)
+        {
+            if (pointsAdded == 2)
+            {
+                // Chạy hiệu ứng xuất hiện và tan biến của hình ảnh Combo duy nhất
+                if (comboCoroutine != null) StopCoroutine(comboCoroutine);
+                comboCoroutine = StartCoroutine(AnimateComboImageRoutine(comboSprite, comboSound));
+            }
+            else
+            {
+                comboImage.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private IEnumerator AnimateComboImageRoutine(Sprite comboSprite, AudioClip comboSound)
+    {
+        // Gán hình ảnh tương ứng nếu có
+        if (comboSprite != null) comboImage.sprite = comboSprite;
+        
+        comboImage.gameObject.SetActive(true);
+        comboImage.transform.localScale = Vector3.zero;
+        
+        CanvasGroup cg = comboImage.GetComponent<CanvasGroup>();
+        if (cg == null) cg = comboImage.gameObject.AddComponent<CanvasGroup>();
+        cg.alpha = 0f;
+
+        // Phát âm thanh combo qua AudioManager (VFX)
+        if (AudioManager.Instance != null && comboSound != null)
+        {
+            AudioManager.Instance.PlaySFX(comboSound);
+        }
+
+        // 1. Hiệu ứng xuất hiện (Scale up + Fade in)
+        float elapsed = 0f;
+        float fadeInDuration = 0.2f;
+        while (elapsed < fadeInDuration)
+        {
+            if (isGameOver) yield break;
+            elapsed += Time.deltaTime;
+            float t = elapsed / fadeInDuration;
+            
+            // Dùng EaseOutBack để phóng to nảy nhẹ hình ảnh Combo dựa trên Scale gốc của Editor
+            float scaleMultiplier = EaseOutBack(t) * 1.1f;
+            comboImage.transform.localScale = new Vector3(comboOriginalScale.x * scaleMultiplier, comboOriginalScale.y * scaleMultiplier, comboOriginalScale.z);
+            cg.alpha = Mathf.Lerp(0f, 1f, t);
+            yield return null;
+        }
+        comboImage.transform.localScale = comboOriginalScale;
+        cg.alpha = 1f;
+
+        // 2. Thời gian đứng yên hiển thị
+        yield return new WaitForSeconds(0.8f);
+
+        // 3. Hiệu ứng tan biến (Fade out + Trôi lên trên nhẹ)
+        elapsed = 0f;
+        float fadeOutDuration = 0.3f;
+        Vector3 startPos = comboImage.transform.localPosition;
+        Vector3 targetPos = startPos + new Vector3(0f, 50f, 0f);
+
+        while (elapsed < fadeOutDuration)
+        {
+            if (isGameOver) yield break;
+            elapsed += Time.deltaTime;
+            float t = elapsed / fadeOutDuration;
+            comboImage.transform.localPosition = Vector3.Lerp(startPos, targetPos, t);
+            cg.alpha = Mathf.Lerp(1f, 0f, t);
+            yield return null;
+        }
+
+        // Tắt và reset lại vị trí, tỉ lệ cũ
+        comboImage.gameObject.SetActive(false);
+        comboImage.transform.localPosition = startPos;
+        comboImage.transform.localScale = comboOriginalScale;
+    }
+
+    // Hiệu ứng hiện các nút trên Panel tuần tự
+    private IEnumerator AnimatePanelButtons(Button[] buttons)
+    {
+        float delayBetween = 0.2f;
+
+        // Lưu lại scale gốc của từng nút thiết lập từ Editor
+        Vector3[] originalScales = new Vector3[buttons.Length];
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            if (buttons[i] != null)
+            {
+                originalScales[i] = buttons[i].transform.localScale;
+                if (originalScales[i] == Vector3.zero) originalScales[i] = Vector3.one;
+                
+                buttons[i].transform.localScale = Vector3.zero;
+            }
+        }
+
+        // Cho từng nút xuất hiện tuần tự
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            if (buttons[i] != null)
+            {
+                StartCoroutine(AnimateButtonEntrance(buttons[i].GetComponent<RectTransform>(), originalScales[i]));
+                yield return new WaitForSeconds(delayBetween);
+            }
+        }
+    }
+
+    private IEnumerator AnimateButtonEntrance(RectTransform btnTransform, Vector3 targetScale)
+    {
+        btnTransform.localScale = Vector3.zero;
+        btnTransform.gameObject.SetActive(true);
+
+        float elapsed = 0f;
+        float duration = 0.5f;
+
+        while (elapsed < duration)
+        {
+            // Thoát coroutine nếu game bị reset đột ngột
+            if (!isGameOver || btnTransform == null || !btnTransform.gameObject.activeInHierarchy)
+                yield break;
+
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+            float scaleMultiplier = EaseOutBack(t);
+            btnTransform.localScale = new Vector3(targetScale.x * scaleMultiplier, targetScale.y * scaleMultiplier, targetScale.z);
+            yield return null;
+        }
+
+        if (btnTransform != null) btnTransform.localScale = targetScale;
+    }
+
+    // Hàm EaseOutBack tạo chuyển động nảy nhẹ cho nút bấm và hình ảnh
+    private float EaseOutBack(float x)
+    {
+        float c1 = 1.70158f;
+        float c3 = c1 + 1f;
+        return 1f + c3 * Mathf.Pow(x - 1f, 3f) + c1 * Mathf.Pow(x - 1f, 2f);
     }
 }
