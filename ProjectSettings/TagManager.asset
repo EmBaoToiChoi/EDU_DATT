@@ -8,10 +8,10 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - BG
   - Water
   - UI
-  - 
+  - Player
   - 
   - 
   - 
@@ -41,14 +41,14 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Menu
-    uniqueID: 2038883849
+  - name: BG
+    uniqueID: 3830067861
     locked: 0
-  - name: Gameplay
-    uniqueID: 2247486947
+  - name: Player
+    uniqueID: 3848258429
     locked: 0
-  - name: Setting
-    uniqueID: 420596079
+  - name: UI
+    uniqueID: 10954297
     locked: 0
   m_RenderingLayers:
   - Default
