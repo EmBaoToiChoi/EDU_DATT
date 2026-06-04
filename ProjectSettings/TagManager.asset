@@ -50,6 +50,9 @@ TagManager:
   - name: UI
     uniqueID: 10954297
     locked: 0
+  - name: Flag
+    uniqueID: 4169526701
+    locked: 0
   m_RenderingLayers:
   - Default
   m_MigratedRenderPipelines: []

@@ -8,6 +8,7 @@ public class GamePlay : MonoBehaviour
     public MazeNavigator navigator;
     public QuestionManager questionManager;
     public SimpleUI ui;
+    public GameObject startScreen;
     public float speed = 2f;
     public float reachThreshold = 0.1f;
 
@@ -24,17 +25,35 @@ public class GamePlay : MonoBehaviour
     {
         if (navigator != null)
         {
-            navigator.RefreshNodes();
+            if (navigator.generateRandomMaze)
+            {
+                navigator.GenerateMaze();
+            }
+            else
+            {
+                navigator.RefreshNodes();
+            }
             walkableTilemap = navigator.walkableTilemap;
             currentCell = navigator.GetStartCell();
             if (walkableTilemap != null)
             {
                 transform.position = walkableTilemap.GetCellCenterWorld(currentCell);
+                transform.localScale = walkableTilemap.transform.localScale;
+                if (navigator.startPoint != null) navigator.startPoint.localScale = walkableTilemap.transform.localScale;
+                if (navigator.goalPoint != null) navigator.goalPoint.localScale = walkableTilemap.transform.localScale;
                 previousCell = currentCell;
                 visitedCells.Clear();
                 moveQueue.Clear();
                 visitedCells.Add(currentCell);
-                PrepareNextStep(currentCell);
+                
+                if (startScreen != null)
+                {
+                    startScreen.SetActive(true);
+                }
+                else
+                {
+                    PrepareNextStep(currentCell);
+                }
             }
         }
     }
@@ -122,10 +141,51 @@ public class GamePlay : MonoBehaviour
         moveQueue.Add(cell);
     }
 
+    public void StartGame()
+    {
+        if (startScreen != null)
+        {
+            startScreen.SetActive(false);
+        }
+
+        if (navigator != null)
+        {
+            if (navigator.generateRandomMaze)
+            {
+                navigator.GenerateMaze();
+            }
+            else
+            {
+                navigator.RefreshNodes();
+            }
+            walkableTilemap = navigator.walkableTilemap;
+            currentCell = navigator.GetStartCell();
+            if (walkableTilemap != null)
+            {
+                transform.position = walkableTilemap.GetCellCenterWorld(currentCell);
+                transform.localScale = walkableTilemap.transform.localScale;
+                if (navigator.startPoint != null) navigator.startPoint.localScale = walkableTilemap.transform.localScale;
+                if (navigator.goalPoint != null) navigator.goalPoint.localScale = walkableTilemap.transform.localScale;
+                previousCell = currentCell;
+                visitedCells.Clear();
+                moveQueue.Clear();
+                visitedCells.Add(currentCell);
+                consecutiveWrong = 0;
+                waitingForAnswer = false;
+
+                PrepareNextStep(currentCell);
+                Debug.Log("Game started/restarted via button");
+            }
+        }
+    }
+
     void ResetToStart()
     {
         Vector3Int startCell = navigator.GetStartCell();
         transform.position = walkableTilemap.GetCellCenterWorld(startCell);
+        transform.localScale = walkableTilemap.transform.localScale;
+        if (navigator.startPoint != null) navigator.startPoint.localScale = walkableTilemap.transform.localScale;
+        if (navigator.goalPoint != null) navigator.goalPoint.localScale = walkableTilemap.transform.localScale;
         currentCell = startCell;
         previousCell = startCell;
         moveQueue.Clear();
@@ -133,6 +193,15 @@ public class GamePlay : MonoBehaviour
         visitedCells.Add(startCell);
         consecutiveWrong = 0;
         waitingForAnswer = false;
+
+        if (startScreen != null)
+        {
+            startScreen.SetActive(true);
+        }
+        else
+        {
+            PrepareNextStep(startCell);
+        }
         Debug.Log("Reset to start after dead end");
     }
 }

@@ -14,6 +14,20 @@ public class MazeNavigator : MonoBehaviour
     public Transform longRoot;
     public Transform deadRoot;
 
+    [Header("Alignment Settings")]
+    public Renderer backgroundRenderer;
+    [Range(0.5f, 1.0f)]
+    public float mazeFitPadding = 0.85f;
+
+    [Header("Visual Prefabs")]
+    public GameObject goalVisualPrefab;
+
+    [Header("Maze Generator Settings")]
+    public bool generateRandomMaze = true;
+    public int mazeWidth = 19;
+    public int mazeHeight = 13;
+    public TileBase walkableTile;
+
     readonly Dictionary<Vector3Int, int> goalDistanceMap = new Dictionary<Vector3Int, int>();
     readonly Dictionary<Vector3Int, Vector3Int> nextStepToGoalMap = new Dictionary<Vector3Int, Vector3Int>();
     readonly HashSet<Vector3Int> shortCells = new HashSet<Vector3Int>();
@@ -169,6 +183,10 @@ public class MazeNavigator : MonoBehaviour
 
     public bool IsDeadCell(Vector3Int cell)
     {
+        if (generateRandomMaze)
+        {
+            return IsDeadEndTerminal(cell);
+        }
         return deadCells.Contains(cell);
     }
 
@@ -184,26 +202,86 @@ public class MazeNavigator : MonoBehaviour
 
     public Vector3Int ChooseNextCell(Vector3Int currentCell, Vector3Int previousCell, bool correct, int consecutiveWrong)
     {
-        var options = GetNeighbors(currentCell, previousCell, includePrevious: !correct);
-        if (options.Count == 0) return currentCell;
-
-        if (correct)
+        if (generateRandomMaze)
         {
-            return PickBestCorrectCell(options, currentCell, previousCell);
+            var options = GetNeighbors(currentCell, previousCell, includePrevious: false);
+            if (options.Count == 0) return currentCell;
+
+            if (correct)
+            {
+                // Trả lời đúng -> tìm đường đi ngắn nhất đến Goal
+                Vector3Int bestCell = options[0];
+                int minDistance = GetGoalDistance(bestCell);
+
+                for (int i = 1; i < options.Count; i++)
+                {
+                    int dist = GetGoalDistance(options[i]);
+                    if (dist < minDistance)
+                    {
+                        minDistance = dist;
+                        bestCell = options[i];
+                    }
+                }
+                return bestCell;
+            }
+            else
+            {
+                // Trả lời sai -> ưu tiên đi vào ngõ cụt gần nhất
+                List<Vector3Int> deadEndOptions = new List<Vector3Int>();
+                foreach (var opt in options)
+                {
+                    if (IsDeadEndOption(opt, currentCell))
+                    {
+                        deadEndOptions.Add(opt);
+                    }
+                }
+
+                if (deadEndOptions.Count > 0)
+                {
+                    return deadEndOptions[UnityEngine.Random.Range(0, deadEndOptions.Count)];
+                }
+                else
+                {
+                    // Không có ngõ cụt -> đi đường dài nhất đến Goal
+                    Vector3Int worstCell = options[0];
+                    int maxDistance = GetGoalDistance(worstCell);
+
+                    for (int i = 1; i < options.Count; i++)
+                    {
+                        int dist = GetGoalDistance(options[i]);
+                        if (dist > maxDistance && dist != int.MaxValue)
+                        {
+                            maxDistance = dist;
+                            worstCell = options[i];
+                        }
+                    }
+                    return worstCell;
+                }
+            }
         }
+        else
+        {
+            var options = GetNeighbors(currentCell, previousCell, includePrevious: !correct);
+            if (options.Count == 0) return currentCell;
 
-        // Sai: ưu tiên đi vào Long trước, nếu không có thì mới vào Dead.
-        for (int i = 0; i < options.Count; i++)
-            if (longCells.Contains(options[i]))
-                return options[i];
+            if (correct)
+            {
+                return PickBestCorrectCell(options, currentCell, previousCell);
+            }
 
-        for (int i = 0; i < options.Count; i++)
-            if (deadCells.Contains(options[i]))
-                return options[i];
+            // Sai: ưu tiên đi vào Long trước, nếu không có thì mới vào Dead.
+            for (int i = 0; i < options.Count; i++)
+                if (longCells.Contains(options[i]))
+                    return options[i];
 
-        // Fallback: nếu không map được group nào thì đi tiếp theo lựa chọn gần goal nhất,
-        // tuyệt đối không quay về Start.
-        return PickClosestToGoal(options, GetGoalCell());
+            for (int i = 0; i < options.Count; i++)
+                if (deadCells.Contains(options[i]))
+                    return options[i];
+
+            // Fallback: nếu không map được group nào thì đi tiếp theo lựa chọn gần goal nhất,
+            // tuyệt đối không quay về Start.
+            return PickClosestToGoal(options, GetGoalCell());
+        }
     }
 
     Vector3Int PickClosestToGoal(List<Vector3Int> options, Vector3Int goalCell)
@@ -342,10 +420,372 @@ public class MazeNavigator : MonoBehaviour
         return int.MaxValue;
     }
 
+    public void GenerateMaze()
+    {
+#if UNITY_EDITOR
+        if (goalVisualPrefab == null || !UnityEditor.PrefabUtility.IsPartOfPrefabAsset(goalVisualPrefab))
+        {
+            string path = "Assets/Dung/Prefab/Goal.prefab";
+            var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab != null)
+            {
+                goalVisualPrefab = prefab;
+                Debug.Log($"Automatically assigned goalVisualPrefab: {path}");
+            }
+        }
+#endif
+
+        if (walkableTilemap == null) return;
+
+        if (mazeWidth % 2 == 0) mazeWidth++;
+        if (mazeHeight % 2 == 0) mazeHeight++;
+
+        if (walkableTile == null)
+        {
+            walkableTile = GetFirstAvailableTile();
+        }
+
+        walkableTilemap.ClearAllTiles();
+
+        bool[,] maze = new bool[mazeWidth, mazeHeight];
+
+        Stack<Vector2Int> stack = new Stack<Vector2Int>();
+        Vector2Int start = new Vector2Int(1, 1);
+        maze[start.x, start.y] = true;
+        stack.Push(start);
+
+        Vector2Int[] dirs = {
+            new Vector2Int(0, 2),
+            new Vector2Int(0, -2),
+            new Vector2Int(2, 0),
+            new Vector2Int(-2, 0)
+        };
+
+        while (stack.Count > 0)
+        {
+            Vector2Int current = stack.Peek();
+            List<Vector2Int> unvisitedNeighbors = new List<Vector2Int>();
+
+            foreach (var d in dirs)
+            {
+                Vector2Int next = current + d;
+                if (next.x > 0 && next.x < mazeWidth - 1 && next.y > 0 && next.y < mazeHeight - 1)
+                {
+                    if (!maze[next.x, next.y])
+                    {
+                        unvisitedNeighbors.Add(next);
+                    }
+                }
+            }
+
+            if (unvisitedNeighbors.Count > 0)
+            {
+                Vector2Int chosen = unvisitedNeighbors[UnityEngine.Random.Range(0, unvisitedNeighbors.Count)];
+                Vector2Int wallBetween = current + (chosen - current) / 2;
+                maze[wallBetween.x, wallBetween.y] = true;
+                maze[chosen.x, chosen.y] = true;
+
+                stack.Push(chosen);
+            }
+            else
+            {
+                stack.Pop();
+            }
+        }
+
+        List<Vector2Int> brokenWalls = new List<Vector2Int>();
+        for (int x = 1; x < mazeWidth - 1; x++)
+        {
+            for (int y = 1; y < mazeHeight - 1; y++)
+            {
+                // Chỉ phá tường ở các ô (chẵn, lẻ) hoặc (lẻ, chẵn) để tránh tạo thành ô 2x2 hoặc đường đi rộng 2 ô
+                bool isWallCell = (x % 2 == 0 && y % 2 != 0) || (x % 2 != 0 && y % 2 == 0);
+                if (!isWallCell) continue;
+
+                if (!maze[x, y])
+                {
+                    bool horizontalNeighbors = maze[x - 1, y] && maze[x + 1, y];
+                    bool verticalNeighbors = maze[x, y - 1] && maze[x, y + 1];
+                    if (horizontalNeighbors || verticalNeighbors)
+                    {
+                        if (UnityEngine.Random.value < 0.15f)
+                        {
+                            // Kiểm tra khoảng cách để tránh các vòng lặp quá gần nhau (ngăn tạo hình số 8)
+                            bool tooClose = false;
+                            foreach (var bw in brokenWalls)
+                            {
+                                int dist = Mathf.Abs(bw.x - x) + Mathf.Abs(bw.y - y);
+                                if (dist < 4) // Khoảng cách tối thiểu giữa 2 lần phá tường là 4 ô
+                                {
+                                    tooClose = true;
+                                    break;
+                                }
+                            }
+
+                            if (!tooClose)
+                            {
+                                maze[x, y] = true;
+                                brokenWalls.Add(new Vector2Int(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        maze[1, 1] = true;
+
+        for (int x = 0; x < mazeWidth; x++)
+        {
+            for (int y = 0; y < mazeHeight; y++)
+            {
+                if (maze[x, y] && walkableTile != null)
+                {
+                    walkableTilemap.SetTile(new Vector3Int(x, y, 0), walkableTile);
+                }
+            }
+        }
+
+        AlignAndFitToBackground();
+
+        // 1. Tính toán khoảng cách từ startCell (1, 1) đến tất cả các ô bằng BFS
+        Vector3Int startCell = new Vector3Int(1, 1, 0);
+        Dictionary<Vector3Int, int> startDistanceMap = new Dictionary<Vector3Int, int>();
+        Queue<Vector3Int> queue = new Queue<Vector3Int>();
+        queue.Enqueue(startCell);
+        startDistanceMap[startCell] = 0;
+
+        while (queue.Count > 0)
+        {
+            var cell = queue.Dequeue();
+            int dist = startDistanceMap[cell];
+
+            foreach (var dir in directions)
+            {
+                var neighbor = cell + dir;
+                if (!walkableTilemap.HasTile(neighbor)) continue;
+                if (startDistanceMap.ContainsKey(neighbor)) continue;
+
+                startDistanceMap[neighbor] = dist + 1;
+                queue.Enqueue(neighbor);
+            }
+        }
+
+        // 2. Tìm tất cả các ô ngõ cụt (Dead-end terminal) trong mê cung
+        List<Vector3Int> deadEndTerminals = new List<Vector3Int>();
+        for (int x = 1; x < mazeWidth - 1; x++)
+        {
+            for (int y = 1; y < mazeHeight - 1; y++)
+            {
+                if (maze[x, y])
+                {
+                    Vector3Int cell = new Vector3Int(x, y, 0);
+                    int neighborCount = 0;
+                    foreach (var d in directions)
+                    {
+                        if (maze[x + d.x, y + d.y]) neighborCount++;
+                    }
+                    if (neighborCount <= 1 && cell != startCell)
+                    {
+                        deadEndTerminals.Add(cell);
+                    }
+                }
+            }
+        }
+
+        // 3. Tìm ô ngõ cụt xa StartCell nhất
+        Vector3Int bestGoalCell = new Vector3Int(mazeWidth - 2, mazeHeight - 2, 0); // Dự phòng
+        int maxDist = -1;
+
+        foreach (var cell in deadEndTerminals)
+        {
+            if (startDistanceMap.TryGetValue(cell, out int dist))
+            {
+                if (dist > maxDist)
+                {
+                    maxDist = dist;
+                    bestGoalCell = cell;
+                }
+            }
+        }
+
+        // Nếu không có ngõ cụt nào, chọn ô xa nhất trong toàn bộ mê cung
+        if (maxDist == -1)
+        {
+            foreach (var kvp in startDistanceMap)
+            {
+                if (kvp.Value > maxDist)
+                {
+                    maxDist = kvp.Value;
+                    bestGoalCell = kvp.Key;
+                }
+            }
+        }
+
+        if (startPoint != null)
+        {
+            startPoint.position = walkableTilemap.GetCellCenterWorld(startCell);
+        }
+        if (goalPoint != null)
+        {
+            goalPoint.position = walkableTilemap.GetCellCenterWorld(bestGoalCell);
+
+            // Xóa hình ảnh cũ của đích đến nếu có
+            foreach (Transform child in goalPoint)
+            {
+                Destroy(child.gameObject);
+            }
+
+            // Tạo hình ảnh mới đại diện cho đích đến từ Prefab kéo thả
+            if (goalVisualPrefab != null)
+            {
+                GameObject visual = Instantiate(goalVisualPrefab, goalPoint);
+                visual.transform.localPosition = Vector3.zero;
+                visual.transform.localRotation = Quaternion.identity;
+                visual.transform.localScale = Vector3.one;
+            }
+        }
+
+        RebuildGoalDistanceMap();
+    }
+
+    void AlignAndFitToBackground()
+    {
+        if (walkableTilemap == null) return;
+
+        if (backgroundRenderer == null)
+        {
+            var renderers = FindObjectsOfType<SpriteRenderer>();
+            foreach (var r in renderers)
+            {
+                string nameLower = r.gameObject.name.ToLower();
+                if (nameLower.Contains("background") || nameLower.Contains("bg") || nameLower.Contains("map"))
+                {
+                    backgroundRenderer = r;
+                    break;
+                }
+            }
+        }
+
+        if (backgroundRenderer != null)
+        {
+            Bounds bgBounds = backgroundRenderer.bounds;
+            float bgWidth = bgBounds.size.x;
+            float bgHeight = bgBounds.size.y;
+            Vector3 bgCenter = bgBounds.center;
+
+            float cellX = walkableTilemap.layoutGrid != null ? walkableTilemap.layoutGrid.cellSize.x : cellSize;
+            float cellY = walkableTilemap.layoutGrid != null ? walkableTilemap.layoutGrid.cellSize.y : cellSize;
+
+            float mazeLocalWidth = mazeWidth * cellX;
+            float mazeLocalHeight = mazeHeight * cellY;
+
+            // Fit with customizable padding
+            float scale = Mathf.Min((bgWidth * mazeFitPadding) / mazeLocalWidth, (bgHeight * mazeFitPadding) / mazeLocalHeight);
+
+            walkableTilemap.transform.localScale = new Vector3(scale, scale, 1f);
+
+            Vector3 localCenter = new Vector3(mazeLocalWidth / 2f, mazeLocalHeight / 2f, 0);
+            Vector3 scaledCenter = Vector3.Scale(localCenter, walkableTilemap.transform.localScale);
+            walkableTilemap.transform.position = bgCenter - scaledCenter;
+
+            Debug.Log($"Fitted maze to background '{backgroundRenderer.gameObject.name}' with scale {scale}");
+        }
+    }
+
+    TileBase GetFirstAvailableTile()
+    {
+        if (walkableTilemap == null) return null;
+        
+        var bounds = walkableTilemap.cellBounds;
+        for (int x = bounds.xMin; x < bounds.xMax; x++)
+        {
+            for (int y = bounds.yMin; y < bounds.yMax; y++)
+            {
+                var pos = new Vector3Int(x, y, 0);
+                if (walkableTilemap.HasTile(pos))
+                {
+                    return walkableTilemap.GetTile(pos);
+                }
+            }
+        }
+        return null;
+    }
+
+    public bool IsDeadEndOption(Vector3Int option, Vector3Int currentCell)
+    {
+        return !CanReachGoalWithout(option, currentCell);
+    }
+
+    public bool CanReachGoalWithout(Vector3Int start, Vector3Int blockedCell)
+    {
+        if (walkableTilemap == null) return false;
+        Vector3Int goalCell = GetGoalCell();
+        if (start == goalCell) return true;
+
+        Queue<Vector3Int> queue = new Queue<Vector3Int>();
+        HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
+
+        queue.Enqueue(start);
+        visited.Add(start);
+        visited.Add(blockedCell);
+
+        while (queue.Count > 0)
+        {
+            var cell = queue.Dequeue();
+            if (cell == goalCell) return true;
+
+            foreach (var dir in directions)
+            {
+                var neighbor = cell + dir;
+                if (!walkableTilemap.HasTile(neighbor)) continue;
+                if (visited.Contains(neighbor)) continue;
+
+                visited.Add(neighbor);
+                queue.Enqueue(neighbor);
+            }
+        }
+
+        return false;
+    }
+
+    public bool IsDeadEndTerminal(Vector3Int cell)
+    {
+        if (walkableTilemap == null) return false;
+        if (cell == GetStartCell()) return false;
+        if (cell == GetGoalCell()) return false;
+
+        int neighborCount = 0;
+        foreach (var dir in directions)
+        {
+            if (walkableTilemap.HasTile(cell + dir))
+            {
+                neighborCount++;
+            }
+        }
+        return neighborCount <= 1;
+    }
+
     T FindMarker<T>() where T : Component
     {
         var markers = FindObjectsOfType<T>();
         return markers != null && markers.Length > 0 ? markers[0] : null;
     }
+
+#if UNITY_EDITOR
+    void OnValidate()
+    {
+        if (goalVisualPrefab == null || !UnityEditor.PrefabUtility.IsPartOfPrefabAsset(goalVisualPrefab))
+        {
+            string path = "Assets/Dung/Prefab/Goal.prefab";
+            var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            if (prefab != null)
+            {
+                goalVisualPrefab = prefab;
+                Debug.Log($"Automatically assigned goalVisualPrefab from asset path: {path}");
+            }
+        }
+    }
+#endif
 }
 
