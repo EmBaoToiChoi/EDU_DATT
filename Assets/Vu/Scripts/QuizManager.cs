@@ -188,6 +188,18 @@ public class QuizManager : MonoBehaviour
 
     private void TriggerWinUI()
     {
+        // 1. Lưu trạng thái: Đã hoàn thành Màn 1 (Giá trị 1 nghĩa là True)
+        PlayerPrefs.SetInt("Level_1_Completed", 1);
+
+        // 2. Lưu trạng thái: Đã mở khóa Ảnh 1 trong Bộ sưu tập
+        PlayerPrefs.SetInt("Unlocked_Photo_1", 1);
+
+        // Lưu lại dữ liệu xuống ổ cứng thiết bị ngay lập tức
+        PlayerPrefs.Save();
+
+        Debug.Log("Đã lưu tiến trình: Hoàn thành màn 1 & Mở khóa ảnh bộ sưu tập!");
+
+        // Hiện Panel Win như cũ
         UIManager.Instance.ShowYouWinPanel();
     }
 }

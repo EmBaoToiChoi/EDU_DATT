@@ -62,6 +62,6 @@ public class UIManager : MonoBehaviour
     public void Btn_Home()
     {
         // Thay "ChooseLevelScene" bằng tên Scene chọn level thực tế của bạn
-        SceneManager.LoadScene("ChooseLevelScene"); 
+        SceneManager.LoadScene("choose level"); 
     }
 }
