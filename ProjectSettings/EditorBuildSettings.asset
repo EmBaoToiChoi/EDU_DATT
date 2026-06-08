@@ -11,5 +11,14 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/HBao.unity
     guid: bd6ee18b7eda77a48bb59b342e791260
+  - enabled: 1
+    path: Assets/TDat/scene/Menu Math.unity
+    guid: 7323b245bd4be154bbbaf3b7ed6b8fb3
+  - enabled: 1
+    path: Assets/TDat/scene/choose level.unity
+    guid: 7f324c02bc8db1b43bdf2f24499276b6
+  - enabled: 1
+    path: Assets/TDat/scene/Math-level 1.unity
+    guid: 50811e3e22f1ce043866531fd1f11180
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
