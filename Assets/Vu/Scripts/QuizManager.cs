@@ -74,6 +74,12 @@ public class QuizManager : MonoBehaviour
     {
         if (currentOpeningCardIndex == cardIndex) return;
 
+        // Phát tiếng click khi mở thẻ bài câu hỏi
+        if (AudioManagers.Instance != null)
+        {
+            AudioManagers.Instance.PlayClick();
+        }
+
         if (currentOpeningCardIndex != -1)
         {
             cardButtons[currentOpeningCardIndex].transform.GetChild(0).gameObject.SetActive(false);
@@ -131,6 +137,12 @@ public class QuizManager : MonoBehaviour
     {
         Debug.Log("Trả lời CHÍNH XÁC!");
 
+        // PHÁT ÂM THANH TRẢ LỜI ĐÚNG VỚI VOLUME THIẾT LẬP RIÊNG
+        if (AudioManagers.Instance != null)
+        {
+            AudioManagers.Instance.PlayCorrect();
+        }
+
         cardButtons[cardIndex].transform.GetChild(0).gameObject.SetActive(false);
         answerPanel.SetActive(false);
         currentOpeningCardIndex = -1; 
@@ -152,6 +164,12 @@ public class QuizManager : MonoBehaviour
     {
         if (currentFails < maxFails)
         {
+            // PHÁT ÂM THANH TRẢ LỜI SAI VỚI VOLUME THIẾT LẬP RIÊNG
+            if (AudioManagers.Instance != null)
+            {
+                AudioManagers.Instance.PlayWrong();
+            }
+
             starFails[currentFails].SetActive(true);
             currentFails++;
             Debug.Log("Trả lời SAI RỒI!");
@@ -177,6 +195,12 @@ public class QuizManager : MonoBehaviour
         correctPiecesCount++;
         Debug.Log($"Số mảnh xếp đúng hiện tại: {correctPiecesCount} / {totalQuestions}");
 
+        // PHÁT ÂM THANH ĐÚNG KHI MẢNH GHÉP ĐƯỢC ĐẶT CHUẨN XÁC
+        if (AudioManagers.Instance != null)
+        {
+            AudioManagers.Instance.PlayCorrect();
+        }
+
         // Nếu xếp đúng đủ cả 8 mảnh -> CHIẾN THẮNG!
         if (correctPiecesCount >= totalQuestions)
         {
@@ -199,7 +223,7 @@ public class QuizManager : MonoBehaviour
 
         Debug.Log("Đã lưu tiến trình: Hoàn thành màn 1 & Mở khóa ảnh bộ sưu tập!");
 
-        // Hiện Panel Win như cũ
+        // Hiện Panel Win như cũ, âm thanh Win độc lập sẽ được kích hoạt tự động bên trong UIManager
         UIManager.Instance.ShowYouWinPanel();
     }
 }
