@@ -1,0 +1,1937 @@
+fileFormatVersion: 2
+guid: b0e74b4028598de4f8ff63c6c0b0fb60
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5489656106097325381
+    second: Mega Panel Pack_0
+  - first:
+      213: -7427111707748575184
+    second: Mega Panel Pack_1
+  - first:
+      213: -7116057236831203408
+    second: Mega Panel Pack_2
+  - first:
+      213: 4122230194856956467
+    second: Mega Panel Pack_3
+  - first:
+      213: -5890892938154284544
+    second: Mega Panel Pack_4
+  - first:
+      213: 8448150033560241628
+    second: Mega Panel Pack_5
+  - first:
+      213: 7963533553638123506
+    second: Mega Panel Pack_6
+  - first:
+      213: -7928872836716057063
+    second: Mega Panel Pack_7
+  - first:
+      213: 1659570354494153561
+    second: Mega Panel Pack_8
+  - first:
+      213: -2622263184296332384
+    second: Mega Panel Pack_9
+  - first:
+      213: 3214214757079675851
+    second: Mega Panel Pack_10
+  - first:
+      213: 841448140014537205
+    second: Mega Panel Pack_11
+  - first:
+      213: 2736886633529563974
+    second: Mega Panel Pack_12
+  - first:
+      213: 3452961196093640487
+    second: Mega Panel Pack_13
+  - first:
+      213: -7092231894778577688
+    second: Mega Panel Pack_14
+  - first:
+      213: 8372707379020602034
+    second: Mega Panel Pack_15
+  - first:
+      213: -8020925158299388683
+    second: Mega Panel Pack_16
+  - first:
+      213: -5718671754363608265
+    second: Mega Panel Pack_17
+  - first:
+      213: 3392366323508983949
+    second: Mega Panel Pack_18
+  - first:
+      213: -1602105978143104782
+    second: Mega Panel Pack_19
+  - first:
+      213: 3112435408720983413
+    second: Mega Panel Pack_20
+  - first:
+      213: -2253743275946880541
+    second: Mega Panel Pack_21
+  - first:
+      213: -8515608705742825535
+    second: Mega Panel Pack_22
+  - first:
+      213: -7546034525095749959
+    second: Mega Panel Pack_23
+  - first:
+      213: -4757822079284217302
+    second: Mega Panel Pack_24
+  - first:
+      213: 303841260367687056
+    second: Mega Panel Pack_25
+  - first:
+      213: 9212491013945866778
+    second: Mega Panel Pack_26
+  - first:
+      213: -5304994738352659932
+    second: Mega Panel Pack_27
+  - first:
+      213: 3494486610803362710
+    second: Mega Panel Pack_28
+  - first:
+      213: 3446468913226603013
+    second: Mega Panel Pack_29
+  - first:
+      213: -3627354483684296363
+    second: Mega Panel Pack_30
+  - first:
+      213: -207263399016965227
+    second: Mega Panel Pack_31
+  - first:
+      213: -8657162261610076469
+    second: Mega Panel Pack_32
+  - first:
+      213: -3679045051754474237
+    second: Mega Panel Pack_33
+  - first:
+      213: 4244299292328839379
+    second: Mega Panel Pack_34
+  - first:
+      213: 2167142604856150155
+    second: Mega Panel Pack_35
+  - first:
+      213: -7878081641542242720
+    second: Mega Panel Pack_36
+  - first:
+      213: -4199069451419866218
+    second: Mega Panel Pack_37
+  - first:
+      213: 1957097897637134435
+    second: Mega Panel Pack_38
+  - first:
+      213: -5634076054868907830
+    second: Mega Panel Pack_39
+  - first:
+      213: -7586562310798674923
+    second: Mega Panel Pack_40
+  - first:
+      213: 5008221261982025103
+    second: Mega Panel Pack_41
+  - first:
+      213: 2510829688873411799
+    second: Mega Panel Pack_42
+  - first:
+      213: -4574379768089700955
+    second: Mega Panel Pack_43
+  - first:
+      213: 9167966542411904414
+    second: Mega Panel Pack_44
+  - first:
+      213: 7652550370685427111
+    second: Mega Panel Pack_45
+  - first:
+      213: -8746800531716299221
+    second: Mega Panel Pack_46
+  - first:
+      213: 173584368139155491
+    second: Mega Panel Pack_47
+  - first:
+      213: -2537302078451621055
+    second: Mega Panel Pack_48
+  - first:
+      213: 4338692722612981996
+    second: Mega Panel Pack_49
+  - first:
+      213: -8484294994135153836
+    second: Mega Panel Pack_50
+  - first:
+      213: -1396007884578845825
+    second: Mega Panel Pack_51
+  - first:
+      213: 2732475621790765974
+    second: Mega Panel Pack_52
+  - first:
+      213: 67671521467431096
+    second: Mega Panel Pack_53
+  - first:
+      213: -1387461682627252447
+    second: Mega Panel Pack_54
+  - first:
+      213: 1291472221506151377
+    second: Mega Panel Pack_55
+  - first:
+      213: 4429768780093720209
+    second: Mega Panel Pack_56
+  - first:
+      213: -4223069034017602980
+    second: Mega Panel Pack_57
+  - first:
+      213: -7963924298813962380
+    second: Mega Panel Pack_58
+  - first:
+      213: -5685078535418957469
+    second: Mega Panel Pack_59
+  - first:
+      213: 6703791247988316734
+    second: Mega Panel Pack_60
+  - first:
+      213: 2987425762370607825
+    second: Mega Panel Pack_61
+  - first:
+      213: -8068494958232922472
+    second: Mega Panel Pack_62
+  - first:
+      213: -2266169795964786455
+    second: Mega Panel Pack_63
+  - first:
+      213: -6336343154711161393
+    second: Mega Panel Pack_64
+  - first:
+      213: -5429863001920500131
+    second: Mega Panel Pack_65
+  - first:
+      213: 5091519052777832510
+    second: Mega Panel Pack_66
+  - first:
+      213: 3511345565218920775
+    second: Mega Panel Pack_67
+  - first:
+      213: -6897872807208978244
+    second: Mega Panel Pack_68
+  - first:
+      213: -5726702590700054229
+    second: Mega Panel Pack_69
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Mega Panel Pack_0
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 2707
+        width: 273
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5453cfe942d2f2c40800000000000000
+      internalID: 5489656106097325381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_1
+      rect:
+        serializedVersion: 2
+        x: 307
+        y: 2706
+        width: 141
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 038508890499de890800000000000000
+      internalID: -7427111707748575184
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_2
+      rect:
+        serializedVersion: 2
+        x: 464
+        y: 2708
+        width: 522
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0bf045545afae3d90800000000000000
+      internalID: -7116057236831203408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_3
+      rect:
+        serializedVersion: 2
+        x: 1021
+        y: 2707
+        width: 273
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33296de858a153930800000000000000
+      internalID: 4122230194856956467
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_4
+      rect:
+        serializedVersion: 2
+        x: 1308
+        y: 2706
+        width: 141
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 00ae47385185f3ea0800000000000000
+      internalID: -5890892938154284544
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_5
+      rect:
+        serializedVersion: 2
+        x: 1465
+        y: 2708
+        width: 522
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd5009ff1bbdd3570800000000000000
+      internalID: 8448150033560241628
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_6
+      rect:
+        serializedVersion: 2
+        x: 2013
+        y: 2707
+        width: 273
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f7218d0397248e60800000000000000
+      internalID: 7963533553638123506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_7
+      rect:
+        serializedVersion: 2
+        x: 2300
+        y: 2706
+        width: 141
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 91eab4af92cf6f190800000000000000
+      internalID: -7928872836716057063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_8
+      rect:
+        serializedVersion: 2
+        x: 2457
+        y: 2708
+        width: 522
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 953a463d17af70710800000000000000
+      internalID: 1659570354494153561
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_9
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 2272
+        width: 273
+        height: 420
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0a3be68f689db9bd0800000000000000
+      internalID: -2622263184296332384
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_10
+      rect:
+        serializedVersion: 2
+        x: 297
+        y: 2475
+        width: 211
+        height: 211
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc37d8bba4f2b9c20800000000000000
+      internalID: 3214214757079675851
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_11
+      rect:
+        serializedVersion: 2
+        x: 492
+        y: 2274
+        width: 211
+        height: 211
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f9ca7a00ac6dab00800000000000000
+      internalID: 841448140014537205
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_12
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 2273
+        width: 273
+        height: 420
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 64b5b0e74ef5bf520800000000000000
+      internalID: 2736886633529563974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_13
+      rect:
+        serializedVersion: 2
+        x: 1021
+        y: 2272
+        width: 273
+        height: 420
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 72f8e5cc9e16bef20800000000000000
+      internalID: 3452961196093640487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_14
+      rect:
+        serializedVersion: 2
+        x: 1298
+        y: 2475
+        width: 211
+        height: 211
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ecf60ffaa4539d90800000000000000
+      internalID: -7092231894778577688
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_15
+      rect:
+        serializedVersion: 2
+        x: 1493
+        y: 2274
+        width: 211
+        height: 211
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2ba90de2005d13470800000000000000
+      internalID: 8372707379020602034
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_16
+      rect:
+        serializedVersion: 2
+        x: 1715
+        y: 2273
+        width: 273
+        height: 420
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5f43291b013ffa090800000000000000
+      internalID: -8020925158299388683
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_17
+      rect:
+        serializedVersion: 2
+        x: 2013
+        y: 2272
+        width: 273
+        height: 420
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 733e816965233a0b0800000000000000
+      internalID: -5718671754363608265
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_18
+      rect:
+        serializedVersion: 2
+        x: 2290
+        y: 2475
+        width: 211
+        height: 211
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8830cc923b141f20800000000000000
+      internalID: 3392366323508983949
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_19
+      rect:
+        serializedVersion: 2
+        x: 2485
+        y: 2274
+        width: 211
+        height: 211
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2f02048e91d24c9e0800000000000000
+      internalID: -1602105978143104782
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_20
+      rect:
+        serializedVersion: 2
+        x: 2707
+        y: 2273
+        width: 273
+        height: 420
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 575792b8387913b20800000000000000
+      internalID: 3112435408720983413
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_21
+      rect:
+        serializedVersion: 2
+        x: 21
+        y: 1990
+        width: 522
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3e1d24e6e6819b0e0800000000000000
+      internalID: -2253743275946880541
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_22
+      rect:
+        serializedVersion: 2
+        x: 559
+        y: 1991
+        width: 141
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1c799ffeffa72d980800000000000000
+      internalID: -8515608705742825535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_23
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 1991
+        width: 273
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b695dc7499174790800000000000000
+      internalID: -7546034525095749959
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_24
+      rect:
+        serializedVersion: 2
+        x: 1022
+        y: 1990
+        width: 522
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a2af0c3e602d8fdb0800000000000000
+      internalID: -4757822079284217302
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_25
+      rect:
+        serializedVersion: 2
+        x: 1560
+        y: 1991
+        width: 141
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 09da2583406773400800000000000000
+      internalID: 303841260367687056
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_26
+      rect:
+        serializedVersion: 2
+        x: 1715
+        y: 1991
+        width: 273
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1ab8be64c759df70800000000000000
+      internalID: 9212491013945866778
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_27
+      rect:
+        serializedVersion: 2
+        x: 2014
+        y: 1990
+        width: 522
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4226c2d746fd066b0800000000000000
+      internalID: -5304994738352659932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_28
+      rect:
+        serializedVersion: 2
+        x: 2552
+        y: 1991
+        width: 141
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69b0b45de09ee7030800000000000000
+      internalID: 3494486610803362710
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_29
+      rect:
+        serializedVersion: 2
+        x: 2707
+        y: 1991
+        width: 273
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 50a5c46673154df20800000000000000
+      internalID: 3446468913226603013
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_30
+      rect:
+        serializedVersion: 2
+        x: 15
+        y: 1669
+        width: 483
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 559b39dc05c09adc0800000000000000
+      internalID: -3627354483684296363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_31
+      rect:
+        serializedVersion: 2
+        x: 502
+        y: 1753
+        width: 282
+        height: 182
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 59b57a66907af1df0800000000000000
+      internalID: -207263399016965227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_32
+      rect:
+        serializedVersion: 2
+        x: 792
+        y: 1752
+        width: 189
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc660d96ac49bd780800000000000000
+      internalID: -8657162261610076469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_33
+      rect:
+        serializedVersion: 2
+        x: 1012
+        y: 1669
+        width: 483
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3051481940861fcc0800000000000000
+      internalID: -3679045051754474237
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_34
+      rect:
+        serializedVersion: 2
+        x: 1499
+        y: 1753
+        width: 282
+        height: 182
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d8c3b718b7c6ea30800000000000000
+      internalID: 4244299292328839379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_35
+      rect:
+        serializedVersion: 2
+        x: 1789
+        y: 1752
+        width: 189
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b88c01497bc331e10800000000000000
+      internalID: 2167142604856150155
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_36
+      rect:
+        serializedVersion: 2
+        x: 2005
+        y: 1669
+        width: 483
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 06e2954ac7e6ba290800000000000000
+      internalID: -7878081641542242720
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_37
+      rect:
+        serializedVersion: 2
+        x: 2492
+        y: 1753
+        width: 282
+        height: 182
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69bace0e498e9b5c0800000000000000
+      internalID: -4199069451419866218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_38
+      rect:
+        serializedVersion: 2
+        x: 2782
+        y: 1752
+        width: 189
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 36043533b22092b10800000000000000
+      internalID: 1957097897637134435
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_39
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 1396
+        width: 498
+        height: 282
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac82100cdadbfc1b0800000000000000
+      internalID: -5634076054868907830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_40
+      rect:
+        serializedVersion: 2
+        x: 509
+        y: 1208
+        width: 485
+        height: 273
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5147a7e06cd17b690800000000000000
+      internalID: -7586562310798674923
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_41
+      rect:
+        serializedVersion: 2
+        x: 523
+        y: 1471
+        width: 245
+        height: 266
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f854ffcf3b6c08540800000000000000
+      internalID: 5008221261982025103
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_42
+      rect:
+        serializedVersion: 2
+        x: 828
+        y: 1471
+        width: 152
+        height: 266
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d4edc09c4248d220800000000000000
+      internalID: 2510829688873411799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_43
+      rect:
+        serializedVersion: 2
+        x: 984
+        y: 1396
+        width: 512
+        height: 282
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5a5974746d98480c0800000000000000
+      internalID: -4574379768089700955
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_44
+      rect:
+        serializedVersion: 2
+        x: 1507
+        y: 1208
+        width: 484
+        height: 273
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e95b0211ff82b3f70800000000000000
+      internalID: 9167966542411904414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_45
+      rect:
+        serializedVersion: 2
+        x: 1520
+        y: 1471
+        width: 245
+        height: 266
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ad1d766402533a60800000000000000
+      internalID: 7652550370685427111
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_46
+      rect:
+        serializedVersion: 2
+        x: 1825
+        y: 1471
+        width: 152
+        height: 266
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b262ad9424f1d9680800000000000000
+      internalID: -8746800531716299221
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_47
+      rect:
+        serializedVersion: 2
+        x: 1981
+        y: 1396
+        width: 508
+        height: 282
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 328be792012b86200800000000000000
+      internalID: 173584368139155491
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_48
+      rect:
+        serializedVersion: 2
+        x: 2500
+        y: 1208
+        width: 484
+        height: 273
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 143e70ee331b9ccd0800000000000000
+      internalID: -2537302078451621055
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_49
+      rect:
+        serializedVersion: 2
+        x: 2513
+        y: 1471
+        width: 245
+        height: 266
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ce05be83b02263c30800000000000000
+      internalID: 4338692722612981996
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_50
+      rect:
+        serializedVersion: 2
+        x: 2818
+        y: 1471
+        width: 152
+        height: 266
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 45303f097aab14a80800000000000000
+      internalID: -8484294994135153836
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_51
+      rect:
+        serializedVersion: 2
+        x: 2974
+        y: 1456
+        width: 26
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f7b8800b93260ace0800000000000000
+      internalID: -1396007884578845825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_52
+      rect:
+        serializedVersion: 2
+        x: 14
+        y: 1213
+        width: 487
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 693d04ac914bbe520800000000000000
+      internalID: 2732475621790765974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_53
+      rect:
+        serializedVersion: 2
+        x: 1011
+        y: 1213
+        width: 487
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b8f976e3ea60f000800000000000000
+      internalID: 67671521467431096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_54
+      rect:
+        serializedVersion: 2
+        x: 2005
+        y: 1213
+        width: 486
+        height: 178
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 12f698363febebce0800000000000000
+      internalID: -1387461682627252447
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_55
+      rect:
+        serializedVersion: 2
+        x: 20
+        y: 956
+        width: 475
+        height: 190
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1d3a828942b3ce110800000000000000
+      internalID: 1291472221506151377
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_56
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 956
+        width: 475
+        height: 190
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1960a9e4c33b97d30800000000000000
+      internalID: 4429768780093720209
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_57
+      rect:
+        serializedVersion: 2
+        x: 1013
+        y: 956
+        width: 475
+        height: 190
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c52cd6d9615a465c0800000000000000
+      internalID: -4223069034017602980
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_58
+      rect:
+        serializedVersion: 2
+        x: 1509
+        y: 956
+        width: 475
+        height: 190
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 477871f7b057a7190800000000000000
+      internalID: -7963924298813962380
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_59
+      rect:
+        serializedVersion: 2
+        x: 2008
+        y: 956
+        width: 475
+        height: 190
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 361b720613b8a11b0800000000000000
+      internalID: -5685078535418957469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_60
+      rect:
+        serializedVersion: 2
+        x: 2504
+        y: 956
+        width: 475
+        height: 190
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e3a57b03f96a80d50800000000000000
+      internalID: 6703791247988316734
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_61
+      rect:
+        serializedVersion: 2
+        x: 19
+        y: 606
+        width: 477
+        height: 287
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1da53fe17e7757920800000000000000
+      internalID: 2987425762370607825
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_62
+      rect:
+        serializedVersion: 2
+        x: 515
+        y: 606
+        width: 477
+        height: 287
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8961f7e8592f60090800000000000000
+      internalID: -8068494958232922472
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_63
+      rect:
+        serializedVersion: 2
+        x: 1011
+        y: 606
+        width: 477
+        height: 287
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9e8acc6c392fc80e0800000000000000
+      internalID: -2266169795964786455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_64
+      rect:
+        serializedVersion: 2
+        x: 1508
+        y: 606
+        width: 477
+        height: 287
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fc59670e879c018a0800000000000000
+      internalID: -6336343154711161393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_65
+      rect:
+        serializedVersion: 2
+        x: 2007
+        y: 606
+        width: 476
+        height: 287
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d5e0e7f4e5045a4b0800000000000000
+      internalID: -5429863001920500131
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_66
+      rect:
+        serializedVersion: 2
+        x: 2503
+        y: 606
+        width: 477
+        height: 287
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e30c4fb3a95b8a640800000000000000
+      internalID: 5091519052777832510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_67
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 47
+        width: 978
+        height: 524
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 749548a003ecab030800000000000000
+      internalID: 3511345565218920775
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_68
+      rect:
+        serializedVersion: 2
+        x: 1018
+        y: 47
+        width: 978
+        height: 524
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cb87b747a35d540a0800000000000000
+      internalID: -6897872807208978244
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Mega Panel Pack_69
+      rect:
+        serializedVersion: 2
+        x: 2009
+        y: 47
+        width: 978
+        height: 524
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b29930bc55aa680b0800000000000000
+      internalID: -5726702590700054229
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Mega Panel Pack_0: 5489656106097325381
+      Mega Panel Pack_1: -7427111707748575184
+      Mega Panel Pack_10: 3214214757079675851
+      Mega Panel Pack_11: 841448140014537205
+      Mega Panel Pack_12: 2736886633529563974
+      Mega Panel Pack_13: 3452961196093640487
+      Mega Panel Pack_14: -7092231894778577688
+      Mega Panel Pack_15: 8372707379020602034
+      Mega Panel Pack_16: -8020925158299388683
+      Mega Panel Pack_17: -5718671754363608265
+      Mega Panel Pack_18: 3392366323508983949
+      Mega Panel Pack_19: -1602105978143104782
+      Mega Panel Pack_2: -7116057236831203408
+      Mega Panel Pack_20: 3112435408720983413
+      Mega Panel Pack_21: -2253743275946880541
+      Mega Panel Pack_22: -8515608705742825535
+      Mega Panel Pack_23: -7546034525095749959
+      Mega Panel Pack_24: -4757822079284217302
+      Mega Panel Pack_25: 303841260367687056
+      Mega Panel Pack_26: 9212491013945866778
+      Mega Panel Pack_27: -5304994738352659932
+      Mega Panel Pack_28: 3494486610803362710
+      Mega Panel Pack_29: 3446468913226603013
+      Mega Panel Pack_3: 4122230194856956467
+      Mega Panel Pack_30: -3627354483684296363
+      Mega Panel Pack_31: -207263399016965227
+      Mega Panel Pack_32: -8657162261610076469
+      Mega Panel Pack_33: -3679045051754474237
+      Mega Panel Pack_34: 4244299292328839379
+      Mega Panel Pack_35: 2167142604856150155
+      Mega Panel Pack_36: -7878081641542242720
+      Mega Panel Pack_37: -4199069451419866218
+      Mega Panel Pack_38: 1957097897637134435
+      Mega Panel Pack_39: -5634076054868907830
+      Mega Panel Pack_4: -5890892938154284544
+      Mega Panel Pack_40: -7586562310798674923
+      Mega Panel Pack_41: 5008221261982025103
+      Mega Panel Pack_42: 2510829688873411799
+      Mega Panel Pack_43: -4574379768089700955
+      Mega Panel Pack_44: 9167966542411904414
+      Mega Panel Pack_45: 7652550370685427111
+      Mega Panel Pack_46: -8746800531716299221
+      Mega Panel Pack_47: 173584368139155491
+      Mega Panel Pack_48: -2537302078451621055
+      Mega Panel Pack_49: 4338692722612981996
+      Mega Panel Pack_5: 8448150033560241628
+      Mega Panel Pack_50: -8484294994135153836
+      Mega Panel Pack_51: -1396007884578845825
+      Mega Panel Pack_52: 2732475621790765974
+      Mega Panel Pack_53: 67671521467431096
+      Mega Panel Pack_54: -1387461682627252447
+      Mega Panel Pack_55: 1291472221506151377
+      Mega Panel Pack_56: 4429768780093720209
+      Mega Panel Pack_57: -4223069034017602980
+      Mega Panel Pack_58: -7963924298813962380
+      Mega Panel Pack_59: -5685078535418957469
+      Mega Panel Pack_6: 7963533553638123506
+      Mega Panel Pack_60: 6703791247988316734
+      Mega Panel Pack_61: 2987425762370607825
+      Mega Panel Pack_62: -8068494958232922472
+      Mega Panel Pack_63: -2266169795964786455
+      Mega Panel Pack_64: -6336343154711161393
+      Mega Panel Pack_65: -5429863001920500131
+      Mega Panel Pack_66: 5091519052777832510
+      Mega Panel Pack_67: 3511345565218920775
+      Mega Panel Pack_68: -6897872807208978244
+      Mega Panel Pack_69: -5726702590700054229
+      Mega Panel Pack_7: -7928872836716057063
+      Mega Panel Pack_8: 1659570354494153561
+      Mega Panel Pack_9: -2622263184296332384
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
