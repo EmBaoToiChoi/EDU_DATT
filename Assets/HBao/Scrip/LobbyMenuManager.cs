@@ -24,6 +24,40 @@ public class LobbyMenuManager : MonoBehaviour
     [SerializeField] private Button gameplaySettingsButton; // Nút cài đặt trong màn chơi (mới thêm)
 
     private bool isScrolling = false;
+    private Vector3 playButtonOriginalScale = Vector3.one;
+    private Vector3 settingsButtonOriginalScale = Vector3.one;
+    private Vector3 exitButtonOriginalScale = Vector3.one;
+
+    void Awake()
+    {
+        // 1. Tự động kiểm tra xem có EventSystem nào trong Scene không, nếu không có sẽ tự tạo
+        if (UnityEngine.EventSystems.EventSystem.current == null)
+        {
+            var existingEventSystem = FindObjectOfType<UnityEngine.EventSystems.EventSystem>();
+            if (existingEventSystem == null)
+            {
+                Debug.LogWarning("[LobbyMenuManager UI Debug] Không tìm thấy EventSystem trong Scene! Đã tự động tạo EventSystem_AutoCreated mới để nút bấm có thể hoạt động.");
+                GameObject eventSystemGo = new GameObject("EventSystem_AutoCreated");
+                eventSystemGo.AddComponent<UnityEngine.EventSystems.EventSystem>();
+                eventSystemGo.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+            }
+        }
+
+        // 2. Kiểm tra GraphicRaycaster trên Canvas chứa script này
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas != null)
+        {
+            GraphicRaycaster raycaster = canvas.GetComponent<GraphicRaycaster>();
+            if (raycaster == null)
+            {
+                Debug.LogError($"[LobbyMenuManager UI Debug] LỖI: Canvas '{canvas.name}' không có component GraphicRaycaster! Các nút bấm sẽ KHÔNG THỂ click/hover được.");
+            }
+            else if (!raycaster.enabled)
+            {
+                Debug.LogWarning($"[LobbyMenuManager UI Debug] CẢNH BÁO: Component GraphicRaycaster trên Canvas '{canvas.name}' đang bị TẮT! Hãy bật nó lên trong Inspector.");
+            }
+        }
+    }
 
     void Start()
     {
@@ -38,19 +72,24 @@ public class LobbyMenuManager : MonoBehaviour
         if (gamePlayCanvas != null) gamePlayCanvas.SetActive(false);
         if (settingsUI != null) settingsUI.SetActive(false);
 
+        // 2. Lưu lại scale thiết kế ban đầu trong Editor để tránh lỗi ghi đè Scale 0
+        if (playButton != null) playButtonOriginalScale = playButton.transform.localScale;
+        if (settingsButton != null) settingsButtonOriginalScale = settingsButton.transform.localScale;
+        if (exitButton != null) exitButtonOriginalScale = exitButton.transform.localScale;
+
         // Đặt kích thước các nút về 0 để chuẩn bị hiệu ứng xuất hiện sau đó
         if (playButton != null) playButton.transform.localScale = Vector3.zero;
         if (settingsButton != null) settingsButton.transform.localScale = Vector3.zero;
         if (exitButton != null) exitButton.transform.localScale = Vector3.zero;
 
-        // 2. Đăng ký sự kiện click cho các nút
+        // 3. Đăng ký sự kiện click cho các nút
         if (playButton != null) playButton.onClick.AddListener(OnPlayClicked);
         if (settingsButton != null) settingsButton.onClick.AddListener(OnSettingsClicked);
         if (exitButton != null) exitButton.onClick.AddListener(OnExitClicked);
         if (closeSettingsButton != null) closeSettingsButton.onClick.AddListener(OnCloseSettingsClicked);
         if (gameplaySettingsButton != null) gameplaySettingsButton.onClick.AddListener(OnSettingsClicked);
 
-        // 3. Bắt đầu cuộn camera từ trái sang phải
+        // 4. Bắt đầu cuộn camera từ trái sang phải
         if (targetCamera != null)
         {
             StartCoroutine(ScrollCameraRoutine());
@@ -58,7 +97,57 @@ public class LobbyMenuManager : MonoBehaviour
         else
         {
             Debug.LogError("LobbyMenuManager: Không tìm thấy Camera để cuộn!");
-            if (lobbyMenuUI != null) lobbyMenuUI.SetActive(true);
+            if (lobbyMenuUI != null)
+            {
+                lobbyMenuUI.SetActive(true);
+                StartCoroutine(AnimateAllButtonsEntrance());
+            }
+        }
+    }
+
+    void Update()
+    {
+        // Log chẩn đoán kiểm tra va chạm UI (Raycast) khi người dùng click chuột
+#if ENABLE_INPUT_SYSTEM
+        if (UnityEngine.InputSystem.Pointer.current != null && UnityEngine.InputSystem.Pointer.current.press.wasPressedThisFrame)
+        {
+            LogRaycastUnderMouse(UnityEngine.InputSystem.Pointer.current.position.ReadValue());
+        }
+#else
+        if (Input.GetMouseButtonDown(0))
+        {
+            LogRaycastUnderMouse(Input.mousePosition);
+        }
+#endif
+    }
+
+    private void LogRaycastUnderMouse(Vector2 screenPosition)
+    {
+        if (UnityEngine.EventSystems.EventSystem.current == null)
+        {
+            Debug.LogError("[LobbyMenuManager UI Debug] Không thể click vì không tìm thấy EventSystem trong Scene!");
+            return;
+        }
+
+        var pointerData = new UnityEngine.EventSystems.PointerEventData(UnityEngine.EventSystems.EventSystem.current)
+        {
+            position = screenPosition
+        };
+
+        var results = new System.Collections.Generic.List<UnityEngine.EventSystems.RaycastResult>();
+        UnityEngine.EventSystems.EventSystem.current.RaycastAll(pointerData, results);
+
+        if (results.Count > 0)
+        {
+            Debug.Log($"[LobbyMenuManager UI Debug] Bạn đã click chuột. Vật thể UI nhận click trên cùng là: <color=yellow><b>{results[0].gameObject.name}</b></color> (Canvas: {results[0].gameObject.GetComponentInParent<Canvas>()?.name})");
+            for (int i = 1; i < results.Count; i++)
+            {
+                Debug.Log($"   -> Phía sau nó có: {results[i].gameObject.name}");
+            }
+        }
+        else
+        {
+            Debug.Log("[LobbyMenuManager UI Debug] Bạn đã click chuột, nhưng không trúng bất kỳ vật thể UI nào (không trúng Raycast). Hãy kiểm tra xem nút bấm có bật 'Raycast Target' trong component Image không.");
         }
     }
 
@@ -154,23 +243,23 @@ public class LobbyMenuManager : MonoBehaviour
 
         if (playButton != null)
         {
-            StartCoroutine(AnimateButtonEntrance(playButton.GetComponent<RectTransform>()));
+            StartCoroutine(AnimateButtonEntrance(playButton.GetComponent<RectTransform>(), playButtonOriginalScale));
             yield return new WaitForSeconds(delayBetween);
         }
 
         if (settingsButton != null)
         {
-            StartCoroutine(AnimateButtonEntrance(settingsButton.GetComponent<RectTransform>()));
+            StartCoroutine(AnimateButtonEntrance(settingsButton.GetComponent<RectTransform>(), settingsButtonOriginalScale));
             yield return new WaitForSeconds(delayBetween);
         }
 
         if (exitButton != null)
         {
-            StartCoroutine(AnimateButtonEntrance(exitButton.GetComponent<RectTransform>()));
+            StartCoroutine(AnimateButtonEntrance(exitButton.GetComponent<RectTransform>(), exitButtonOriginalScale));
         }
     }
 
-    private IEnumerator AnimateButtonEntrance(RectTransform btnTransform)
+    private IEnumerator AnimateButtonEntrance(RectTransform btnTransform, Vector3 targetScale)
     {
         btnTransform.localScale = Vector3.zero;
         btnTransform.gameObject.SetActive(true);
@@ -184,13 +273,13 @@ public class LobbyMenuManager : MonoBehaviour
             float t = Mathf.Clamp01(elapsed / duration);
             
             // Sử dụng hàm EaseOutBack để tạo hiệu ứng nảy nhẹ khi phóng to
-            float scale = EaseOutBack(t);
-            btnTransform.localScale = new Vector3(scale, scale, 1f);
+            float scaleMultiplier = EaseOutBack(t);
+            btnTransform.localScale = new Vector3(targetScale.x * scaleMultiplier, targetScale.y * scaleMultiplier, targetScale.z);
             
             yield return null;
         }
 
-        btnTransform.localScale = Vector3.one;
+        btnTransform.localScale = targetScale;
     }
 
     // Hàm EaseOutBack tạo chuyển động phóng to quá đà một chút rồi nảy nhẹ lại

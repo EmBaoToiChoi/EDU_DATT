@@ -21,9 +21,9 @@ public class ButtonEffects : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     void Awake()
     {
-        // Lưu kích thước gốc ban đầu của nút
+        // Lưu kích thước gốc ban đầu của nút, đề phòng trường hợp scale bị set = 0 trên Start
         originalScale = transform.localScale;
-        if (originalScale == Vector3.zero)
+        if (originalScale.magnitude < 0.01f)
         {
             originalScale = Vector3.one;
         }
@@ -93,6 +93,12 @@ public class ButtonEffects : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     private IEnumerator ScaleRoutine(Vector3 targetScale)
     {
+        if (scaleDuration <= 0f)
+        {
+            transform.localScale = targetScale;
+            yield break;
+        }
+
         float elapsed = 0f;
         Vector3 startScale = transform.localScale;
 

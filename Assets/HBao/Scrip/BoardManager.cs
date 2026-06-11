@@ -39,6 +39,10 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI winScoreText;      // Text điểm hiển thị trên Panel Thắng
     [SerializeField] private TextMeshProUGUI loseScoreText;     // Text điểm hiển thị trên Panel Thua
 
+    [Header("Timer Settings")]
+    [SerializeField] private float totalTime = 90f;             // Thời gian giới hạn chơi (giây, mặc định 90s = 1p30s)
+    private float remainingTime;                                // Thời gian còn lại
+
     [Header("Combo Settings")]
     [SerializeField] private float comboThreshold = 3.0f;       // Zeit tối đa giữa 2 lần ghép để tính combo (giây)
     [SerializeField] private Image comboImage;                  // Image UI hiển thị hình ảnh Combo
@@ -73,9 +77,10 @@ public class BoardManager : MonoBehaviour
         if (expSlider != null)
         {
             expSlider.minValue = 0;
-            expSlider.maxValue = maxExp;
-            expSlider.value = 0;
+            expSlider.maxValue = 100f;
+            expSlider.value = 100f;
         }
+        remainingTime = totalTime;
 
         // Lưu vị trí và màu sắc ban đầu của các trái tim để reset khi chơi lại
         currentHearts = 3;
@@ -112,6 +117,29 @@ public class BoardManager : MonoBehaviour
         if (comboImage != null)
         {
             comboOriginalScale = comboImage.transform.localScale;
+        }
+    }
+
+    void Update()
+    {
+        if (isGameOver) return;
+
+        // Chỉ đếm ngược thời gian khi đang trong màn chơi chính (chờ game bắt đầu và chưa Game Over)
+        if (remainingTime > 0f)
+        {
+            remainingTime -= Time.deltaTime;
+            
+            if (expSlider != null)
+            {
+                expSlider.value = (remainingTime / totalTime) * 100f;
+            }
+
+            if (remainingTime <= 0f)
+            {
+                remainingTime = 0f;
+                if (expSlider != null) expSlider.value = 0f;
+                TriggerGameOver(false); // Thua cuộc do hết thời gian
+            }
         }
     }
 
@@ -374,7 +402,6 @@ public class BoardManager : MonoBehaviour
     private void GainExp()
     {
         currentExp++;
-        if (expSlider != null) expSlider.value = currentExp;
 
         // Tính toán combo dựa trên khoảng thời gian với lần ghép đúng trước đó
         float timeSinceLastMatch = Time.time - lastMatchTime;
@@ -569,7 +596,8 @@ public class BoardManager : MonoBehaviour
         currentCombo = 0; // Reset combo về 0
         lastMatchTime = -100f;
         firstSelected = null;
-        if (expSlider != null) expSlider.value = 0;
+        remainingTime = totalTime;
+        if (expSlider != null) expSlider.value = 100f;
         UpdateScoreUI();
 
         if (comboImage != null)

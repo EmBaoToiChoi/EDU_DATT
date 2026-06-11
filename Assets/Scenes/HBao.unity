@@ -441,6 +441,7 @@ MonoBehaviour:
   gameplayScoreText: {fileID: 1168634915}
   winScoreText: {fileID: 2013803486}
   loseScoreText: {fileID: 1183923065}
+  totalTime: 90
   comboThreshold: 2
   comboImage: {fileID: 701862321}
   comboSprite: {fileID: 5307882462097650756, guid: d2bafdd2c4286de4c9707c2480a63ea2, type: 3}
@@ -496,7 +497,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
