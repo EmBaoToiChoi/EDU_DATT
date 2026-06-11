@@ -338,7 +338,7 @@ Canvas:
   m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
+  m_SortingLayerID: -464899435
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!224 &19647270
@@ -407,7 +407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BoardManager
   rows: 6
-  cols: 10
+  cols: 6
   elementPrefabs:
   - {fileID: 3181257878812441711, guid: 9c13d7c4f32d7bd4b84b8727fbcc8de1, type: 3}
   - {fileID: 5386730405394747687, guid: 08ac5cb115f5b2b4fa364999671f9f48, type: 3}
@@ -1705,7 +1705,7 @@ Canvas:
   m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 420596079
+  m_SortingLayerID: 10954297
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!1 &648906968
@@ -2341,7 +2341,7 @@ Canvas:
   m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: -2047480349
+  m_SortingLayerID: -446708867
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!224 &1104738849
@@ -3018,7 +3018,7 @@ Canvas:
   m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 420596079
+  m_SortingLayerID: 10954297
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!224 &1251796924
@@ -3296,7 +3296,7 @@ Canvas:
   m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 2038883849
+  m_SortingLayerID: 10954297
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!1 &1648837317
@@ -4460,7 +4460,7 @@ Canvas:
   m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 420596079
+  m_SortingLayerID: 10954297
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!224 &2074615084
@@ -4898,7 +4898,7 @@ MonoBehaviour:
   targetCamera: {fileID: 1950690526}
   startX: -8.89
   endX: 16.26
-  scrollDuration: 15
+  scrollDuration: 10
   scrollCurve:
     serializedVersion: 2
     m_Curve:
@@ -5062,7 +5062,7 @@ Canvas:
   m_UseReflectionProbes: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 420596079
+  m_SortingLayerID: -446708867
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!224 &2137755428
