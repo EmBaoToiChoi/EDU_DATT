@@ -40,7 +40,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI loseScoreText;     // Text điểm hiển thị trên Panel Thua
 
     [Header("Timer Settings")]
-    [SerializeField] private float totalTime = 90f;             // Thời gian giới hạn chơi (giây, mặc định 90s = 1p30s)
+    [SerializeField] private float totalTime = 180f;             // Thời gian giới hạn chơi (giây, mặc định 90s = 1p30s)
     private float remainingTime;                                // Thời gian còn lại
 
     [Header("Combo Settings")]
