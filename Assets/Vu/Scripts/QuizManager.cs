@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // Khai báo thư viện để sử dụng TextMesh Pro
+using TMPro;
 
 [System.Serializable]
 public struct QuestionData
@@ -23,16 +23,19 @@ public class QuizManager : MonoBehaviour
 
     [Header("Lists Component (Kéo thả 8 cái từ Hierarchy)")]
     public GameObject[] cardButtons;   // 8 cái Card_Btn
-    public TextMeshProUGUI[] questionTexts; // Đã đổi sang kiểu TextMeshProUGUI cho 8 câu hỏi
+    public TextMeshProUGUI[] questionTexts; // 8 cái Text câu hỏi TMP
     public GameObject[] pieceLocks;    // 8 cái Piece_Lock_img
     public GameObject[] pieceUnlocks;  // 8 cái Piece_UnLock_img
+    
+    [Header("Sprite Ảnh Chiến Thắng Để Thay Thế Gốc (Mới Tối Ưu)")]
+    public Sprite[] correctSprites; // Kéo thả trực tiếp 8 file ảnh chiến thắng (Sprite) từ Project vào đây!
 
     [Header("Khung Đáp Án Dùng Chung (Kéo từ Inspector)")]
-    public GameObject answerPanel;     // Kéo Object AnswerPanel vào đây
-    public Button btnA;                // Kéo Object Btn_A vào đây
-    public Button btnB;                // Kéo Object Btn_B vào đây
-    public Button btnC;                // Kéo Object Btn_C vào đây
-    public Button btnD;                // Kéo Object Btn_D vào đây
+    public GameObject answerPanel;     
+    public Button btnA;                
+    public Button btnB;                
+    public Button btnC;                
+    public Button btnD;                
 
     [Header("Data Câu Hỏi (Lớp 1 - Lớp 3)")]
     public QuestionData[] questionDataList = new QuestionData[8]
@@ -50,6 +53,9 @@ public class QuizManager : MonoBehaviour
     private int completedQuestions = 0;
     private int totalQuestions = 8;
     private int currentOpeningCardIndex = -1; 
+    
+    // Mảng lưu trạng thái câu hỏi đã xong để tránh việc nhấn lại vào thẻ đã làm đúng
+    private bool[] isCardCompleted = new bool[8];
 
     private void Start()
     {
@@ -57,7 +63,7 @@ public class QuizManager : MonoBehaviour
         foreach (GameObject piece in pieceUnlocks) piece.SetActive(false);
         foreach (GameObject lockImg in pieceLocks) lockImg.SetActive(true);
 
-        // Ban đầu ẩn toàn bộ các khung Image câu hỏi của từng Card
+        // Ban đầu ẩn toàn bộ các khung Image câu hỏi (con đầu tiên) của từng Card
         for (int i = 0; i < cardButtons.Length; i++)
         {
             if (cardButtons[i] != null && cardButtons[i].transform.childCount > 0)
@@ -66,15 +72,15 @@ public class QuizManager : MonoBehaviour
             }
         }
 
-        // Ban đầu ẩn luôn cả AnswerPanel dùng chung
         if (answerPanel != null) answerPanel.SetActive(false);
     }
 
     public void OnClickCard(int cardIndex)
     {
+        // Nếu thẻ này đã làm đúng rồi thì khóa hoàn toàn không phản hồi Click nữa
+        if (isCardCompleted[cardIndex]) return;
         if (currentOpeningCardIndex == cardIndex) return;
 
-        // Phát tiếng click khi mở thẻ bài câu hỏi
         if (AudioManagers.Instance != null)
         {
             AudioManagers.Instance.PlayClick();
@@ -87,26 +93,20 @@ public class QuizManager : MonoBehaviour
 
         currentOpeningCardIndex = cardIndex;
 
-        // 1. Bật Khung Image câu hỏi của Card_Btn này lên
         GameObject questionImage = cardButtons[cardIndex].transform.GetChild(0).gameObject;
         questionImage.SetActive(true);
 
-        // 2. Bật AnswerPanel dùng chung
         answerPanel.SetActive(true);
 
-        // 3. Lấy Data câu hỏi tương ứng
         QuestionData data = questionDataList[cardIndex];
 
-        // 4. Gán chữ vào QuetionText (TextMeshPro)
         questionTexts[cardIndex].text = data.questionText;
 
-        // 5. Gán chữ vào các nút A, B, C, D dùng chung (Tìm Component TextMeshProUGUI nằm bên trong nút)
         btnA.GetComponentInChildren<TextMeshProUGUI>().text = "A. " + data.answerA;
         btnB.GetComponentInChildren<TextMeshProUGUI>().text = "B. " + data.answerB;
         btnC.GetComponentInChildren<TextMeshProUGUI>().text = "C. " + data.answerC;
         btnD.GetComponentInChildren<TextMeshProUGUI>().text = "D. " + data.answerD;
 
-        // 6. Cài đặt sự kiện click cho các nút trả lời
         SetButtonAnswerEvent(btnA, "A", cardIndex);
         SetButtonAnswerEvent(btnB, "B", cardIndex);
         SetButtonAnswerEvent(btnC, "C", cardIndex);
@@ -137,17 +137,27 @@ public class QuizManager : MonoBehaviour
     {
         Debug.Log("Trả lời CHÍNH XÁC!");
 
-        // PHÁT ÂM THANH TRẢ LỜI ĐÚNG VỚI VOLUME THIẾT LẬP RIÊNG
         if (AudioManagers.Instance != null)
         {
             AudioManagers.Instance.PlayCorrect();
         }
 
+        // 1. Đánh dấu thẻ bài này đã hoàn thành
+        isCardCompleted[cardIndex] = true;
+
+        // 2. Ẩn Khung chứa nội dung câu hỏi (con thứ nhất) đi để lộ bề mặt Card
         cardButtons[cardIndex].transform.GetChild(0).gameObject.SetActive(false);
+
+        // 3. THAY THẾ trực tiếp Sprite gốc của Card_Btn bằng Sprite chiến thắng mới
+        Image cardMainImage = cardButtons[cardIndex].GetComponent<Image>();
+        if (cardMainImage != null && correctSprites != null && cardIndex < correctSprites.Length && correctSprites[cardIndex] != null)
+        {
+            cardMainImage.sprite = correctSprites[cardIndex]; // Đổi hẳn ruột ảnh gốc
+        }
+
+        // Ẩn bảng đáp án dùng chung
         answerPanel.SetActive(false);
         currentOpeningCardIndex = -1; 
-
-        cardButtons[cardIndex].GetComponent<Button>().interactable = false;
 
         pieceLocks[cardIndex].SetActive(false);
         pieceUnlocks[cardIndex].SetActive(true);
@@ -164,7 +174,6 @@ public class QuizManager : MonoBehaviour
     {
         if (currentFails < maxFails)
         {
-            // PHÁT ÂM THANH TRẢ LỜI SAI VỚI VOLUME THIẾT LẬP RIÊNG
             if (AudioManagers.Instance != null)
             {
                 AudioManagers.Instance.PlayWrong();
@@ -187,43 +196,32 @@ public class QuizManager : MonoBehaviour
         UIManager.Instance.ShowXepHinhPanel();
     }
 
-    private int correctPiecesCount = 0; // Biến đếm số mảnh đã xếp đúng
+    private int correctPiecesCount = 0; 
 
-    // Hàm này sẽ được gọi từ script DragDropPiece mỗi khi có 1 mảnh xếp đúng
     public void OnPiecePlacedCorrectly()
     {
         correctPiecesCount++;
         Debug.Log($"Số mảnh xếp đúng hiện tại: {correctPiecesCount} / {totalQuestions}");
 
-        // PHÁT ÂM THANH ĐÚNG KHI MẢNH GHÉP ĐƯỢC ĐẶT CHUẨN XÁC
         if (AudioManagers.Instance != null)
         {
             AudioManagers.Instance.PlayCorrect();
         }
 
-        // Nếu xếp đúng đủ cả 8 mảnh -> CHIẾN THẮNG!
         if (correctPiecesCount >= totalQuestions)
         {
             Debug.Log("CHÚC MỪNG! BẠN ĐÃ CHIẾN THẮNG GAME!");
-            // Đợi 0.5 giây cho hiệu ứng mượt rồi bật Panel Win
             Invoke("TriggerWinUI", 0.5f);
         }
     }
 
     private void TriggerWinUI()
     {
-        // 1. Lưu trạng thái: Đã hoàn thành Màn 1 (Giá trị 1 nghĩa là True)
         PlayerPrefs.SetInt("Level_1_Completed", 1);
-
-        // 2. Lưu trạng thái: Đã mở khóa Ảnh 1 trong Bộ sưu tập
         PlayerPrefs.SetInt("Unlocked_Photo_1", 1);
-
-        // Lưu lại dữ liệu xuống ổ cứng thiết bị ngay lập tức
         PlayerPrefs.Save();
 
         Debug.Log("Đã lưu tiến trình: Hoàn thành màn 1 & Mở khóa ảnh bộ sưu tập!");
-
-        // Hiện Panel Win như cũ, âm thanh Win độc lập sẽ được kích hoạt tự động bên trong UIManager
         UIManager.Instance.ShowYouWinPanel();
     }
 }

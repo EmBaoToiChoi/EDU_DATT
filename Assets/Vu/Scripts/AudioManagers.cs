@@ -24,13 +24,17 @@ public class AudioManagers : MonoBehaviour
     public AudioClip wrongSound;      
     public AudioClip winSound;        
 
+    private bool isMuted = false;
+
     private void Awake()
     {
-        // Khởi tạo Singleton để quản lý xuyên suốt các Scene
         if (Instance == null)
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+            
+            // Tải trạng thái tắt/bật âm thanh đã lưu từ trước (0: Bật, 1: Tắt)
+            isMuted = PlayerPrefs.GetInt("GameMuted", 0) == 1;
         }
         else
         {
@@ -46,16 +50,47 @@ public class AudioManagers : MonoBehaviour
 
     private void Start()
     {
-        // Kích hoạt phát nhạc nền với âm lượng riêng biệt của nó
         PlayMusic(backgroundMusic);
+        ApplyMuteState(); // Áp dụng trạng thái âm thanh ngay khi vào game
     }
 
-    // Cập nhật âm lượng thời gian thực ngay khi bạn kéo thanh trượt trên Inspector lúc đang Play game
     private void OnValidate()
     {
-        if (musicSource != null)
+        if (musicSource != null && !isMuted)
         {
             musicSource.volume = volumeBackgroundMusic;
+        }
+    }
+
+    // --- HÀM BẬT/TẮT TOÀN BỘ ÂM THANH (Sẽ gọi từ Button) ---
+    public void ToggleMute()
+    {
+        isMuted = !isMuted;
+        
+        // Lưu lại cấu hình vào thiết bị (0: Bật âm, 1: Tắt âm)
+        PlayerPrefs.SetInt("GameMuted", isMuted ? 1 : 0);
+        PlayerPrefs.Save();
+
+        ApplyMuteState();
+    }
+
+    // Hàm trả về trạng thái hiện tại để UI (nếu có) thay đổi icon Loa bật/tắt
+    public bool IsMuted()
+    {
+        return isMuted;
+    }
+
+    private void ApplyMuteState()
+    {
+        if (isMuted)
+        {
+            musicSource.volume = 0f;
+            sfxSource.mute = true; // Khóa nguồn phát hiệu ứng âm thanh
+        }
+        else
+        {
+            musicSource.volume = volumeBackgroundMusic;
+            sfxSource.mute = false; // Mở khóa nguồn phát hiệu ứng âm thanh
         }
     }
 
@@ -64,7 +99,7 @@ public class AudioManagers : MonoBehaviour
     {
         if (clip == null) return;
         musicSource.clip = clip;
-        musicSource.volume = volumeBackgroundMusic; // Gán đúng âm lượng được chỉnh của Nhạc nền
+        musicSource.volume = isMuted ? 0f : volumeBackgroundMusic; 
         musicSource.Play();
     }
 
@@ -74,11 +109,10 @@ public class AudioManagers : MonoBehaviour
     }
 
     // --- HÀM PHÁT HIỆU ỨNG ÂM THANH ĐỘC LẬP TỪNG LOẠI ---
-    // Thay vì PlayOneShot mặc định, hàm này sẽ lấy chính xác mức Volume của từng Clip cụ thể từ Inspector
     public void PlaySFX(AudioClip clip, float customVolume)
     {
-        if (clip == null) return;
-        sfxSource.PlayOneShot(clip, customVolume); // Ép AudioSource phát đúng mức âm lượng thiết lập riêng cho Clip đó
+        if (clip == null || isMuted) return; // Nếu đang tắt âm thì không phát SFX
+        sfxSource.PlayOneShot(clip, customVolume); 
     }
 
     // --- CÁC HÀM TIỆN ÍCH ĐỂ CODE KHÁC GỌI NGẮN GỌN ---
