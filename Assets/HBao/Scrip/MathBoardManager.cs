@@ -2,37 +2,64 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // Nhập thư viện TMPro để quản lý hiển thị chữ điểm số
+using TMPro;
 
-public class BoardManager : MonoBehaviour
+[System.Serializable]
+public struct MathQuestion
+{
+    public string questionPart1;     // Số/Hạng tử thứ nhất (ví dụ: "1")
+    public string questionPart2;     // Phép tính (ví dụ: "+")
+    public string questionPart3;     // Số/Hạng tử thứ hai (ví dụ: "1")
+    public string questionPart4;     // Dấu kết quả (ví dụ: "=")
+    public int correctAnswerIndex;   // Vị trí Index của prefab đáp án đúng trong mảng answerPrefabs
+}
+
+public class MathBoardManager : MonoBehaviour
 {
     [Header("Board Settings")]
-    public int rows = 6;
-    public int cols = 10;
+    public int rows = 4;
+    public int cols = 4;
 
-    [Header("Element Database")]
-    [Tooltip("Danh sách các Prefab chất hóa học tự thiết kế (Cu, Zn, Br, Al...)")]
-    [SerializeField] private GameObject[] elementPrefabs; 
+    [Header("Answer Prefabs Database")]
+    [Tooltip("Danh sách các Prefab con số đáp án (0, 1, 2, 3, 4...)")]
+    [SerializeField] private GameObject[] answerPrefabs; 
+
+    [Header("Questions Database")]
+    [Tooltip("Danh sách các câu hỏi hiển thị")]
+    [SerializeField] private MathQuestion[] questions = new MathQuestion[]
+    {
+        new MathQuestion { questionPart1 = "1", questionPart2 = "+", questionPart3 = "1", questionPart4 = "=", correctAnswerIndex = 1 }, // Đáp án là 2 (index 1 nếu prefab là 1, 2, 3...)
+        new MathQuestion { questionPart1 = "5", questionPart2 = "+", questionPart3 = "3", questionPart4 = "=", correctAnswerIndex = 7 }, // Đáp án là 8 (index 7)
+        new MathQuestion { questionPart1 = "10", questionPart2 = "-", questionPart3 = "4", questionPart4 = "=", correctAnswerIndex = 5 }, // Đáp án là 6 (index 5)
+        new MathQuestion { questionPart1 = "12", questionPart2 = "+", questionPart3 = "3", questionPart4 = "=", correctAnswerIndex = 14 } // Đáp án là 15 (index 14)
+    };
+
+    [Header("Question UI References")]
+    [SerializeField] private TextMeshProUGUI questionTextUI; // Text hiển thị câu hỏi gộp (nếu có)
+    [SerializeField] private TextMeshProUGUI questionPart1UI; // Khung hiển thị số thứ nhất
+    [SerializeField] private TextMeshProUGUI questionPart2UI; // Khung hiển thị phép tính (+, -, ...)
+    [SerializeField] private TextMeshProUGUI questionPart3UI; // Khung hiển thị số thứ hai
+    [SerializeField] private TextMeshProUGUI questionPart4UI; // Khung hiển thị dấu bằng (=)
 
     [Header("References")]
     public Transform boardParent;
-    public Slider expSlider; // Thanh Kinh Nghiệm
+    public Slider expSlider; // Thanh thời gian đếm ngược (Slider thời gian)
 
     [Header("Hearts Settings")]
     [SerializeField] private HeartUI[] heartIcons;       // Mảng 3 trái tim UI
     [SerializeField] private GameObject gameOverPanel;   // Panel khi thua cuộc
-    [SerializeField] private Button replayButton;        // Nút chơi lại trên Panel Thua (mới)
-    [SerializeField] private Button exitButton;          // Nút thoát trên Panel Thua (mới)
+    [SerializeField] private Button replayButton;        // Nút chơi lại trên Panel Thua
+    [SerializeField] private Button exitButton;          // Nút thoát trên Panel Thua
     [SerializeField] private GameObject lobbyMenuUI;     // Menu Lobby (để quay lại nếu nhấn thoát trong game)
-    [SerializeField] private GameObject winPanel;        // Panel khi chiến thắng (mới)
-    [SerializeField] private Button winReplayButton;     // Nút chơi lại trên Panel Thắng (mới)
-    [SerializeField] private Button winExitButton;       // Nút thoát trên Panel Thắng (mới)
+    [SerializeField] private GameObject winPanel;        // Panel khi chiến thắng
+    [SerializeField] private Button winReplayButton;     // Nút chơi lại trên Panel Thắng
+    [SerializeField] private Button winExitButton;       // Nút thoát trên Panel Thắng
 
     [Header("Gameplay Audio Clips")]
     [SerializeField] private AudioClip matchSound;       // Âm thanh khi nối đúng
     [SerializeField] private AudioClip errorSound;       // Âm thanh khi chọn sai / mất mạng
     [SerializeField] private AudioClip gameOverSound;    // Âm thanh khi thua cuộc
-    [SerializeField] private AudioClip winSound;         // Âm thanh khi chiến thắng (mới)
+    [SerializeField] private AudioClip winSound;         // Âm thanh khi chiến thắng
 
     [Header("Score Settings")]
     [SerializeField] private TextMeshProUGUI gameplayScoreText; // Text điểm hiển thị trong màn chơi
@@ -40,7 +67,7 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI loseScoreText;     // Text điểm hiển thị trên Panel Thua
 
     [Header("Timer Settings")]
-    [SerializeField] private float totalTime = 180f;             // Thời gian giới hạn chơi (giây, mặc định 90s = 1p30s)
+    [SerializeField] private float totalTime = 90f;             // Thời gian giới hạn chơi (giây, mặc định 90s = 1p30s)
     private float remainingTime;                                // Thời gian còn lại
 
     [Header("Combo Settings")]
@@ -50,40 +77,57 @@ public class BoardManager : MonoBehaviour
     [SerializeField] private AudioClip comboSound;              // Âm thanh hiệu ứng Combo duy nhất
 
     private int[,] matrix;
-    private TileController firstSelected = null;
-    private int currentExp = 0;
-    private int maxExp = 0;
+    private MathTileController firstSelected = null;
+    private int currentQuestionIndex = 0;
     private bool isGameOver = false;
 
     private int currentScore = 0; // Điểm số hiện tại của màn chơi
     private float lastMatchTime = -100f; // Thời điểm ghép đúng trước đó
-    private int currentCombo = 0; // Cấp combo hiện tại (0 -> base, 1 -> combo x2, 2 -> combo x3)
+    private int currentCombo = 0; 
     private Coroutine comboCoroutine;
-    private Vector3 comboOriginalScale = Vector3.one; // Lưu tỷ lệ RectTransform gốc từ Editor (mới)
+    private Vector3 comboOriginalScale = Vector3.one; 
 
     private int currentHearts = 3;
     private Vector2[] heartStartPositions;
     private Color heartOriginalColor;
 
+    private void ShuffleQuestions()
+    {
+        if (questions == null || questions.Length <= 1) return;
+        for (int i = questions.Length - 1; i > 0; i--)
+        {
+            int r = Random.Range(0, i + 1);
+            MathQuestion temp = questions[i];
+            questions[i] = questions[r];
+            questions[r] = temp;
+        }
+    }
+
     void Start()
     {
         Application.targetFrameRate = 60;
-        matrix = new int[rows + 2, cols + 2];
+        
+        // Cài đặt ban đầu
+        currentQuestionIndex = 0;
+        isGameOver = false;
+        currentHearts = 3;
+        currentScore = 0;
+        remainingTime = totalTime;
 
-        GenerateBoardLogic();
-
-        // 1 Cặp nối đúng = 1 EXP. Max EXP = Tống số ô chia 2.
-        maxExp = (rows * cols) / 2;
         if (expSlider != null)
         {
             expSlider.minValue = 0;
             expSlider.maxValue = 100f;
             expSlider.value = 100f;
         }
-        remainingTime = totalTime;
+
+        // 1. Dựng lưới bàn chơi một lần duy nhất chứa tất cả đáp án và tự sinh các câu hỏi tương ứng
+        GenerateBoard();
+
+        // 2. Khởi tạo hiển thị câu hỏi đầu tiên
+        LoadQuestion(currentQuestionIndex);
 
         // Lưu vị trí và màu sắc ban đầu của các trái tim để reset khi chơi lại
-        currentHearts = 3;
         if (heartIcons != null && heartIcons.Length > 0)
         {
             heartStartPositions = new Vector2[heartIcons.Length];
@@ -109,8 +153,6 @@ public class BoardManager : MonoBehaviour
         if (winReplayButton != null) winReplayButton.onClick.AddListener(ResetGame);
         if (winExitButton != null) winExitButton.onClick.AddListener(OnExitClicked);
 
-        // Khởi tạo điểm ban đầu
-        currentScore = 0;
         UpdateScoreUI();
 
         // Lưu tỷ lệ (Scale) gốc của Combo Image được thiết lập từ Editor
@@ -143,21 +185,155 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    void GenerateBoardLogic()
+    void LoadQuestion(int questionIndex)
     {
+        if (questions == null || questions.Length == 0)
+        {
+            Debug.LogError("MathBoardManager: Chưa cấu hình danh sách câu hỏi!");
+            return;
+        }
+
+        if (questionIndex >= questions.Length)
+        {
+            // Đã trả lời hết toàn bộ các câu hỏi -> Chiến thắng!
+            TriggerGameOver(true);
+            return;
+        }
+
+        // 1. Cập nhật Text câu hỏi trên màn hình
+        // 1. Cập nhật Text câu hỏi trên màn hình (cho cả 4 khung riêng biệt)
+        if (questionPart1UI != null) questionPart1UI.text = questions[questionIndex].questionPart1;
+        if (questionPart2UI != null) questionPart2UI.text = questions[questionIndex].questionPart2;
+        if (questionPart3UI != null) questionPart3UI.text = questions[questionIndex].questionPart3;
+        if (questionPart4UI != null) questionPart4UI.text = questions[questionIndex].questionPart4;
+
+        // Giữ tương thích ngược với ô Text gộp cũ nếu có gán
+        if (questionTextUI != null)
+        {
+            questionTextUI.text = questions[questionIndex].questionPart1 + " " + 
+                                  questions[questionIndex].questionPart2 + " " + 
+                                  questions[questionIndex].questionPart3 + " " + 
+                                  questions[questionIndex].questionPart4;
+        }
+
+        firstSelected = null;
+    }
+
+    private MathQuestion GenerateDynamicQuestion(int id)
+    {
+        int targetValue = id + 1; // Giá trị đáp án (từ 1 đến 16)
+        
+        string part1 = "";
+        string part2 = "";
+        string part3 = "";
+        string part4 = "=";
+
+        // Chọn ngẫu nhiên phép cộng (+) hoặc trừ (-)
+        int op = Random.Range(0, 2); // 0: cộng, 1: trừ
+
+        if (targetValue == 1)
+        {
+            op = 0; // Để 1 luôn dùng phép cộng 0 + 1 hoặc 1 + 0
+        }
+
+        if (op == 0) // Phép cộng: A + B = targetValue
+        {
+            int a = Random.Range(0, targetValue); // A từ 0 đến targetValue - 1
+            int b = targetValue - a;
+            part1 = a.ToString();
+            part2 = "+";
+            part3 = b.ToString();
+        }
+        else // Phép trừ: A - B = targetValue
+        {
+            // A từ targetValue + 1 đến targetValue + 8
+            int a = Random.Range(targetValue + 1, targetValue + 9);
+            int b = a - targetValue;
+            part1 = a.ToString();
+            part2 = "-";
+            part3 = b.ToString();
+        }
+
+        return new MathQuestion
+        {
+            questionPart1 = part1,
+            questionPart2 = part2,
+            questionPart3 = part3,
+            questionPart4 = part4,
+            correctAnswerIndex = id
+        };
+    }
+
+    void GenerateBoard()
+    {
+        // 1. Xóa bàn chơi cũ nếu có
+        if (boardParent != null)
+        {
+            foreach (Transform child in boardParent)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        matrix = new int[rows + 2, cols + 2];
+
         int totalPlayableTiles = rows * cols;
         List<int> elementIDs = new List<int>();
 
         int numPairs = totalPlayableTiles / 2;
-        for (int i = 0; i < numPairs; i++)
+
+        if (answerPrefabs == null || answerPrefabs.Length == 0)
         {
-            // Lấy ngẫu nhiên ID từ danh sách Prefab bạn nạp vào
-            int randomID = Random.Range(0, elementPrefabs.Length);
-            elementIDs.Add(randomID);
-            elementIDs.Add(randomID);
+            Debug.LogError("MathBoardManager: Chưa gán Answer Prefabs!");
+            return;
         }
 
-        // Xáo trộn (Shuffle)
+        // 2. Chọn ra các ID đáp án không trùng lặp để tạo bàn chơi và câu hỏi
+        List<int> selectedIDs = new List<int>();
+        List<int> availableIDs = new List<int>();
+        for (int i = 0; i < answerPrefabs.Length; i++)
+        {
+            availableIDs.Add(i);
+        }
+
+        for (int i = 0; i < numPairs; i++)
+        {
+            int chosenID = 0;
+            if (availableIDs.Count > 0)
+            {
+                int randIndex = Random.Range(0, availableIDs.Count);
+                chosenID = availableIDs[randIndex];
+                availableIDs.RemoveAt(randIndex);
+            }
+            else
+            {
+                chosenID = Random.Range(0, answerPrefabs.Length);
+            }
+            selectedIDs.Add(chosenID);
+
+            // Mỗi đáp án thêm 2 lần để tạo thành cặp
+            elementIDs.Add(chosenID);
+            elementIDs.Add(chosenID);
+        }
+
+        // Trộn ngẫu nhiên thứ tự đáp án để tạo câu hỏi ngẫu nhiên
+        List<int> shuffledIDsForQuestions = new List<int>(selectedIDs);
+        for (int i = shuffledIDsForQuestions.Count - 1; i > 0; i--)
+        {
+            int r = Random.Range(0, i + 1);
+            int temp = shuffledIDsForQuestions[i];
+            shuffledIDsForQuestions[i] = shuffledIDsForQuestions[r];
+            shuffledIDsForQuestions[r] = temp;
+        }
+
+        // 3. Tạo danh sách câu hỏi dựa trên các đáp án đã chọn
+        questions = new MathQuestion[shuffledIDsForQuestions.Count];
+        for (int i = 0; i < shuffledIDsForQuestions.Count; i++)
+        {
+            questions[i] = GenerateDynamicQuestion(shuffledIDsForQuestions[i]);
+        }
+
+        // Xáo trộn vị trí các ô trên bàn chơi (Shuffle)
         for (int i = elementIDs.Count - 1; i > 0; i--)
         {
             int r = Random.Range(0, i + 1);
@@ -177,17 +353,15 @@ public class BoardManager : MonoBehaviour
             cellSize = gridLayout.cellSize;
             spacing = gridLayout.spacing;
             padding = gridLayout.padding;
-            gridLayout.enabled = false; // Tắt layout group tự động để không ghi đè kích thước/tỉ lệ của Prefab
+            gridLayout.enabled = false; 
         }
 
-        // Tự động phát hiện kích thước lớn nhất của các Prefab chất để làm kích thước ô lưới cơ bản.
-        // Điều này giúp lưới tự giãn khoảng cách dựa trên kích thước thật của Prefab mà bạn đã chỉnh,
-        // tránh bị dính liền hay đè lên nhau.
-        if (elementPrefabs != null && elementPrefabs.Length > 0)
+        // Tự động phát hiện kích thước lớn nhất của các Prefab đáp án
+        if (answerPrefabs != null && answerPrefabs.Length > 0)
         {
             float maxW = 0f;
             float maxH = 0f;
-            foreach (var prefab in elementPrefabs)
+            foreach (var prefab in answerPrefabs)
             {
                 if (prefab != null)
                 {
@@ -227,7 +401,6 @@ public class BoardManager : MonoBehaviour
             float netParentWidth = parentWidth - padLeft - padRight;
             float netParentHeight = parentHeight - padTop - padBottom;
 
-            // Đảm bảo không âm hoặc lỗi chia cho 0
             if (netParentWidth <= 0f) netParentWidth = parentWidth;
             if (netParentHeight <= 0f) netParentHeight = parentHeight;
 
@@ -239,7 +412,6 @@ public class BoardManager : MonoBehaviour
                 gridScale = Mathf.Min(scaleX, scaleY);
             }
 
-            // Áp dụng tỉ lệ co giãn vào các kích thước của lưới
             float scaledCellWidth = cellSize.x * gridScale;
             float scaledCellHeight = cellSize.y * gridScale;
             float scaledSpacingX = spacing.x * gridScale;
@@ -248,7 +420,6 @@ public class BoardManager : MonoBehaviour
             float scaledTotalWidth = cols * scaledCellWidth + (cols - 1) * scaledSpacingX;
             float scaledTotalHeight = rows * scaledCellHeight + (rows - 1) * scaledSpacingY;
 
-            // Xác định vị trí bắt đầu dựa trên childAlignment của Grid ban đầu
             TextAnchor alignment = gridLayout != null ? gridLayout.childAlignment : TextAnchor.MiddleCenter;
 
             // Tính startX
@@ -260,7 +431,7 @@ public class BoardManager : MonoBehaviour
             {
                 startX = parentWidth / 2f - padRight - scaledTotalWidth + scaledCellWidth / 2f;
             }
-            else // MiddleCenter, UpperCenter, LowerCenter
+            else
             {
                 startX = -parentWidth / 2f + padLeft + (netParentWidth - scaledTotalWidth) / 2f + scaledCellWidth / 2f;
             }
@@ -274,19 +445,17 @@ public class BoardManager : MonoBehaviour
             {
                 startY = -parentHeight / 2f + padBottom + scaledTotalHeight - scaledCellHeight / 2f;
             }
-            else // MiddleLeft, MiddleCenter, MiddleRight
+            else 
             {
                 startY = parentHeight / 2f - padTop - (netParentHeight - scaledTotalHeight) / 2f - scaledCellHeight / 2f;
             }
         }
         else
         {
-            // Dự phòng nếu không có RectTransform hoặc kích thước chưa được khởi tạo
             startX = -totalWidth / 2f + cellSize.x / 2f;
             startY = totalHeight / 2f - cellSize.y / 2f;
         }
 
-        // Cập nhật lại các khoảng cách và cell size theo tỉ lệ gridScale
         float finalCellWidth = cellSize.x * gridScale;
         float finalCellHeight = cellSize.y * gridScale;
         float finalSpacingX = spacing.x * gridScale;
@@ -298,55 +467,70 @@ public class BoardManager : MonoBehaviour
             for (int c = 1; c <= cols; c++)
             {
                 int id = elementIDs[index];
-                matrix[r, c] = id + 1; // +1 để phân biệt với 0 (ô trống)
+                matrix[r, c] = id + 1; // Lưu ID trong ma trận
 
-                // Tạo ra prefab tương ứng với ID chất đó
-                GameObject go = Instantiate(elementPrefabs[id], boardParent);
+                GameObject go = Instantiate(answerPrefabs[id], boardParent);
                 
-                // Đảm bảo giữ nguyên kích thước (sizeDelta) và áp dụng tỉ lệ thu nhỏ của lưới lên scale
                 RectTransform goRect = go.GetComponent<RectTransform>();
-                RectTransform prefabRect = elementPrefabs[id].GetComponent<RectTransform>();
+                RectTransform prefabRect = answerPrefabs[id].GetComponent<RectTransform>();
                 if (goRect != null && prefabRect != null)
                 {
                     Vector2 originalSize = prefabRect.sizeDelta;
                     Vector3 originalScale = prefabRect.localScale;
                     Vector2 originalPivot = prefabRect.pivot;
 
-                    // Đặt neo ở chính giữa để tính toán vị trí dễ dàng
                     goRect.anchorMin = new Vector2(0.5f, 0.5f);
                     goRect.anchorMax = new Vector2(0.5f, 0.5f);
                     goRect.pivot = originalPivot;
                     goRect.sizeDelta = originalSize;
                     
-                    // Nhân tỉ lệ gốc của prefab với tỉ lệ co giãn của lưới
                     Vector3 targetScale = new Vector3(originalScale.x * gridScale, originalScale.y * gridScale, originalScale.z * gridScale);
                     goRect.localScale = targetScale;
 
-                    // Tính vị trí tâm ô (r, c)
                     float posX = startX + (c - 1) * (finalCellWidth + finalSpacingX);
                     float posY = startY - (r - 1) * (finalCellHeight + finalSpacingY);
 
-                    // Điều chỉnh vị trí theo Pivot của prefab (sử dụng targetScale mới để không bị lệch)
                     float offsetX = (originalPivot.x - 0.5f) * originalSize.x * targetScale.x;
                     float offsetY = (originalPivot.y - 0.5f) * originalSize.y * targetScale.y;
 
                     goRect.anchoredPosition = new Vector2(posX + offsetX, posY + offsetY);
                 }
 
-                TileController tile = go.GetComponent<TileController>();
-                tile.SetupTile(r, c, id + 1, this);
+                MathTileController tile = go.GetComponent<MathTileController>();
+                if (tile == null)
+                {
+                    TileController oldTile = go.GetComponent<TileController>();
+                    if (oldTile != null)
+                    {
+                        tile = go.AddComponent<MathTileController>();
+                        tile.CopyFromOldTile(oldTile);
+                        Destroy(oldTile);
+                    }
+                }
+
+                if (tile != null)
+                {
+                    tile.SetupTile(r, c, id + 1, this);
+                }
 
                 index++;
             }
         }
     }
 
-    public void SelectTile(TileController clickedTile)
+    public void SelectTile(MathTileController clickedTile)
     {
-        if (isGameOver) return;
+        if (isGameOver)
+        {
+            Debug.Log("[MathBoardManager] SelectTile: Game đã kết thúc, bỏ qua click.");
+            return;
+        }
+
+        Debug.Log($"[MathBoardManager] Nhận sự kiện click từ ô ({clickedTile.x}, {clickedTile.y}) - ID: {clickedTile.elementID}");
 
         if (firstSelected == clickedTile)
         {
+            Debug.Log("[MathBoardManager] Click trùng ô cũ -> Hủy chọn.");
             firstSelected.SetSelectedVisual(false);
             firstSelected = null;
             return;
@@ -356,38 +540,41 @@ public class BoardManager : MonoBehaviour
         {
             firstSelected = clickedTile;
             firstSelected.SetSelectedVisual(true);
+            Debug.Log($"[MathBoardManager] Chọn ô thứ nhất: ({firstSelected.x}, {firstSelected.y}) - ID: {firstSelected.elementID}");
         }
         else
         {
             bool isMatch = false;
+            int currentCorrectAnswerID = questions[currentQuestionIndex].correctAnswerIndex + 1;
 
-            if (firstSelected.elementID == clickedTile.elementID)
+            Debug.Log($"[MathBoardManager] So sánh: Ô thứ nhất ID={firstSelected.elementID} | Ô thứ hai ID={clickedTile.elementID} | Đáp án đúng ID={currentCorrectAnswerID}");
+
+            // Kiểm tra: Hai ô được chọn phải có cùng ID VÀ phải là ID của ĐÁP ÁN ĐÚNG
+            if (firstSelected.elementID == clickedTile.elementID && firstSelected.elementID == currentCorrectAnswerID)
             {
-                Vector2Int p1 = new Vector2Int(firstSelected.x, firstSelected.y);
-                Vector2Int p2 = new Vector2Int(clickedTile.x, clickedTile.y);
-
                 // Dù bị kẹt hay bị vây quanh vẫn kết nối và khớp được (Không dùng thuật toán tìm đường đi)
                 isMatch = true;
-                matrix[p1.x, p1.y] = 0;
-                matrix[p2.x, p2.y] = 0;
+                Debug.Log("[MathBoardManager] GHÉP ĐÚNG! Đang tạo hiệu ứng kết nối...");
+                
+                matrix[firstSelected.x, firstSelected.y] = 0;
+                matrix[clickedTile.x, clickedTile.y] = 0;
 
-                // Gọi hiệu ứng thay vì ẩn đi lập tức
                 firstSelected.PlayMatchEffect();
                 clickedTile.PlayMatchEffect();
 
-                // Phát âm thanh ghép đúng
                 if (AudioManager.Instance != null && matchSound != null)
                 {
                     AudioManager.Instance.PlaySFX(matchSound);
                 }
 
-                // Tăng cấp độ
-                GainExp();
+                // Cộng điểm và kiểm tra chuyển câu tiếp theo
+                GainScoreAndCheckNextQuestion();
             }
 
             if (!isMatch)
             {
-                // Chọn sai hoặc không tìm được đường đi nối 2 ô -> Trừ tim
+                // Chọn sai (Chọn 2 ô khác nhau, hoặc chọn 2 ô giống nhau nhưng KHÔNG PHẢI đáp án đúng của câu này)
+                Debug.Log("[MathBoardManager] GHÉP SAI! Trừ 1 tim.");
                 firstSelected.SetSelectedVisual(false);
                 DeductHeart();
             }
@@ -396,22 +583,18 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    private void GainExp()
+    private void GainScoreAndCheckNextQuestion()
     {
-        currentExp++;
-
         // Tính toán combo dựa trên khoảng thời gian với lần ghép đúng trước đó
         float timeSinceLastMatch = Time.time - lastMatchTime;
         int pointsAdded = 1;
 
         if (timeSinceLastMatch <= comboThreshold)
         {
-            // Ghép nhanh -> Đạt combo, cộng 2 điểm (+2 điểm là cao nhất)
-            pointsAdded = 2;
+            pointsAdded = 2; // Ghép nhanh -> Đạt combo, cộng 2 điểm
         }
         else
         {
-            // Quá thời gian -> Nhận 1 điểm cơ bản
             pointsAdded = 1;
         }
         lastMatchTime = Time.time;
@@ -421,89 +604,17 @@ public class BoardManager : MonoBehaviour
         UpdateScoreUI();
         UpdateComboUI(pointsAdded);
 
-        if (currentExp >= maxExp)
-        {
-            TriggerGameOver(true);
-        }
+        // Chuyển sang câu hỏi tiếp theo
+        currentQuestionIndex++;
+        
+        // Chờ hiệu ứng biến mất kết thúc (khoảng 0.35s) trước khi sinh câu hỏi mới
+        StartCoroutine(LoadNextQuestionRoutine(0.35f));
     }
 
-    // --- THUẬT TOÁN TÌM ĐƯỜNG KIỂU MỚI (CHỐNG KẸT LỖI 100%) ---
-    struct Node
+    private IEnumerator LoadNextQuestionRoutine(float delay)
     {
-        public int x, y, segments; // Đếm số đoạn thẳng (tối đa 3 đoạn = 2 lần rẽ)
-        public Node(int x, int y, int segments) { this.x = x; this.y = y; this.segments = segments; }
-    }
-
-    // --- THUẬT TOÁN TÌM ĐƯỜNG PIKACHU CHUẨN (100% KHÔNG LỖI) ---
-
-    // Đổi tên hàm gọi ở phần Check Logic trong SelectTile thành hàm này
-    private bool CheckPath(Vector2Int p1, Vector2Int p2)
-    {
-        if (CheckLine(p1, p2)) return true;       // Nối đường thẳng
-        if (CheckRect(p1, p2)) return true;       // Nối chữ L (1 lần rẽ)
-        if (CheckMoreLine(p1, p2)) return true;   // Nối chữ U, Z (2 lần rẽ)
-        return false;
-    }
-
-    // 1. Kiểm tra đường thẳng
-    private bool CheckLine(Vector2Int p1, Vector2Int p2)
-    {
-        if (p1.x == p2.x) // Cùng hàng
-        {
-            int y1 = Mathf.Min(p1.y, p2.y);
-            int y2 = Mathf.Max(p1.y, p2.y);
-            for (int y = y1 + 1; y < y2; y++)
-                if (matrix[p1.x, y] > 0) return false; // Vướng vật cản
-            return true;
-        }
-        if (p1.y == p2.y) // Cùng cột
-        {
-            int x1 = Mathf.Min(p1.x, p2.x);
-            int x2 = Mathf.Max(p1.x, p2.x);
-            for (int x = x1 + 1; x < x2; x++)
-                if (matrix[x, p1.y] > 0) return false; // Vướng vật cản
-            return true;
-        }
-        return false;
-    }
-
-    // 2. Kiểm tra chữ L (1 lần rẽ)
-    private bool CheckRect(Vector2Int p1, Vector2Int p2)
-    {
-        Vector2Int p3 = new Vector2Int(p1.x, p2.y); // Góc vuông 1
-        if (matrix[p3.x, p3.y] == 0 && CheckLine(p1, p3) && CheckLine(p2, p3)) return true;
-
-        Vector2Int p4 = new Vector2Int(p2.x, p1.y); // Góc vuông 2
-        if (matrix[p4.x, p4.y] == 0 && CheckLine(p1, p4) && CheckLine(p2, p4)) return true;
-
-        return false;
-    }
-
-    // 3. Kiểm tra chữ U, Z (2 lần rẽ)
-    private bool CheckMoreLine(Vector2Int p1, Vector2Int p2)
-    {
-        // Quét dọc theo tất cả các cột
-        for (int y = 0; y < cols + 2; y++)
-        {
-            Vector2Int p3 = new Vector2Int(p1.x, y);
-            Vector2Int p4 = new Vector2Int(p2.x, y);
-            if (matrix[p3.x, p3.y] == 0 && matrix[p4.x, p4.y] == 0)
-            {
-                if (CheckLine(p1, p3) && CheckLine(p3, p4) && CheckLine(p4, p2)) return true;
-            }
-        }
-
-        // Quét ngang theo tất cả các hàng
-        for (int x = 0; x < rows + 2; x++)
-        {
-            Vector2Int p3 = new Vector2Int(x, p1.y);
-            Vector2Int p4 = new Vector2Int(x, p2.y);
-            if (matrix[p3.x, p3.y] == 0 && matrix[p4.x, p4.y] == 0)
-            {
-                if (CheckLine(p1, p3) && CheckLine(p3, p4) && CheckLine(p4, p2)) return true;
-            }
-        }
-        return false;
+        yield return new WaitForSeconds(delay);
+        LoadQuestion(currentQuestionIndex);
     }
 
     private void DeductHeart()
@@ -541,11 +652,10 @@ public class BoardManager : MonoBehaviour
 
         if (isWin)
         {
-            Debug.Log("LEVEL UP! Chúc mừng hoàn thành bài học!");
+            Debug.Log("LEVEL UP! Chúc mừng hoàn thành toàn bộ câu hỏi Toán!");
             if (winPanel != null)
             {
                 winPanel.SetActive(true);
-                // Hiệu ứng hiện các nút của Panel Thắng tuần tự
                 StartCoroutine(AnimatePanelButtons(new Button[] { winReplayButton, winExitButton }));
             }
             if (AudioManager.Instance != null && winSound != null)
@@ -555,11 +665,10 @@ public class BoardManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("GAME OVER! Bạn đã hết mạng chơi.");
+            Debug.Log("GAME OVER! Bạn đã thua cuộc.");
             if (gameOverPanel != null)
             {
                 gameOverPanel.SetActive(true);
-                // Hiệu ứng hiện các nút của Panel Thua tuần tự
                 StartCoroutine(AnimatePanelButtons(new Button[] { replayButton, exitButton }));
             }
             if (AudioManager.Instance != null && gameOverSound != null)
@@ -572,37 +681,23 @@ public class BoardManager : MonoBehaviour
     // Reset lại game (gọi khi bấm chơi lại)
     public void ResetGame()
     {
-        // 1. Hủy toàn bộ các ô cũ trên bàn chơi
-        if (boardParent != null)
-        {
-            foreach (Transform child in boardParent)
-            {
-                Destroy(child.gameObject);
-            }
-        }
-
-        // 2. Tạo ma trận mới và sinh bảng chơi mới
-        matrix = new int[rows + 2, cols + 2];
-        GenerateBoardLogic();
-
-        // 3. Khôi phục các trạng thái ban đầu
-        currentHearts = 3;
+        currentQuestionIndex = 0;
         isGameOver = false;
-        currentExp = 0;
-        currentScore = 0; // Reset điểm về 0
-        currentCombo = 0; // Reset combo về 0
+        currentHearts = 3;
+        currentScore = 0; 
         lastMatchTime = -100f;
         firstSelected = null;
         remainingTime = totalTime;
+
         if (expSlider != null) expSlider.value = 100f;
         UpdateScoreUI();
 
         if (comboImage != null)
         {
-            comboImage.gameObject.SetActive(false); // Ẩn hình combo
+            comboImage.gameObject.SetActive(false); 
         }
 
-        // 4. Reset hiển thị 3 quả tim
+        // Reset hiển thị 3 quả tim
         if (heartIcons != null)
         {
             for (int i = 0; i < heartIcons.Length; i++)
@@ -614,24 +709,29 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        // 5. Ẩn Panel Thua & Thắng
+        // Ẩn Panel Thua & Thắng
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         if (winPanel != null) winPanel.SetActive(false);
+
+        // Tạo lại lưới bàn chơi mới hoàn toàn và tự sinh các câu hỏi tương ứng
+        GenerateBoard();
+
+        // Tải câu hỏi đầu tiên
+        LoadQuestion(currentQuestionIndex);
     }
 
     private void OnExitClicked()
     {
-        // Nếu có gán lobbyMenuUI thì quay về Lobby Menu, ngược lại sẽ thoát ứng dụng
         if (lobbyMenuUI != null)
         {
             if (gameOverPanel != null) gameOverPanel.SetActive(false);
             if (winPanel != null) winPanel.SetActive(false);
-            gameObject.SetActive(false); // Ẩn Canvas chơi game hiện tại (nếu script nằm trên Canvas này)
+            gameObject.SetActive(false); // Ẩn Canvas chơi game hiện tại
             lobbyMenuUI.SetActive(true); // Hiện Menu Lobby
         }
         else
         {
-            Debug.Log("BoardManager: Thoát game!");
+            Debug.Log("MathBoardManager: Thoát game!");
             Application.Quit();
         }
     }
@@ -649,7 +749,6 @@ public class BoardManager : MonoBehaviour
         {
             if (pointsAdded == 2)
             {
-                // Chạy hiệu ứng xuất hiện và tan biến của hình ảnh Combo duy nhất
                 if (comboCoroutine != null) StopCoroutine(comboCoroutine);
                 comboCoroutine = StartCoroutine(AnimateComboImageRoutine(comboSprite, comboSound));
             }
@@ -662,7 +761,6 @@ public class BoardManager : MonoBehaviour
 
     private IEnumerator AnimateComboImageRoutine(Sprite comboSprite, AudioClip comboSound)
     {
-        // Gán hình ảnh tương ứng nếu có
         if (comboSprite != null) comboImage.sprite = comboSprite;
         
         comboImage.gameObject.SetActive(true);
@@ -672,13 +770,11 @@ public class BoardManager : MonoBehaviour
         if (cg == null) cg = comboImage.gameObject.AddComponent<CanvasGroup>();
         cg.alpha = 0f;
 
-        // Phát âm thanh combo qua AudioManager (VFX)
         if (AudioManager.Instance != null && comboSound != null)
         {
             AudioManager.Instance.PlaySFX(comboSound);
         }
 
-        // 1. Hiệu ứng xuất hiện (Scale up + Fade in)
         float elapsed = 0f;
         float fadeInDuration = 0.2f;
         while (elapsed < fadeInDuration)
@@ -687,7 +783,6 @@ public class BoardManager : MonoBehaviour
             elapsed += Time.deltaTime;
             float t = elapsed / fadeInDuration;
             
-            // Dùng EaseOutBack để phóng to nảy nhẹ hình ảnh Combo dựa trên Scale gốc của Editor
             float scaleMultiplier = EaseOutBack(t) * 1.1f;
             comboImage.transform.localScale = new Vector3(comboOriginalScale.x * scaleMultiplier, comboOriginalScale.y * scaleMultiplier, comboOriginalScale.z);
             cg.alpha = Mathf.Lerp(0f, 1f, t);
@@ -696,10 +791,8 @@ public class BoardManager : MonoBehaviour
         comboImage.transform.localScale = comboOriginalScale;
         cg.alpha = 1f;
 
-        // 2. Thời gian đứng yên hiển thị
         yield return new WaitForSeconds(0.8f);
 
-        // 3. Hiệu ứng tan biến (Fade out + Trôi lên trên nhẹ)
         elapsed = 0f;
         float fadeOutDuration = 0.3f;
         Vector3 startPos = comboImage.transform.localPosition;
@@ -715,18 +808,15 @@ public class BoardManager : MonoBehaviour
             yield return null;
         }
 
-        // Tắt và reset lại vị trí, tỉ lệ cũ
         comboImage.gameObject.SetActive(false);
         comboImage.transform.localPosition = startPos;
         comboImage.transform.localScale = comboOriginalScale;
     }
 
-    // Hiệu ứng hiện các nút trên Panel tuần tự
     private IEnumerator AnimatePanelButtons(Button[] buttons)
     {
         float delayBetween = 0.2f;
 
-        // Lưu lại scale gốc của từng nút thiết lập từ Editor
         Vector3[] originalScales = new Vector3[buttons.Length];
         for (int i = 0; i < buttons.Length; i++)
         {
@@ -739,7 +829,6 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        // Cho từng nút xuất hiện tuần tự
         for (int i = 0; i < buttons.Length; i++)
         {
             if (buttons[i] != null)
@@ -760,7 +849,6 @@ public class BoardManager : MonoBehaviour
 
         while (elapsed < duration)
         {
-            // Thoát coroutine nếu game bị reset đột ngột
             if (!isGameOver || btnTransform == null || !btnTransform.gameObject.activeInHierarchy)
                 yield break;
 
@@ -774,7 +862,6 @@ public class BoardManager : MonoBehaviour
         if (btnTransform != null) btnTransform.localScale = targetScale;
     }
 
-    // Hàm EaseOutBack tạo chuyển động nảy nhẹ cho nút bấm và hình ảnh
     private float EaseOutBack(float x)
     {
         float c1 = 1.70158f;
