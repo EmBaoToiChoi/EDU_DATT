@@ -209,6 +209,9 @@ public class LobbyMenuManager : MonoBehaviour
         {
             settingsUI.SetActive(true);
             
+            // Đưa SettingsUI lên trên cùng của Canvas để không bị GamePlayCanvas hay LobbyMenuUI che khuất (tránh bị cản click chuột)
+            settingsUI.transform.SetAsLastSibling();
+            
             // Log chẩn đoán kiểm tra phân cấp UI
             Debug.Log($"LobbyMenuManager: Bật SettingsUI. Active Self: {settingsUI.activeSelf}, Active In Hierarchy (Có thực sự hiển thị): {settingsUI.activeInHierarchy}");
             
