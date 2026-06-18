@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Collections; // Bắt buộc có để sử dụng Coroutine nhấp nháy
 
 [System.Serializable]
 public struct QuestionData
@@ -37,6 +38,13 @@ public class QuizManager : MonoBehaviour
     public Button btnC;                
     public Button btnD;                
 
+    [Header("Cấu Hình Hướng Dẫn / Gợi Ý Tự Động")]
+    [Tooltip("Thời gian không tương tác (giây) để kích hoạt gợi ý")]
+    public float idleHintTime = 15f; 
+    private float currentIdleTime = 0f;
+    private bool isCountingIdle = false;
+    private Coroutine hintCoroutine = null;
+
     [Header("Data Câu Hỏi (Lớp 1 - Lớp 3)")]
     public QuestionData[] questionDataList = new QuestionData[8]
     {
@@ -54,7 +62,6 @@ public class QuizManager : MonoBehaviour
     private int totalQuestions = 8;
     private int currentOpeningCardIndex = -1; 
     
-    // Mảng lưu trạng thái câu hỏi đã xong để tránh việc nhấn lại vào thẻ đã làm đúng
     private bool[] isCardCompleted = new bool[8];
 
     private void Start()
@@ -63,7 +70,6 @@ public class QuizManager : MonoBehaviour
         foreach (GameObject piece in pieceUnlocks) piece.SetActive(false);
         foreach (GameObject lockImg in pieceLocks) lockImg.SetActive(true);
 
-        // Ban đầu ẩn toàn bộ các khung Image câu hỏi (con đầu tiên) của từng Card
         for (int i = 0; i < cardButtons.Length; i++)
         {
             if (cardButtons[i] != null && cardButtons[i].transform.childCount > 0)
@@ -75,9 +81,22 @@ public class QuizManager : MonoBehaviour
         if (answerPanel != null) answerPanel.SetActive(false);
     }
 
+    private void Update()
+    {
+        // Bộ đếm thời gian chờ khi bảng câu hỏi đang mở
+        if (isCountingIdle && currentOpeningCardIndex != -1)
+        {
+            currentIdleTime += Time.deltaTime;
+            if (currentIdleTime >= idleHintTime)
+            {
+                isCountingIdle = false; // Ngừng đếm để kích hoạt gợi ý
+                ShowAnswerHint();
+            }
+        }
+    }
+
     public void OnClickCard(int cardIndex)
     {
-        // Nếu thẻ này đã làm đúng rồi thì khóa hoàn toàn không phản hồi Click nữa
         if (isCardCompleted[cardIndex]) return;
         if (currentOpeningCardIndex == cardIndex) return;
 
@@ -85,6 +104,9 @@ public class QuizManager : MonoBehaviour
         {
             AudioManagers.Instance.PlayClick();
         }
+
+        // Reset lại hiệu ứng nhấp nháy cũ nếu người chơi đổi sang thẻ khác
+        ResetAllButtonColors();
 
         if (currentOpeningCardIndex != -1)
         {
@@ -99,7 +121,6 @@ public class QuizManager : MonoBehaviour
         answerPanel.SetActive(true);
 
         QuestionData data = questionDataList[cardIndex];
-
         questionTexts[cardIndex].text = data.questionText;
 
         btnA.GetComponentInChildren<TextMeshProUGUI>().text = "A. " + data.answerA;
@@ -111,6 +132,10 @@ public class QuizManager : MonoBehaviour
         SetButtonAnswerEvent(btnB, "B", cardIndex);
         SetButtonAnswerEvent(btnC, "C", cardIndex);
         SetButtonAnswerEvent(btnD, "D", cardIndex);
+
+        // KHỞI ĐỘNG LẠI BỘ ĐẾM THỜI GIAN CHỜ
+        currentIdleTime = 0f;
+        isCountingIdle = true;
     }
 
     private void SetButtonAnswerEvent(Button btn, string choice, int cardIndex)
@@ -121,6 +146,9 @@ public class QuizManager : MonoBehaviour
 
     public void CheckAnswer(string userChoice, int cardIndex)
     {
+        // Người chơi bấm chọn đáp án bất kỳ -> Reset ngay lập tức
+        ResetAllButtonColors();
+
         string correctAns = questionDataList[cardIndex].correctAnswer;
 
         if (userChoice == correctAns)
@@ -130,7 +158,70 @@ public class QuizManager : MonoBehaviour
         else
         {
             AnswerWrong();
+            // Nếu trả lời sai, cho đếm lại từ đầu để hiển thị lại gợi ý nếu họ tiếp tục phân vân
+            currentIdleTime = 0f;
+            isCountingIdle = true;
         }
+    }
+
+    // --- LOGIC HƯỚNG DẪN / GỢI Ý ĐÁP ÁN ---
+    private void ShowAnswerHint()
+    {
+        if (currentOpeningCardIndex == -1) return;
+
+        string correctAns = questionDataList[currentOpeningCardIndex].correctAnswer;
+        Button targetButton = null;
+
+        // Tìm kiếm nút bấm chứa câu trả lời chính xác
+        if (correctAns == "A") targetButton = btnA;
+        else if (correctAns == "B") targetButton = btnB;
+        else if (correctAns == "C") targetButton = btnC;
+        else if (correctAns == "D") targetButton = btnD;
+
+        if (targetButton != null)
+        {
+            // Bắt đầu hiệu ứng nhấp nháy màu sắc trên nút đúng
+            if (hintCoroutine != null) StopCoroutine(hintCoroutine);
+            hintCoroutine = StartCoroutine(BlinkHintRoutine(targetButton));
+        }
+    }
+
+    private IEnumerator BlinkHintRoutine(Button targetBtn)
+    {
+        Image btnImage = targetBtn.GetComponent<Image>();
+        if (btnImage == null) yield break;
+
+        Color originalColor = btnImage.color;
+        // Màu sắc nhấp nháy gợi ý (Màu xanh lá cây nhạt hoặc vàng tùy chỉnh)
+        Color hintColor = new Color(0.4f, 1f, 0.4f, 1f); 
+
+        // Nhấp nháy liên tục cho đến khi người chơi click đáp án hoặc đổi thẻ
+        while (true)
+        {
+            btnImage.color = hintColor;
+            yield return new WaitForSeconds(0.4f);
+            btnImage.color = originalColor;
+            yield return new WaitForSeconds(0.4f);
+        }
+    }
+
+    private void ResetAllButtonColors()
+    {
+        // Dừng tiến trình nhấp nháy
+        if (hintCoroutine != null)
+        {
+            StopCoroutine(hintCoroutine);
+            hintCoroutine = null;
+        }
+
+        // Trả lại màu trắng mặc định cho các nút đáp án dùng chung
+        if (btnA != null) btnA.GetComponent<Image>().color = Color.white;
+        if (btnB != null) btnB.GetComponent<Image>().color = Color.white;
+        if (btnC != null) btnC.GetComponent<Image>().color = Color.white;
+        if (btnD != null) btnD.GetComponent<Image>().color = Color.white;
+
+        isCountingIdle = false;
+        currentIdleTime = 0f;
     }
 
     private void AnswerCorrect(int cardIndex)
@@ -142,20 +233,15 @@ public class QuizManager : MonoBehaviour
             AudioManagers.Instance.PlayCorrect();
         }
 
-        // 1. Đánh dấu thẻ bài này đã hoàn thành
         isCardCompleted[cardIndex] = true;
-
-        // 2. Ẩn Khung chứa nội dung câu hỏi (con thứ nhất) đi để lộ bề mặt Card
         cardButtons[cardIndex].transform.GetChild(0).gameObject.SetActive(false);
 
-        // 3. THAY THẾ trực tiếp Sprite gốc của Card_Btn bằng Sprite chiến thắng mới
         Image cardMainImage = cardButtons[cardIndex].GetComponent<Image>();
         if (cardMainImage != null && correctSprites != null && cardIndex < correctSprites.Length && correctSprites[cardIndex] != null)
         {
-            cardMainImage.sprite = correctSprites[cardIndex]; // Đổi hẳn ruột ảnh gốc
+            cardMainImage.sprite = correctSprites[cardIndex]; 
         }
 
-        // Ẩn bảng đáp án dùng chung
         answerPanel.SetActive(false);
         currentOpeningCardIndex = -1; 
 
