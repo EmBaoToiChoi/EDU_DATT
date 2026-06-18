@@ -6032,7 +6032,7 @@ MonoBehaviour:
   targetCamera: {fileID: 1950690526}
   startX: -8.89
   endX: 16.26
-  scrollDuration: 10
+  scrollDuration: 1
   scrollCurve:
     serializedVersion: 2
     m_Curve:
