@@ -127,7 +127,7 @@ public class MathBoardManager : MonoBehaviour
         // 2. Khởi tạo hiển thị câu hỏi đầu tiên
         LoadQuestion(currentQuestionIndex);
 
-        // Lưu vị trí và màu sắc ban đầu của các trái tim để reset khi chơi lại
+        // Tự động ẩn UI trái tim (chỉ sử dụng thời gian)
         if (heartIcons != null && heartIcons.Length > 0)
         {
             heartStartPositions = new Vector2[heartIcons.Length];
@@ -141,6 +141,7 @@ public class MathBoardManager : MonoBehaviour
                 if (heartIcons[i] != null)
                 {
                     heartStartPositions[i] = heartIcons[i].GetComponent<RectTransform>().anchoredPosition;
+                    heartIcons[i].gameObject.SetActive(false); // Ẩn hình ảnh trái tim
                 }
             }
         }
@@ -356,28 +357,8 @@ public class MathBoardManager : MonoBehaviour
             gridLayout.enabled = false; 
         }
 
-        // Tự động phát hiện kích thước lớn nhất của các Prefab đáp án
-        if (answerPrefabs != null && answerPrefabs.Length > 0)
-        {
-            float maxW = 0f;
-            float maxH = 0f;
-            foreach (var prefab in answerPrefabs)
-            {
-                if (prefab != null)
-                {
-                    RectTransform rt = prefab.GetComponent<RectTransform>();
-                    if (rt != null)
-                    {
-                        maxW = Mathf.Max(maxW, rt.sizeDelta.x * rt.localScale.x);
-                        maxH = Mathf.Max(maxH, rt.sizeDelta.y * rt.localScale.y);
-                    }
-                }
-            }
-            if (maxW > 0 && maxH > 0)
-            {
-                cellSize = new Vector2(maxW, maxH);
-            }
-        }
+        // Sử dụng trực tiếp cellSize từ GridLayoutGroup để đồng bộ kích thước tất cả các ô số
+
 
         // Tính toán tổng kích thước lưới chưa co giãn để căn chỉnh
         float totalWidth = cols * cellSize.x + (cols - 1) * spacing.x;
@@ -475,23 +456,23 @@ public class MathBoardManager : MonoBehaviour
                 RectTransform prefabRect = answerPrefabs[id].GetComponent<RectTransform>();
                 if (goRect != null && prefabRect != null)
                 {
-                    Vector2 originalSize = prefabRect.sizeDelta;
-                    Vector3 originalScale = prefabRect.localScale;
                     Vector2 originalPivot = prefabRect.pivot;
 
                     goRect.anchorMin = new Vector2(0.5f, 0.5f);
                     goRect.anchorMax = new Vector2(0.5f, 0.5f);
                     goRect.pivot = originalPivot;
-                    goRect.sizeDelta = originalSize;
                     
-                    Vector3 targetScale = new Vector3(originalScale.x * gridScale, originalScale.y * gridScale, originalScale.z * gridScale);
+                    // Đồng bộ hóa kích thước của tất cả các ô theo kích thước ô lưới (cellSize)
+                    goRect.sizeDelta = cellSize;
+                    
+                    Vector3 targetScale = new Vector3(gridScale, gridScale, 1f);
                     goRect.localScale = targetScale;
 
                     float posX = startX + (c - 1) * (finalCellWidth + finalSpacingX);
                     float posY = startY - (r - 1) * (finalCellHeight + finalSpacingY);
 
-                    float offsetX = (originalPivot.x - 0.5f) * originalSize.x * targetScale.x;
-                    float offsetY = (originalPivot.y - 0.5f) * originalSize.y * targetScale.y;
+                    float offsetX = (originalPivot.x - 0.5f) * cellSize.x * targetScale.x;
+                    float offsetY = (originalPivot.y - 0.5f) * cellSize.y * targetScale.y;
 
                     goRect.anchoredPosition = new Vector2(posX + offsetX, posY + offsetY);
                 }
@@ -621,28 +602,10 @@ public class MathBoardManager : MonoBehaviour
     {
         if (isGameOver) return;
 
-        currentHearts--;
-
-        // Kích hoạt hiệu ứng rơi tim tương ứng
-        int heartIndex = currentHearts;
-        if (heartIcons != null && heartIndex >= 0 && heartIndex < heartIcons.Length)
-        {
-            if (heartIcons[heartIndex] != null)
-            {
-                heartIcons[heartIndex].PlayFallEffect();
-            }
-        }
-
-        // Phát âm thanh khi chọn sai
+        // Chỉ phát âm thanh báo chọn sai, không trừ tim và không game over
         if (AudioManager.Instance != null && errorSound != null)
         {
             AudioManager.Instance.PlaySFX(errorSound);
-        }
-
-        // Kiểm tra điều kiện thua cuộc
-        if (currentHearts <= 0)
-        {
-            TriggerGameOver(false);
         }
     }
 
