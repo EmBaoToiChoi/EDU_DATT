@@ -178,7 +178,7 @@ public class BoardManager : MonoBehaviour
             cellSize = gridLayout.cellSize;
             spacing = gridLayout.spacing;
             padding = gridLayout.padding;
-            gridLayout.enabled = false; // Tắt layout group tự động để không ghi đè kích thước/tỉ lệ của Prefab
+            Destroy(gridLayout); // Xóa hẳn component để tránh việc Unity tự động bật lại làm xáo trộn vị trí
         }
 
         // Sử dụng trực tiếp cellSize từ GridLayoutGroup để đồng bộ kích thước tất cả các ô chất
