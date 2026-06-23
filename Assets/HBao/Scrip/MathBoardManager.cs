@@ -354,7 +354,7 @@ public class MathBoardManager : MonoBehaviour
             cellSize = gridLayout.cellSize;
             spacing = gridLayout.spacing;
             padding = gridLayout.padding;
-            gridLayout.enabled = false; 
+            Destroy(gridLayout); // Xóa hẳn component để tránh việc Unity tự động bật lại làm xáo trộn vị trí
         }
 
         // Sử dụng trực tiếp cellSize từ GridLayoutGroup để đồng bộ kích thước tất cả các ô số
