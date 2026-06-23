@@ -1,22 +1,40 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Collections; // Bắt buộc có để sử dụng Coroutine nhấp nháy
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.Networking; // Thư viện mạng bắt buộc để kết nối API Swagger
+
+// --- CẤU TRÚC ĐỊNH DẠNG CHUẨN ĐỂ ĐỌC DỮ LIỆU JSON TỪ SWAGGER ---
 
 [System.Serializable]
-public struct QuestionData
+public struct APIAnswerData
 {
-    [TextArea(2, 3)]
-    public string questionText; 
-    public string answerA;      
-    public string answerB;      
-    public string answerC;      
-    public string answerD;      
-    public string correctAnswer; 
+    public string id;
+    public string answerName; // Nội dung câu trả lời (Ví dụ: "6", "7", "11")
+    public bool isAnswer;     // true nếu đây là đáp án đúng
+}
+
+[System.Serializable]
+public struct APIQuestionItem
+{
+    public int id;
+    public string questionName;      // Nội dung câu hỏi
+    public int typeQuestion;         // 100: Trắc nghiệm, 200: Ô trống
+    public string status;            // Trạng thái câu hỏi (basic, level, advanced...)
+    public List<APIAnswerData> answers; // Mảng danh sách các câu trả lời động
+}
+
+[System.Serializable]
+public class SwaggerResponseWrapper
+{
+    public List<APIQuestionItem> data; // Mảng "data" chứa danh sách câu hỏi ở ngoài cùng JSON
 }
 
 public class QuizManager : MonoBehaviour
 {
+    public static QuizManager Instance;
+
     [Header("Stars UI")]
     public GameObject[] starFails; 
     private int currentFails = 0;
@@ -28,8 +46,8 @@ public class QuizManager : MonoBehaviour
     public GameObject[] pieceLocks;    // 8 cái Piece_Lock_img
     public GameObject[] pieceUnlocks;  // 8 cái Piece_UnLock_img
     
-    [Header("Sprite Ảnh Chiến Thắng Để Thay Thế Gốc (Mới Tối Ưu)")]
-    public Sprite[] correctSprites; // Kéo thả trực tiếp 8 file ảnh chiến thắng (Sprite) từ Project vào đây!
+    [Header("Sprite Ảnh Chiến Thắng Để Thay Thế Gốc")]
+    public Sprite[] correctSprites; // Kéo thả trực tiếp 8 file ảnh chiến thắng (Sprite) từ Project vào đây
 
     [Header("Khung Đáp Án Dùng Chung (Kéo từ Inspector)")]
     public GameObject answerPanel;     
@@ -45,27 +63,29 @@ public class QuizManager : MonoBehaviour
     private bool isCountingIdle = false;
     private Coroutine hintCoroutine = null;
 
-    [Header("Data Câu Hỏi (Lớp 1 - Lớp 3)")]
-    public QuestionData[] questionDataList = new QuestionData[8]
-    {
-        new QuestionData { questionText = "Lớp 1: 5 + 4 bằng bao nhiêu?", answerA = "7", answerB = "8", answerC = "9", answerD = "10", correctAnswer = "C" },
-        new QuestionData { questionText = "Lớp 1: Hình nào sau đây có 3 cạnh?", answerA = "Hình vuông", answerB = "Hình tam giác", answerC = "Hình tròn", answerD = "Hình chữ nhật", correctAnswer = "B" },
-        new QuestionData { questionText = "Lớp 2: 5 x 4 bằng bao nhiêu?", answerA = "20", answerB = "25", answerC = "15", answerD = "30", correctAnswer = "A" },
-        new QuestionData { questionText = "Lớp 2: Số liền sau của số 99 là số nào?", answerA = "98", answerB = "100", answerC = "101", answerD = "90", correctAnswer = "B" },
-        new QuestionData { questionText = "Lớp 3: Số gồm 3 nghìn, 5 trăm và 2 đơn vị viết là:", answerA = "352", answerB = "3520", answerC = "3052", answerD = "3502", correctAnswer = "D" },
-        new QuestionData { questionText = "Lớp 3: Một hình vuông có cạnh 5cm. Chu vi hình vuông đó là?", answerA = "20cm", answerB = "25cm", answerC = "15cm", answerD = "10cm", correctAnswer = "A" },
-        new QuestionData { questionText = "Lớp 2: Có 14 quả táo chia đều cho 2 bạn. Mỗi bạn được mấy quả?", answerA = "6 quả", answerB = "7 quả", answerC = "8 quả", answerD = "9 quả", correctAnswer = "B" },
-        new QuestionData { questionText = "Lớp 3: Tháng nào sau đây luôn có 28 hoặc 29 ngày?", answerA = "Tháng 1", answerB = "Tháng 2", answerC = "Tháng 3", answerD = "Tháng 12", correctAnswer = "B" }
-    };
+    [Header("Cấu Hình Kết Nối API Swagger")]
+    [Tooltip("Đường link API lấy danh sách câu hỏi")]
+    public string swaggerApiURL = "https://class-edu-v1.onrender.com/questions?page=1&limit=30&sortBy=createdAt&sortOrder=ASC";
+    
+    [Tooltip("Nhập chính xác chữ status bạn muốn lọc cho màn này (Ví dụ: basic, level, advanced...)")]
+    public string statusToFilter = "basic"; 
+
+    // Danh sách lưu trữ câu hỏi sau khi tải từ API và lọc sạch
+    private List<APIQuestionItem> activeQuestionList = new List<APIQuestionItem>();
 
     private int completedQuestions = 0;
-    private int totalQuestions = 8;
+    private int totalQuestions = 8; // Mặc định map với 8 thẻ bài trong game của bạn
     private int currentOpeningCardIndex = -1; 
-    
     private bool[] isCardCompleted = new bool[8];
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void Start()
     {
+        // Khởi tạo trạng thái ẩn/hiện ban đầu cho các thành phần UI
         foreach (GameObject star in starFails) star.SetActive(false);
         foreach (GameObject piece in pieceUnlocks) piece.SetActive(false);
         foreach (GameObject lockImg in pieceLocks) lockImg.SetActive(true);
@@ -79,34 +99,89 @@ public class QuizManager : MonoBehaviour
         }
 
         if (answerPanel != null) answerPanel.SetActive(false);
+
+        // Kích hoạt tiến trình tải câu hỏi từ API trực tuyến
+        StartCoroutine(FetchQuestionsFromSwagger());
+    }
+
+    private IEnumerator FetchQuestionsFromSwagger()
+    {
+        Debug.Log("Đang tải dữ liệu câu hỏi từ API Swagger...");
+        using (UnityWebRequest webRequest = UnityWebRequest.Get(swaggerApiURL))
+        {
+            // Chờ phản hồi từ server mạng
+            yield return webRequest.SendWebRequest();
+
+            // Kiểm tra nếu xảy ra lỗi kết nối internet hoặc lỗi từ phía server
+            if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError("Không thể kết nối đến API Swagger hoặc lỗi Server. Lỗi: " + webRequest.error);
+                // ĐÃ BỎ HOÀN TOÀN CÂU HỎI OFFLINE THEO YÊU CẦU
+            }
+            else
+            {
+                string jsonResponse = webRequest.downloadHandler.text;
+                try
+                {
+                    // Giải mã chuỗi JSON nhận về đổ vào Wrapper Class
+                    SwaggerResponseWrapper wrapper = JsonUtility.FromJson<SwaggerResponseWrapper>(jsonResponse);
+                    
+                    if (wrapper != null && wrapper.data != null)
+                    {
+                        activeQuestionList.Clear();
+                        
+                        // LỌC DỮ LIỆU: Chỉ lấy câu hỏi Trắc nghiệm (100) VÀ có status trùng khớp với Inspector
+                        foreach (var item in wrapper.data)
+                        {
+                            bool matchStatus = !string.IsNullOrEmpty(item.status) && 
+                                               item.status.ToLower().Trim() == statusToFilter.ToLower().Trim();
+
+                            // Điều kiện: Là câu trắc nghiệm, khớp status và phải có ít nhất 1 đáp án trở lên
+                            if (item.typeQuestion == 100 && matchStatus && item.answers != null && item.answers.Count > 0)
+                            {
+                                activeQuestionList.Add(item);
+                            }
+                        }
+
+                        Debug.Log($"Đã tải thành công và lọc được {activeQuestionList.Count} câu trắc nghiệm có status '{statusToFilter}'!");
+                        
+                        // Nếu số câu hỏi lấy về từ API ít hơn số lượng thẻ bài ban đầu, cập nhật lại tổng số màn
+                        if (activeQuestionList.Count < totalQuestions)
+                        {
+                            totalQuestions = activeQuestionList.Count;
+                        }
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError("Lỗi phân rã chuỗi JSON từ Swagger: " + e.Message);
+                }
+            }
+        }
     }
 
     private void Update()
     {
-        // Bộ đếm thời gian chờ khi bảng câu hỏi đang mở
+        // Bộ đếm thời gian chờ để tự động hiển thị gợi ý hướng dẫn
         if (isCountingIdle && currentOpeningCardIndex != -1)
         {
             currentIdleTime += Time.deltaTime;
             if (currentIdleTime >= idleHintTime)
             {
-                isCountingIdle = false; // Ngừng đếm để kích hoạt gợi ý
-                ShowAnswerHint();
+                isCountingIdle = false; 
+                ShowAnswerHint();       
             }
         }
     }
 
     public void OnClickCard(int cardIndex)
     {
+        if (cardIndex >= activeQuestionList.Count) return;
         if (isCardCompleted[cardIndex]) return;
         if (currentOpeningCardIndex == cardIndex) return;
 
-        if (AudioManagers.Instance != null)
-        {
-            AudioManagers.Instance.PlayClick();
-        }
-
-        // Reset lại hiệu ứng nhấp nháy cũ nếu người chơi đổi sang thẻ khác
-        ResetAllButtonColors();
+        if (AudioManagers.Instance != null) AudioManagers.Instance.PlayClick();
+        ResetAllButtonColors(); 
 
         if (currentOpeningCardIndex != -1)
         {
@@ -114,73 +189,82 @@ public class QuizManager : MonoBehaviour
         }
 
         currentOpeningCardIndex = cardIndex;
-
-        GameObject questionImage = cardButtons[cardIndex].transform.GetChild(0).gameObject;
-        questionImage.SetActive(true);
-
+        cardButtons[cardIndex].transform.GetChild(0).gameObject.SetActive(true);
         answerPanel.SetActive(true);
 
-        QuestionData data = questionDataList[cardIndex];
-        questionTexts[cardIndex].text = data.questionText;
+        // Áp dụng dữ liệu câu hỏi động từ API Swagger lên UI giao diện
+        APIQuestionItem currentQuestion = activeQuestionList[cardIndex];
+        questionTexts[cardIndex].text = currentQuestion.questionName;
 
-        btnA.GetComponentInChildren<TextMeshProUGUI>().text = "A. " + data.answerA;
-        btnB.GetComponentInChildren<TextMeshProUGUI>().text = "B. " + data.answerB;
-        btnC.GetComponentInChildren<TextMeshProUGUI>().text = "C. " + data.answerC;
-        btnD.GetComponentInChildren<TextMeshProUGUI>().text = "D. " + data.answerD;
+        // BƯỚC TỐI ƯU ẨN NÚT: Tạm thời ẩn TẤT CẢ các nút đáp án đi trước
+        btnA.gameObject.SetActive(false);
+        btnB.gameObject.SetActive(false);
+        btnC.gameObject.SetActive(false);
+        btnD.gameObject.SetActive(false);
 
-        SetButtonAnswerEvent(btnA, "A", cardIndex);
-        SetButtonAnswerEvent(btnB, "B", cardIndex);
-        SetButtonAnswerEvent(btnC, "C", cardIndex);
-        SetButtonAnswerEvent(btnD, "D", cardIndex);
+        // Đổ chữ và CHỈ BẬT lại những nút thực sự có đáp án trả về từ API (Hỗ trợ câu 2 hoặc 3 đáp án)
+        if (currentQuestion.answers.Count > 0) SetupSingleAnswerButton(btnA, currentQuestion.answers[0], 0);
+        if (currentQuestion.answers.Count > 1) SetupSingleAnswerButton(btnB, currentQuestion.answers[1], 1);
+        if (currentQuestion.answers.Count > 2) SetupSingleAnswerButton(btnC, currentQuestion.answers[2], 2);
+        if (currentQuestion.answers.Count > 3) SetupSingleAnswerButton(btnD, currentQuestion.answers[3], 3);
 
-        // KHỞI ĐỘNG LẠI BỘ ĐẾM THỜI GIAN CHỜ
+        // Khởi động lại bộ đếm thời gian chờ tính năng hướng dẫn
         currentIdleTime = 0f;
         isCountingIdle = true;
     }
 
-    private void SetButtonAnswerEvent(Button btn, string choice, int cardIndex)
+    private void SetupSingleAnswerButton(Button btn, APIAnswerData answerInfo, int indexInList)
     {
-        btn.onClick.RemoveAllListeners(); 
-        btn.onClick.AddListener(() => CheckAnswer(choice, cardIndex));
+        // Kích hoạt hiển thị nút này lên màn hình UI vì nó có dữ liệu hợp lệ
+        btn.gameObject.SetActive(true);
+        
+        string prefix = indexInList == 0 ? "A. " : indexInList == 1 ? "B. " : indexInList == 2 ? "C. " : "D. ";
+        btn.GetComponentInChildren<TextMeshProUGUI>().text = prefix + answerInfo.answerName;
+
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() => CheckAnswer(answerInfo.isAnswer));
     }
 
-    public void CheckAnswer(string userChoice, int cardIndex)
+    public void CheckAnswer(bool isCorrect)
     {
-        // Người chơi bấm chọn đáp án bất kỳ -> Reset ngay lập tức
-        ResetAllButtonColors();
+        ResetAllButtonColors(); 
 
-        string correctAns = questionDataList[cardIndex].correctAnswer;
-
-        if (userChoice == correctAns)
+        if (isCorrect)
         {
-            AnswerCorrect(cardIndex);
+            AnswerCorrect(currentOpeningCardIndex);
         }
         else
         {
             AnswerWrong();
-            // Nếu trả lời sai, cho đếm lại từ đầu để hiển thị lại gợi ý nếu họ tiếp tục phân vân
             currentIdleTime = 0f;
             isCountingIdle = true;
         }
     }
 
-    // --- LOGIC HƯỚNG DẪN / GỢI Ý ĐÁP ÁN ---
+    // --- LOGIC TỰ ĐỘNG GỢI Ý / HƯỚNG DẪN ĐÁP ÁN ĐÚNG ---
     private void ShowAnswerHint()
     {
-        if (currentOpeningCardIndex == -1) return;
+        if (currentOpeningCardIndex == -1 || currentOpeningCardIndex >= activeQuestionList.Count) return;
 
-        string correctAns = questionDataList[currentOpeningCardIndex].correctAnswer;
+        APIQuestionItem currentQuestion = activeQuestionList[currentOpeningCardIndex];
         Button targetButton = null;
 
-        // Tìm kiếm nút bấm chứa câu trả lời chính xác
-        if (correctAns == "A") targetButton = btnA;
-        else if (correctAns == "B") targetButton = btnB;
-        else if (correctAns == "C") targetButton = btnC;
-        else if (correctAns == "D") targetButton = btnD;
-
-        if (targetButton != null)
+        // Duyệt mảng tìm xem nút nào chứa thuộc tính câu trả lời đúng (isAnswer == true)
+        for (int i = 0; i < currentQuestion.answers.Count; i++)
         {
-            // Bắt đầu hiệu ứng nhấp nháy màu sắc trên nút đúng
+            if (currentQuestion.answers[i].isAnswer)
+            {
+                if (i == 0) targetButton = btnA;
+                else if (i == 1) targetButton = btnB;
+                else if (i == 2) targetButton = btnC;
+                else if (i == 3) targetButton = btnD;
+                break;
+            }
+        }
+
+        // Chỉ cho nhấp nháy nếu nút đúng đó đang được bật hoạt động (Active) trên UI
+        if (targetButton != null && targetButton.gameObject.activeSelf)
+        {
             if (hintCoroutine != null) StopCoroutine(hintCoroutine);
             hintCoroutine = StartCoroutine(BlinkHintRoutine(targetButton));
         }
@@ -192,10 +276,8 @@ public class QuizManager : MonoBehaviour
         if (btnImage == null) yield break;
 
         Color originalColor = btnImage.color;
-        // Màu sắc nhấp nháy gợi ý (Màu xanh lá cây nhạt hoặc vàng tùy chỉnh)
         Color hintColor = new Color(0.4f, 1f, 0.4f, 1f); 
 
-        // Nhấp nháy liên tục cho đến khi người chơi click đáp án hoặc đổi thẻ
         while (true)
         {
             btnImage.color = hintColor;
@@ -207,14 +289,12 @@ public class QuizManager : MonoBehaviour
 
     private void ResetAllButtonColors()
     {
-        // Dừng tiến trình nhấp nháy
         if (hintCoroutine != null)
         {
             StopCoroutine(hintCoroutine);
             hintCoroutine = null;
         }
 
-        // Trả lại màu trắng mặc định cho các nút đáp án dùng chung
         if (btnA != null) btnA.GetComponent<Image>().color = Color.white;
         if (btnB != null) btnB.GetComponent<Image>().color = Color.white;
         if (btnC != null) btnC.GetComponent<Image>().color = Color.white;
@@ -227,11 +307,7 @@ public class QuizManager : MonoBehaviour
     private void AnswerCorrect(int cardIndex)
     {
         Debug.Log("Trả lời CHÍNH XÁC!");
-
-        if (AudioManagers.Instance != null)
-        {
-            AudioManagers.Instance.PlayCorrect();
-        }
+        if (AudioManagers.Instance != null) AudioManagers.Instance.PlayCorrect();
 
         isCardCompleted[cardIndex] = true;
         cardButtons[cardIndex].transform.GetChild(0).gameObject.SetActive(false);
@@ -260,18 +336,13 @@ public class QuizManager : MonoBehaviour
     {
         if (currentFails < maxFails)
         {
-            if (AudioManagers.Instance != null)
-            {
-                AudioManagers.Instance.PlayWrong();
-            }
+            if (AudioManagers.Instance != null) AudioManagers.Instance.PlayWrong();
 
             starFails[currentFails].SetActive(true);
             currentFails++;
-            Debug.Log("Trả lời SAI RỒI!");
 
             if (currentFails >= maxFails)
             {
-                Debug.Log("GAME OVER!");
                 UIManager.Instance.ShowGameOverPanel();
             }
         }
@@ -283,20 +354,13 @@ public class QuizManager : MonoBehaviour
     }
 
     private int correctPiecesCount = 0; 
-
     public void OnPiecePlacedCorrectly()
     {
         correctPiecesCount++;
-        Debug.Log($"Số mảnh xếp đúng hiện tại: {correctPiecesCount} / {totalQuestions}");
-
-        if (AudioManagers.Instance != null)
-        {
-            AudioManagers.Instance.PlayCorrect();
-        }
+        if (AudioManagers.Instance != null) AudioManagers.Instance.PlayCorrect();
 
         if (correctPiecesCount >= totalQuestions)
         {
-            Debug.Log("CHÚC MỪNG! BẠN ĐÃ CHIẾN THẮNG GAME!");
             Invoke("TriggerWinUI", 0.5f);
         }
     }
@@ -306,8 +370,6 @@ public class QuizManager : MonoBehaviour
         PlayerPrefs.SetInt("Level_1_Completed", 1);
         PlayerPrefs.SetInt("Unlocked_Photo_1", 1);
         PlayerPrefs.Save();
-
-        Debug.Log("Đã lưu tiến trình: Hoàn thành màn 1 & Mở khóa ảnh bộ sưu tập!");
         UIManager.Instance.ShowYouWinPanel();
     }
 }
