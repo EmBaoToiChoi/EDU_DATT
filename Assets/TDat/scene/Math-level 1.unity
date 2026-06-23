@@ -877,7 +877,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1134567533806120139, guid: 53d71df4bf57f9c44ac7df242380cf1e, type: 3}
       propertyPath: m_fontSize
-      value: 60
+      value: 48
+      objectReference: {fileID: 0}
+    - target: {fileID: 1134567533806120139, guid: 53d71df4bf57f9c44ac7df242380cf1e, type: 3}
+      propertyPath: m_margin.x
+      value: 27.137863
+      objectReference: {fileID: 0}
+    - target: {fileID: 1134567533806120139, guid: 53d71df4bf57f9c44ac7df242380cf1e, type: 3}
+      propertyPath: m_margin.z
+      value: 17.20819
       objectReference: {fileID: 0}
     - target: {fileID: 1134567533806120139, guid: 53d71df4bf57f9c44ac7df242380cf1e, type: 3}
       propertyPath: m_fontAsset
@@ -889,11 +897,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1134567533806120139, guid: 53d71df4bf57f9c44ac7df242380cf1e, type: 3}
       propertyPath: m_fontSizeMax
-      value: 60
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 1134567533806120139, guid: 53d71df4bf57f9c44ac7df242380cf1e, type: 3}
       propertyPath: m_fontSizeMin
-      value: 60
+      value: 48
       objectReference: {fileID: 0}
     - target: {fileID: 1134567533806120139, guid: 53d71df4bf57f9c44ac7df242380cf1e, type: 3}
       propertyPath: m_fontSizeBase
@@ -1379,6 +1387,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 7797312408331323884}
+    - target: {fileID: 7436927188498639132, guid: 53d71df4bf57f9c44ac7df242380cf1e, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -29.17
+      objectReference: {fileID: 0}
+    - target: {fileID: 7436927188498639132, guid: 53d71df4bf57f9c44ac7df242380cf1e, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -4.59
+      objectReference: {fileID: 0}
     - target: {fileID: 7564993917243387063, guid: 53d71df4bf57f9c44ac7df242380cf1e, type: 3}
       propertyPath: m_fontSize
       value: 60
@@ -1954,60 +1970,8 @@ MonoBehaviour:
   btnC: {fileID: 3318068064010644487}
   btnD: {fileID: 3318068064010644486}
   idleHintTime: 15
-  questionDataList:
-  - questionText: "L\u1EDBp 1: 5 + 4 b\u1EB1ng bao nhi\xEAu?"
-    answerA: 7
-    answerB: 8
-    answerC: 9
-    answerD: 10
-    correctAnswer: C
-  - questionText: "L\u1EDBp 1: H\xECnh n\xE0o sau \u0111\xE2y c\xF3 3 c\u1EA1nh?"
-    answerA: "H\xECnh vu\xF4ng"
-    answerB: "H\xECnh tam gi\xE1c"
-    answerC: "H\xECnh tr\xF2n"
-    answerD: "H\xECnh ch\u1EEF nh\u1EADt"
-    correctAnswer: B
-  - questionText: "L\u1EDBp 2: 5 x 4 b\u1EB1ng bao nhi\xEAu?"
-    answerA: 20
-    answerB: 25
-    answerC: 15
-    answerD: 30
-    correctAnswer: A
-  - questionText: "L\u1EDBp 2: S\u1ED1 li\u1EC1n sau c\u1EE7a s\u1ED1 99 l\xE0 s\u1ED1
-      n\xE0o?"
-    answerA: 98
-    answerB: 100
-    answerC: 101
-    answerD: 90
-    correctAnswer: B
-  - questionText: "L\u1EDBp 3: S\u1ED1 g\u1ED3m 3 ngh\xECn, 5 tr\u0103m v\xE0 2 \u0111\u01A1n
-      v\u1ECB vi\u1EBFt l\xE0:"
-    answerA: 352
-    answerB: 3520
-    answerC: 3052
-    answerD: 3502
-    correctAnswer: D
-  - questionText: "L\u1EDBp 3: M\u1ED9t h\xECnh vu\xF4ng c\xF3 c\u1EA1nh 5cm. Chu
-      vi h\xECnh vu\xF4ng \u0111\xF3 l\xE0?"
-    answerA: 20cm
-    answerB: 25cm
-    answerC: 15cm
-    answerD: 10cm
-    correctAnswer: A
-  - questionText: "L\u1EDBp 2: C\xF3 14 qu\u1EA3 t\xE1o chia \u0111\u1EC1u cho 2
-      b\u1EA1n. M\u1ED7i b\u1EA1n \u0111\u01B0\u1EE3c m\u1EA5y qu\u1EA3?"
-    answerA: "6 qu\u1EA3"
-    answerB: "7 qu\u1EA3"
-    answerC: "8 qu\u1EA3"
-    answerD: "9 qu\u1EA3"
-    correctAnswer: B
-  - questionText: "L\u1EDBp 3: Th\xE1ng n\xE0o sau \u0111\xE2y lu\xF4n c\xF3 28 ho\u1EB7c
-      29 ng\xE0y?"
-    answerA: "Th\xE1ng 1"
-    answerB: "Th\xE1ng 2"
-    answerC: "Th\xE1ng 3"
-    answerD: "Th\xE1ng 12"
-    correctAnswer: B
+  swaggerApiURL: https://class-edu-v1.onrender.com/questions?page=1&limit=30&sortBy=createdAt&sortOrder=ASC
+  statusToFilter: basic
 --- !u!223 &7629068374506588793
 Canvas:
   m_ObjectHideFlags: 0
