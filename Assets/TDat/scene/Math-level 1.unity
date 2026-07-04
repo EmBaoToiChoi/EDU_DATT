@@ -1471,7 +1471,7 @@ MonoBehaviour:
   btnD: {fileID: 3318068064010644486}
   idleHintTime: 15
   swaggerApiURL: https://class-edu-v1.onrender.com/questions?page=1&limit=30&sortBy=createdAt&sortOrder=ASC
-  statusToFilter: level
+  statusToFilter: basic
 --- !u!223 &7629068374506588793
 Canvas:
   m_ObjectHideFlags: 0
