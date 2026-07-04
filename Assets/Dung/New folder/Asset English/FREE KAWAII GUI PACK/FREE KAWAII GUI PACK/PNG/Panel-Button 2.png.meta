@@ -1,0 +1,1079 @@
+fileFormatVersion: 2
+guid: db8c0940dad87eb468ca320bbae980b0
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7876923671132290781
+    second: Panel-Button 2_0
+  - first:
+      213: 2665031508588514230
+    second: Panel-Button 2_1
+  - first:
+      213: 6252483462100919289
+    second: Panel-Button 2_2
+  - first:
+      213: 1835363962333278028
+    second: Panel-Button 2_3
+  - first:
+      213: 1703922720421574976
+    second: Panel-Button 2_4
+  - first:
+      213: -3328657410067369093
+    second: Panel-Button 2_5
+  - first:
+      213: 2615513861296368445
+    second: Panel-Button 2_6
+  - first:
+      213: -3109471776516834520
+    second: Panel-Button 2_7
+  - first:
+      213: 6822251638939033871
+    second: Panel-Button 2_8
+  - first:
+      213: -2937072959502923854
+    second: Panel-Button 2_9
+  - first:
+      213: 1302403295044455657
+    second: Panel-Button 2_10
+  - first:
+      213: 8426320853862906114
+    second: Panel-Button 2_11
+  - first:
+      213: 4220728617819662532
+    second: Panel-Button 2_12
+  - first:
+      213: -6932262823237295930
+    second: Panel-Button 2_13
+  - first:
+      213: 5368691964293081234
+    second: Panel-Button 2_14
+  - first:
+      213: -3422867316527378953
+    second: Panel-Button 2_15
+  - first:
+      213: -7144064486760116535
+    second: Panel-Button 2_16
+  - first:
+      213: -206718102694827258
+    second: Panel-Button 2_17
+  - first:
+      213: 4313563700846304481
+    second: Panel-Button 2_18
+  - first:
+      213: 7489417433080050231
+    second: Panel-Button 2_19
+  - first:
+      213: 1124140562826620632
+    second: Panel-Button 2_20
+  - first:
+      213: -4924210734750634243
+    second: Panel-Button 2_21
+  - first:
+      213: 5397284788693765220
+    second: Panel-Button 2_22
+  - first:
+      213: -1404106024802448673
+    second: Panel-Button 2_23
+  - first:
+      213: 4260828662992878678
+    second: Panel-Button 2_24
+  - first:
+      213: 2648669145111374215
+    second: Panel-Button 2_25
+  - first:
+      213: 2260400120361889560
+    second: Panel-Button 2_26
+  - first:
+      213: -8237003645039774232
+    second: Panel-Button 2_27
+  - first:
+      213: -5901839775634848313
+    second: Panel-Button 2_28
+  - first:
+      213: -3889572264655858989
+    second: Panel-Button 2_29
+  - first:
+      213: -1037083352633232838
+    second: Panel-Button 2_30
+  - first:
+      213: 8327302589738057741
+    second: Panel-Button 2_31
+  - first:
+      213: 6966052029124977220
+    second: Panel-Button 2_32
+  - first:
+      213: 8221266545802655075
+    second: Panel-Button 2_33
+  - first:
+      213: -4024685506544460686
+    second: Panel-Button 2_34
+  - first:
+      213: -1251591479104434853
+    second: Panel-Button 2_35
+  - first:
+      213: 8450595853321089560
+    second: Panel-Button 2_36
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Panel-Button 2_0
+      rect:
+        serializedVersion: 2
+        x: 87
+        y: 2772
+        width: 353
+        height: 184
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ddeb4bc5854705d60800000000000000
+      internalID: 7876923671132290781
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_1
+      rect:
+        serializedVersion: 2
+        x: 476
+        y: 2772
+        width: 353
+        height: 184
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6bb44a089081cf420800000000000000
+      internalID: 2665031508588514230
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_2
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 2718
+        width: 480
+        height: 238
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9f3a78ae49845c650800000000000000
+      internalID: 6252483462100919289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_3
+      rect:
+        serializedVersion: 2
+        x: 1372
+        y: 2717
+        width: 239
+        height: 239
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c4fad60bcc5887910800000000000000
+      internalID: 1835363962333278028
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_4
+      rect:
+        serializedVersion: 2
+        x: 1643
+        y: 2717
+        width: 239
+        height: 239
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 049f17bbfac85a710800000000000000
+      internalID: 1703922720421574976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_5
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 2229
+        width: 355
+        height: 507
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b7376f5b8bb3ec1d0800000000000000
+      internalID: -3328657410067369093
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_6
+      rect:
+        serializedVersion: 2
+        x: 475
+        y: 2229
+        width: 355
+        height: 507
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d3b2eafcffb2c4420800000000000000
+      internalID: 2615513861296368445
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_7
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 2430
+        width: 480
+        height: 238
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82b7c99d4efe8d4d0800000000000000
+      internalID: -3109471776516834520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_8
+      rect:
+        serializedVersion: 2
+        x: 1372
+        y: 2425
+        width: 239
+        height: 239
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f01a94348b18dae50800000000000000
+      internalID: 6822251638939033871
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_9
+      rect:
+        serializedVersion: 2
+        x: 1643
+        y: 2425
+        width: 239
+        height: 239
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2b74c6164bb6d37d0800000000000000
+      internalID: -2937072959502923854
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_10
+      rect:
+        serializedVersion: 2
+        x: 86
+        y: 1849
+        width: 355
+        height: 337
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ec4c6b75e0131210800000000000000
+      internalID: 1302403295044455657
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_11
+      rect:
+        serializedVersion: 2
+        x: 475
+        y: 1849
+        width: 355
+        height: 337
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 209f6f90c2e40f470800000000000000
+      internalID: 8426320853862906114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_12
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 2137
+        width: 480
+        height: 238
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c86776c05a039a30800000000000000
+      internalID: 4220728617819662532
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_13
+      rect:
+        serializedVersion: 2
+        x: 1375
+        y: 2141
+        width: 500
+        height: 230
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c06b43e0b7abcf90800000000000000
+      internalID: -6932262823237295930
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_14
+      rect:
+        serializedVersion: 2
+        x: 864
+        y: 1849
+        width: 480
+        height: 238
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 298ee20a5ec618a40800000000000000
+      internalID: 5368691964293081234
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_15
+      rect:
+        serializedVersion: 2
+        x: 1375
+        y: 1850
+        width: 500
+        height: 230
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7fd471d8f488f70d0800000000000000
+      internalID: -3422867316527378953
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_16
+      rect:
+        serializedVersion: 2
+        x: 130
+        y: 1438
+        width: 323
+        height: 324
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9ce0e2e333f2bdc90800000000000000
+      internalID: -7144064486760116535
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_17
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 1459
+        width: 343
+        height: 291
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 60b6b381bf6912df0800000000000000
+      internalID: -206718102694827258
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_18
+      rect:
+        serializedVersion: 2
+        x: 897
+        y: 1453
+        width: 312
+        height: 313
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1ec96f8e45bdcdb30800000000000000
+      internalID: 4313563700846304481
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_19
+      rect:
+        serializedVersion: 2
+        x: 1375
+        y: 1554
+        width: 500
+        height: 230
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 732ba598971cfe760800000000000000
+      internalID: 7489417433080050231
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_20
+      rect:
+        serializedVersion: 2
+        x: 284
+        y: 1193
+        width: 181
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8de63ecc2efb99f00800000000000000
+      internalID: 1124140562826620632
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_21
+      rect:
+        serializedVersion: 2
+        x: 510
+        y: 1085
+        width: 300
+        height: 301
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dfee5042d60b9abb0800000000000000
+      internalID: -4924210734750634243
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_22
+      rect:
+        serializedVersion: 2
+        x: 885
+        y: 1107
+        width: 323
+        height: 243
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 46c06b55be107ea40800000000000000
+      internalID: 5397284788693765220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_23
+      rect:
+        serializedVersion: 2
+        x: 1375
+        y: 1263
+        width: 500
+        height: 230
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fda0aac720d938ce0800000000000000
+      internalID: -1404106024802448673
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_24
+      rect:
+        serializedVersion: 2
+        x: 143
+        y: 1089
+        width: 192
+        height: 153
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 65c3e7a1811812b30800000000000000
+      internalID: 4260828662992878678
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_25
+      rect:
+        serializedVersion: 2
+        x: 1386
+        y: 937
+        width: 432
+        height: 270
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 789a6e1ed86f1c420800000000000000
+      internalID: 2648669145111374215
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_26
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 877
+        width: 202
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 81fab60feed8e5f10800000000000000
+      internalID: 2260400120361889560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_27
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 747
+        width: 212
+        height: 212
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e57ecb83d840bd80800000000000000
+      internalID: -8237003645039774232
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_28
+      rect:
+        serializedVersion: 2
+        x: 150
+        y: 770
+        width: 202
+        height: 89
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c5830c4ef3781ea0800000000000000
+      internalID: -5901839775634848313
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_29
+      rect:
+        serializedVersion: 2
+        x: 786
+        y: 541
+        width: 580
+        height: 313
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3d2d9f412a6750ac0800000000000000
+      internalID: -3889572264655858989
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_30
+      rect:
+        serializedVersion: 2
+        x: 1386
+        y: 574
+        width: 432
+        height: 270
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3233db7f2a8b91f0800000000000000
+      internalID: -1037083352633232838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_31
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 285
+        width: 312
+        height: 314
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d00078ed595809370800000000000000
+      internalID: 8327302589738057741
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_32
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 183
+        width: 144
+        height: 145
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 44222eaa9636ca060800000000000000
+      internalID: 6966052029124977220
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_33
+      rect:
+        serializedVersion: 2
+        x: 433
+        y: 183
+        width: 143
+        height: 145
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 365be528d5ec71270800000000000000
+      internalID: 8221266545802655075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_34
+      rect:
+        serializedVersion: 2
+        x: 838
+        y: 246
+        width: 63
+        height: 219
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 27c11c10bd17528c0800000000000000
+      internalID: -4024685506544460686
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_35
+      rect:
+        serializedVersion: 2
+        x: 922
+        y: 246
+        width: 316
+        height: 219
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b5d03145e2471aee0800000000000000
+      internalID: -1251591479104434853
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Panel-Button 2_36
+      rect:
+        serializedVersion: 2
+        x: 1259
+        y: 246
+        width: 64
+        height: 219
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 812b799c72c864570800000000000000
+      internalID: 8450595853321089560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Panel-Button 2_0: 7876923671132290781
+      Panel-Button 2_1: 2665031508588514230
+      Panel-Button 2_10: 1302403295044455657
+      Panel-Button 2_11: 8426320853862906114
+      Panel-Button 2_12: 4220728617819662532
+      Panel-Button 2_13: -6932262823237295930
+      Panel-Button 2_14: 5368691964293081234
+      Panel-Button 2_15: -3422867316527378953
+      Panel-Button 2_16: -7144064486760116535
+      Panel-Button 2_17: -206718102694827258
+      Panel-Button 2_18: 4313563700846304481
+      Panel-Button 2_19: 7489417433080050231
+      Panel-Button 2_2: 6252483462100919289
+      Panel-Button 2_20: 1124140562826620632
+      Panel-Button 2_21: -4924210734750634243
+      Panel-Button 2_22: 5397284788693765220
+      Panel-Button 2_23: -1404106024802448673
+      Panel-Button 2_24: 4260828662992878678
+      Panel-Button 2_25: 2648669145111374215
+      Panel-Button 2_26: 2260400120361889560
+      Panel-Button 2_27: -8237003645039774232
+      Panel-Button 2_28: -5901839775634848313
+      Panel-Button 2_29: -3889572264655858989
+      Panel-Button 2_3: 1835363962333278028
+      Panel-Button 2_30: -1037083352633232838
+      Panel-Button 2_31: 8327302589738057741
+      Panel-Button 2_32: 6966052029124977220
+      Panel-Button 2_33: 8221266545802655075
+      Panel-Button 2_34: -4024685506544460686
+      Panel-Button 2_35: -1251591479104434853
+      Panel-Button 2_36: 8450595853321089560
+      Panel-Button 2_4: 1703922720421574976
+      Panel-Button 2_5: -3328657410067369093
+      Panel-Button 2_6: 2615513861296368445
+      Panel-Button 2_7: -3109471776516834520
+      Panel-Button 2_8: 6822251638939033871
+      Panel-Button 2_9: -2937072959502923854
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

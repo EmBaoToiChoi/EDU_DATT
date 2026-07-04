@@ -28,6 +28,10 @@ public class MazeNavigator : MonoBehaviour
     public int mazeHeight = 13;
     public TileBase walkableTile;
 
+    [Header("Road Tiles (15 combinations)")]
+    [Tooltip("0: None, 1: R, 2: L, 3: LR, 4: D, 5: DR, 6: DL, 7: DLR, 8: U, 9: UR, 10: UL, 11: ULR, 12: UD, 13: UDR, 14: UDL, 15: UDLR")]
+    public TileBase[] roadTiles = new TileBase[16];
+
     readonly Dictionary<Vector3Int, int> goalDistanceMap = new Dictionary<Vector3Int, int>();
     readonly Dictionary<Vector3Int, Vector3Int> nextStepToGoalMap = new Dictionary<Vector3Int, Vector3Int>();
     readonly HashSet<Vector3Int> shortCells = new HashSet<Vector3Int>();
@@ -46,7 +50,7 @@ public class MazeNavigator : MonoBehaviour
     {
         if (walkableTilemap == null)
         {
-            var tilemaps = FindObjectsOfType<Tilemap>();
+            var tilemaps = FindObjectsByType<Tilemap>(FindObjectsSortMode.None);
             if (tilemaps != null && tilemaps.Length > 0)
                 walkableTilemap = tilemaps[0];
         }
@@ -539,9 +543,18 @@ public class MazeNavigator : MonoBehaviour
         {
             for (int y = 0; y < mazeHeight; y++)
             {
-                if (maze[x, y] && walkableTile != null)
+                if (maze[x, y])
                 {
-                    walkableTilemap.SetTile(new Vector3Int(x, y, 0), walkableTile);
+                    int mask = 0;
+                    if (y + 1 < mazeHeight && maze[x, y + 1]) mask |= 8; // Up
+                    if (y - 1 >= 0 && maze[x, y - 1])         mask |= 4; // Down
+                    if (x - 1 >= 0 && maze[x - 1, y])         mask |= 2; // Left
+                    if (x + 1 < mazeWidth && maze[x + 1, y])  mask |= 1; // Right
+
+                    TileBase tile = (roadTiles != null && mask < roadTiles.Length) ? roadTiles[mask] : null;
+                    if (tile == null) tile = walkableTile; // Fallback to original single tile
+
+                    walkableTilemap.SetTile(new Vector3Int(x, y, 0), tile);
                 }
             }
         }
@@ -655,7 +668,7 @@ public class MazeNavigator : MonoBehaviour
 
         if (backgroundRenderer == null)
         {
-            var renderers = FindObjectsOfType<SpriteRenderer>();
+            var renderers = FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None);
             foreach (var r in renderers)
             {
                 string nameLower = r.gameObject.name.ToLower();
@@ -768,7 +781,7 @@ public class MazeNavigator : MonoBehaviour
 
     T FindMarker<T>() where T : Component
     {
-        var markers = FindObjectsOfType<T>();
+        var markers = FindObjectsByType<T>(FindObjectsSortMode.None);
         return markers != null && markers.Length > 0 ? markers[0] : null;
     }
 
@@ -783,6 +796,49 @@ public class MazeNavigator : MonoBehaviour
             {
                 goalVisualPrefab = prefab;
                 Debug.Log($"Automatically assigned goalVisualPrefab from asset path: {path}");
+            }
+        }
+
+        if (roadTiles == null || roadTiles.Length != 16)
+        {
+            roadTiles = new TileBase[16];
+        }
+
+        string folderPath = "Assets/Dung/New folder/Asset English/kenney_top-down-tanks-remastered/Tilesheet";
+        if (System.IO.Directory.Exists(folderPath))
+        {
+            string[] tileNames = new string[16];
+            tileNames[0]  = ""; // None
+            tileNames[1]  = "terrainTiles_default_28"; // R (Cap Left)
+            tileNames[2]  = "terrainTiles_default_27"; // L (Cap Right)
+            tileNames[3]  = "terrainTiles_default_2";  // LR (Horizontal)
+            tileNames[4]  = "terrainTiles_default_37"; // D (Cap Up)
+            tileNames[5]  = "terrainTiles_default_13"; // DR (Corner Top-Left)
+            tileNames[6]  = "terrainTiles_default_14"; // DL (Corner Top-Right)
+            tileNames[7]  = "terrainTiles_default_6";  // DLR (T Down)
+            tileNames[8]  = "terrainTiles_default_38"; // U (Cap Down)
+            tileNames[9]  = "terrainTiles_default_15"; // UR (Corner Bottom-Left)
+            tileNames[10] = "terrainTiles_default_16"; // UL (Corner Bottom-Right)
+            tileNames[11] = "terrainTiles_default_5";  // ULR (T Up)
+            tileNames[12] = "terrainTiles_default_1";  // UD (Vertical)
+            tileNames[13] = "terrainTiles_default_3";  // UDR (T Right)
+            tileNames[14] = "terrainTiles_default_4";  // UDL (T Left)
+            tileNames[15] = "terrainTiles_default_12"; // UDLR (Crossroad)
+
+            for (int i = 0; i < 16; i++)
+            {
+                if (!string.IsNullOrEmpty(tileNames[i]))
+                {
+                    if (roadTiles[i] == null || roadTiles[i].name.StartsWith("terrainTiles_default_"))
+                    {
+                        string tilePath = $"{folderPath}/{tileNames[i]}.asset";
+                        var tile = UnityEditor.AssetDatabase.LoadAssetAtPath<TileBase>(tilePath);
+                        if (tile != null)
+                        {
+                            roadTiles[i] = tile;
+                        }
+                    }
+                }
             }
         }
     }
