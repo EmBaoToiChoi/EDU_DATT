@@ -27,6 +27,7 @@ public class GamePlay : MonoBehaviour
 
     private Animator animator;
     private string currentAnimState = "";
+    private Vector3 originalLocalScale = Vector3.one;
 
     Vector3Int currentCell;
     Vector3Int previousCell;
@@ -72,6 +73,7 @@ public class GamePlay : MonoBehaviour
     {
         animator = GetComponent<Animator>();
         if (animator == null) animator = GetComponentInChildren<Animator>();
+        originalLocalScale = transform.localScale;
 
         if (winScreen != null) winScreen.SetActive(false);
         if (loseScreen != null) loseScreen.SetActive(false);
@@ -97,7 +99,7 @@ public class GamePlay : MonoBehaviour
             if (walkableTilemap != null)
             {
                 transform.position = walkableTilemap.GetCellCenterWorld(currentCell);
-                transform.localScale = walkableTilemap.transform.localScale;
+                transform.localScale = originalLocalScale;
                 if (navigator.startPoint != null) navigator.startPoint.localScale = walkableTilemap.transform.localScale;
                 if (navigator.goalPoint != null) navigator.goalPoint.localScale = walkableTilemap.transform.localScale;
                 previousCell = currentCell;
@@ -252,7 +254,7 @@ public class GamePlay : MonoBehaviour
             if (walkableTilemap != null)
             {
                 transform.position = walkableTilemap.GetCellCenterWorld(currentCell);
-                transform.localScale = walkableTilemap.transform.localScale;
+                transform.localScale = originalLocalScale;
                 if (navigator.startPoint != null) navigator.startPoint.localScale = walkableTilemap.transform.localScale;
                 if (navigator.goalPoint != null) navigator.goalPoint.localScale = walkableTilemap.transform.localScale;
                 previousCell = currentCell;
@@ -376,7 +378,7 @@ public class GamePlay : MonoBehaviour
 
         Vector3Int startCell = navigator.GetStartCell();
         transform.position = walkableTilemap.GetCellCenterWorld(startCell);
-        transform.localScale = walkableTilemap.transform.localScale;
+        transform.localScale = originalLocalScale;
         if (navigator.startPoint != null) navigator.startPoint.localScale = walkableTilemap.transform.localScale;
         if (navigator.goalPoint != null) navigator.goalPoint.localScale = walkableTilemap.transform.localScale;
         currentCell = startCell;

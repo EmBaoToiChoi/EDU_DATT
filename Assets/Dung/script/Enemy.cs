@@ -22,6 +22,12 @@ public class Enemy : MonoBehaviour
     private Vector3Int startCell;
     private float defaultSpeed;
     private bool hasSavedDefaultSpeed = false;
+    private Vector3 originalLocalScale = Vector3.one;
+
+    private void Awake()
+    {
+        originalLocalScale = transform.localScale;
+    }
 
     public void Spawn(Vector3Int spawnCell, GamePlay gp)
     {
@@ -41,7 +47,7 @@ public class Enemy : MonoBehaviour
         walkableTilemap = gp.navigator.walkableTilemap;
 
         transform.position = walkableTilemap.GetCellCenterWorld(spawnCell);
-        transform.localScale = walkableTilemap.transform.localScale;
+        transform.localScale = originalLocalScale;
 
         currentCell = spawnCell;
         targetCell = spawnCell;
