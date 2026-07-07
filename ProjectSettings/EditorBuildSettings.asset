@@ -20,5 +20,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/TDat/scene/Math-level 1.unity
     guid: 50811e3e22f1ce043866531fd1f11180
+  - enabled: 1
+    path: Assets/TDat/scene/Math-level 2.unity
+    guid: 036abb8c88b932e428b9c1070d71649d
+  - enabled: 1
+    path: Assets/TDat/scene/Math-level 3.unity
+    guid: 7e9db26ab0372da4980c62bf368b6d87
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
