@@ -1,0 +1,1391 @@
+fileFormatVersion: 2
+guid: 45a941af459e8774c84ded8cfad30750
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5412185218014065156
+    second: PSD Files Pannel_0
+  - first:
+      213: 4022510367073741619
+    second: PSD Files Pannel_1
+  - first:
+      213: 4257075486843031098
+    second: PSD Files Pannel_2
+  - first:
+      213: -5086415105622505189
+    second: PSD Files Pannel_3
+  - first:
+      213: -2877887656859188393
+    second: PSD Files Pannel_4
+  - first:
+      213: 3832577116354847756
+    second: PSD Files Pannel_5
+  - first:
+      213: 6419093716809112393
+    second: PSD Files Pannel_6
+  - first:
+      213: -2502267903128689293
+    second: PSD Files Pannel_7
+  - first:
+      213: 4015472400111794261
+    second: PSD Files Pannel_8
+  - first:
+      213: 991955961304139920
+    second: PSD Files Pannel_9
+  - first:
+      213: -6208653388186958698
+    second: PSD Files Pannel_10
+  - first:
+      213: -8746195317311083195
+    second: PSD Files Pannel_11
+  - first:
+      213: 3573911187230731528
+    second: PSD Files Pannel_12
+  - first:
+      213: -8167055419568613742
+    second: PSD Files Pannel_13
+  - first:
+      213: -5151722925355936183
+    second: PSD Files Pannel_14
+  - first:
+      213: -3008547325767476663
+    second: PSD Files Pannel_15
+  - first:
+      213: -5978499922039433257
+    second: PSD Files Pannel_16
+  - first:
+      213: -7749327825153907827
+    second: PSD Files Pannel_17
+  - first:
+      213: 8108641956135030783
+    second: PSD Files Pannel_18
+  - first:
+      213: -7765835716196408120
+    second: PSD Files Pannel_19
+  - first:
+      213: -5515842699535851829
+    second: PSD Files Pannel_20
+  - first:
+      213: 3600359928098773021
+    second: PSD Files Pannel_21
+  - first:
+      213: -7616115365145608178
+    second: PSD Files Pannel_22
+  - first:
+      213: 7611981672100891437
+    second: PSD Files Pannel_23
+  - first:
+      213: 6101324557080449466
+    second: PSD Files Pannel_24
+  - first:
+      213: -8010930467659231545
+    second: PSD Files Pannel_25
+  - first:
+      213: -8398136651854889743
+    second: PSD Files Pannel_26
+  - first:
+      213: 635665291829797462
+    second: PSD Files Pannel_27
+  - first:
+      213: -4438653191767441722
+    second: PSD Files Pannel_28
+  - first:
+      213: 3082856961399413533
+    second: PSD Files Pannel_29
+  - first:
+      213: -7232334329966657771
+    second: PSD Files Pannel_30
+  - first:
+      213: -9178818579986396006
+    second: PSD Files Pannel_31
+  - first:
+      213: 6207908689674489371
+    second: PSD Files Pannel_32
+  - first:
+      213: 2271379754775713084
+    second: PSD Files Pannel_33
+  - first:
+      213: 1692880020301230886
+    second: PSD Files Pannel_34
+  - first:
+      213: -2763403491324382466
+    second: PSD Files Pannel_35
+  - first:
+      213: 4508379182230728910
+    second: PSD Files Pannel_36
+  - first:
+      213: 1226091549473400615
+    second: PSD Files Pannel_37
+  - first:
+      213: 5580240154863073281
+    second: PSD Files Pannel_38
+  - first:
+      213: 1854804308199731766
+    second: PSD Files Pannel_39
+  - first:
+      213: -2219325886732831530
+    second: PSD Files Pannel_40
+  - first:
+      213: 8700994127439249510
+    second: PSD Files Pannel_41
+  - first:
+      213: 3667337643998765702
+    second: PSD Files Pannel_42
+  - first:
+      213: -2387872802133197758
+    second: PSD Files Pannel_43
+  - first:
+      213: -9123689481246761331
+    second: PSD Files Pannel_44
+  - first:
+      213: 6513414338222871469
+    second: PSD Files Pannel_45
+  - first:
+      213: 2484917910963263885
+    second: PSD Files Pannel_46
+  - first:
+      213: 7892306570685564709
+    second: PSD Files Pannel_47
+  - first:
+      213: 960071501604800913
+    second: PSD Files Pannel_48
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: PSD Files Pannel_0
+      rect:
+        serializedVersion: 2
+        x: 120
+        y: 2714
+        width: 89
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfdc6ad183e04e4b0800000000000000
+      internalID: -5412185218014065156
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_1
+      rect:
+        serializedVersion: 2
+        x: 213
+        y: 2713
+        width: 95
+        height: 117
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 33ba1ceddd3d2d730800000000000000
+      internalID: 4022510367073741619
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_2
+      rect:
+        serializedVersion: 2
+        x: 317
+        y: 2713
+        width: 82
+        height: 116
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a3e4d4fa99b241b30800000000000000
+      internalID: 4257075486843031098
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_3
+      rect:
+        serializedVersion: 2
+        x: 408
+        y: 2714
+        width: 63
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b198031196c6969b0800000000000000
+      internalID: -5086415105622505189
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_4
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 2714
+        width: 63
+        height: 115
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7534d6d7c60bf08d0800000000000000
+      internalID: -2877887656859188393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_5
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 2328
+        width: 273
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c042f9ad49c003530800000000000000
+      internalID: 3832577116354847756
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_6
+      rect:
+        serializedVersion: 2
+        x: 327
+        y: 2326
+        width: 141
+        height: 268
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94b5952c9b3351950800000000000000
+      internalID: 6419093716809112393
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_7
+      rect:
+        serializedVersion: 2
+        x: 484
+        y: 2325
+        width: 522
+        height: 267
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 37527258998264dd0800000000000000
+      internalID: -2502267903128689293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_8
+      rect:
+        serializedVersion: 2
+        x: 1066
+        y: 2327
+        width: 518
+        height: 262
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5587c0e7fd2d9b730800000000000000
+      internalID: 4015472400111794261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_9
+      rect:
+        serializedVersion: 2
+        x: 1601
+        y: 2328
+        width: 268
+        height: 262
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0984d52f0b224cd00800000000000000
+      internalID: 991955961304139920
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_10
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 1896
+        width: 273
+        height: 420
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 694479763ae66d9a0800000000000000
+      internalID: -6208653388186958698
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_11
+      rect:
+        serializedVersion: 2
+        x: 333
+        y: 2058
+        width: 264
+        height: 264
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 54dec7fb2b54f9680800000000000000
+      internalID: -8746195317311083195
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_12
+      rect:
+        serializedVersion: 2
+        x: 772
+        y: 2202
+        width: 258
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80daea51a45199130800000000000000
+      internalID: 3573911187230731528
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_13
+      rect:
+        serializedVersion: 2
+        x: 1050
+        y: 2194
+        width: 258
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2961fa7ed5ac8ae80800000000000000
+      internalID: -8167055419568613742
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_14
+      rect:
+        serializedVersion: 2
+        x: 1326
+        y: 2192
+        width: 258
+        height: 88
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9465cec5b476188b0800000000000000
+      internalID: -5151722925355936183
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_15
+      rect:
+        serializedVersion: 2
+        x: 1602
+        y: 2172
+        width: 267
+        height: 137
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 94a9dada52e7f36d0800000000000000
+      internalID: -3008547325767476663
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_16
+      rect:
+        serializedVersion: 2
+        x: 614
+        y: 1753
+        width: 522
+        height: 409
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7d793211ff9180da0800000000000000
+      internalID: -5978499922039433257
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_17
+      rect:
+        serializedVersion: 2
+        x: 1245
+        y: 1758
+        width: 340
+        height: 394
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d83a6a5966bd47490800000000000000
+      internalID: -7749327825153907827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_18
+      rect:
+        serializedVersion: 2
+        x: 1601
+        y: 1895
+        width: 258
+        height: 258
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fffc14ec5eea78070800000000000000
+      internalID: 8108641956135030783
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_19
+      rect:
+        serializedVersion: 2
+        x: 52
+        y: 1252
+        width: 711
+        height: 399
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8c46210bf853a3490800000000000000
+      internalID: -7765835716196408120
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_20
+      rect:
+        serializedVersion: 2
+        x: 791
+        y: 1254
+        width: 692
+        height: 389
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bcedb39f94ac373b0800000000000000
+      internalID: -5515842699535851829
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_21
+      rect:
+        serializedVersion: 2
+        x: 1530
+        y: 1251
+        width: 349
+        height: 380
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d18d0e1774c07f130800000000000000
+      internalID: 3600359928098773021
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_22
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 956
+        width: 270
+        height: 252
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e000a146d6f1e4690800000000000000
+      internalID: -7616115365145608178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_23
+      rect:
+        serializedVersion: 2
+        x: 372
+        y: 950
+        width: 400
+        height: 259
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d2b8b52300133a960800000000000000
+      internalID: 7611981672100891437
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_24
+      rect:
+        serializedVersion: 2
+        x: 795
+        y: 960
+        width: 692
+        height: 252
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab1d524cb524ca450800000000000000
+      internalID: 6101324557080449466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_25
+      rect:
+        serializedVersion: 2
+        x: 175
+        y: 428
+        width: 653
+        height: 326
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7ce41d2fe2573d090800000000000000
+      internalID: -8010930467659231545
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_26
+      rect:
+        serializedVersion: 2
+        x: 901
+        y: 428
+        width: 734
+        height: 326
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1fc300bd533d37b80800000000000000
+      internalID: -8398136651854889743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_27
+      rect:
+        serializedVersion: 2
+        x: 424
+        y: 290
+        width: 60
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6526f8b073652d800800000000000000
+      internalID: 635665291829797462
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_28
+      rect:
+        serializedVersion: 2
+        x: 485
+        y: 289
+        width: 70
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6ce3c87607cb662c0800000000000000
+      internalID: -4438653191767441722
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_29
+      rect:
+        serializedVersion: 2
+        x: 548
+        y: 289
+        width: 76
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d1b5d8d921288ca20800000000000000
+      internalID: 3082856961399413533
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_30
+      rect:
+        serializedVersion: 2
+        x: 659
+        y: 290
+        width: 70
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 51f7975de3691ab90800000000000000
+      internalID: -7232334329966657771
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_31
+      rect:
+        serializedVersion: 2
+        x: 728
+        y: 289
+        width: 36
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a9cc72a02294e9080800000000000000
+      internalID: -9178818579986396006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_32
+      rect:
+        serializedVersion: 2
+        x: 1251
+        y: 281
+        width: 60
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b1ecb16ff0ce62650800000000000000
+      internalID: 6207908689674489371
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_33
+      rect:
+        serializedVersion: 2
+        x: 1312
+        y: 280
+        width: 70
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c359b694adf858f10800000000000000
+      internalID: 2271379754775713084
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_34
+      rect:
+        serializedVersion: 2
+        x: 1375
+        y: 280
+        width: 76
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6233961c8615e7710800000000000000
+      internalID: 1692880020301230886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_35
+      rect:
+        serializedVersion: 2
+        x: 1487
+        y: 281
+        width: 69
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ef239807a2b66a9d0800000000000000
+      internalID: -2763403491324382466
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_36
+      rect:
+        serializedVersion: 2
+        x: 1556
+        y: 280
+        width: 35
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ec0f0a5dafaf09e30800000000000000
+      internalID: 4508379182230728910
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_37
+      rect:
+        serializedVersion: 2
+        x: 445
+        y: 164
+        width: 70
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7276874a4c3f30110800000000000000
+      internalID: 1226091549473400615
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_38
+      rect:
+        serializedVersion: 2
+        x: 516
+        y: 164
+        width: 70
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 108fbfffadef07d40800000000000000
+      internalID: 5580240154863073281
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_39
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 198
+        width: 31
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 632fb1ee0b69db910800000000000000
+      internalID: 1854804308199731766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_40
+      rect:
+        serializedVersion: 2
+        x: 618
+        y: 162
+        width: 62
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6d4f5705dde5331e0800000000000000
+      internalID: -2219325886732831530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_41
+      rect:
+        serializedVersion: 2
+        x: 683
+        y: 163
+        width: 61
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 660c6ce1f0420c870800000000000000
+      internalID: 8700994127439249510
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_42
+      rect:
+        serializedVersion: 2
+        x: 1295
+        y: 154
+        width: 35
+        height: 86
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 682e6f5282005e230800000000000000
+      internalID: 3667337643998765702
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_43
+      rect:
+        serializedVersion: 2
+        x: 1332
+        y: 155
+        width: 55
+        height: 85
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 24cb80486529cded0800000000000000
+      internalID: -2387872802133197758
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_44
+      rect:
+        serializedVersion: 2
+        x: 1389
+        y: 189
+        width: 31
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8e915591c4226180800000000000000
+      internalID: -9123689481246761331
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_45
+      rect:
+        serializedVersion: 2
+        x: 1421
+        y: 155
+        width: 54
+        height: 84
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: da3d5b0c4db446a50800000000000000
+      internalID: 6513414338222871469
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_46
+      rect:
+        serializedVersion: 2
+        x: 1476
+        y: 155
+        width: 70
+        height: 87
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d8998f2aca33c7220800000000000000
+      internalID: 2484917910963263885
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_47
+      rect:
+        serializedVersion: 2
+        x: 588
+        y: 164
+        width: 31
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 527c134c20b178d60800000000000000
+      internalID: 7892306570685564709
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: PSD Files Pannel_48
+      rect:
+        serializedVersion: 2
+        x: 1388
+        y: 155
+        width: 32
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 199412ca1fbd25d00800000000000000
+      internalID: 960071501604800913
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      PSD Files Pannel_0: -5412185218014065156
+      PSD Files Pannel_1: 4022510367073741619
+      PSD Files Pannel_10: -6208653388186958698
+      PSD Files Pannel_11: -8746195317311083195
+      PSD Files Pannel_12: 3573911187230731528
+      PSD Files Pannel_13: -8167055419568613742
+      PSD Files Pannel_14: -5151722925355936183
+      PSD Files Pannel_15: -3008547325767476663
+      PSD Files Pannel_16: -5978499922039433257
+      PSD Files Pannel_17: -7749327825153907827
+      PSD Files Pannel_18: 8108641956135030783
+      PSD Files Pannel_19: -7765835716196408120
+      PSD Files Pannel_2: 4257075486843031098
+      PSD Files Pannel_20: -5515842699535851829
+      PSD Files Pannel_21: 3600359928098773021
+      PSD Files Pannel_22: -7616115365145608178
+      PSD Files Pannel_23: 7611981672100891437
+      PSD Files Pannel_24: 6101324557080449466
+      PSD Files Pannel_25: -8010930467659231545
+      PSD Files Pannel_26: -8398136651854889743
+      PSD Files Pannel_27: 635665291829797462
+      PSD Files Pannel_28: -4438653191767441722
+      PSD Files Pannel_29: 3082856961399413533
+      PSD Files Pannel_3: -5086415105622505189
+      PSD Files Pannel_30: -7232334329966657771
+      PSD Files Pannel_31: -9178818579986396006
+      PSD Files Pannel_32: 6207908689674489371
+      PSD Files Pannel_33: 2271379754775713084
+      PSD Files Pannel_34: 1692880020301230886
+      PSD Files Pannel_35: -2763403491324382466
+      PSD Files Pannel_36: 4508379182230728910
+      PSD Files Pannel_37: 1226091549473400615
+      PSD Files Pannel_38: 5580240154863073281
+      PSD Files Pannel_39: 1854804308199731766
+      PSD Files Pannel_4: -2877887656859188393
+      PSD Files Pannel_40: -2219325886732831530
+      PSD Files Pannel_41: 8700994127439249510
+      PSD Files Pannel_42: 3667337643998765702
+      PSD Files Pannel_43: -2387872802133197758
+      PSD Files Pannel_44: -9123689481246761331
+      PSD Files Pannel_45: 6513414338222871469
+      PSD Files Pannel_46: 2484917910963263885
+      PSD Files Pannel_47: 7892306570685564709
+      PSD Files Pannel_48: 960071501604800913
+      PSD Files Pannel_5: 3832577116354847756
+      PSD Files Pannel_6: 6419093716809112393
+      PSD Files Pannel_7: -2502267903128689293
+      PSD Files Pannel_8: 4015472400111794261
+      PSD Files Pannel_9: 991955961304139920
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
