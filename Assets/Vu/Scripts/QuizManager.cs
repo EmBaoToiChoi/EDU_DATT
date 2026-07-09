@@ -3,7 +3,9 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine.Networking; // Thư viện mạng bắt buộc để kết nối API Swagger
+using UnityEngine.SceneManagement;
 
 // --- CẤU TRÚC ĐỊNH DẠNG CHUẨN ĐỂ ĐỌC DỮ LIỆU JSON TỪ SWAGGER ---
 
@@ -70,6 +72,10 @@ public class QuizManager : MonoBehaviour
     [Tooltip("Nhập chính xác chữ status bạn muốn lọc cho màn này (Ví dụ: basic, level, advanced...)")]
     public string statusToFilter = "basic"; 
 
+    [Header("Thông tin Level")]
+    [Tooltip("Số level hiện tại dùng để lưu trạng thái hoàn thành vào PlayerPrefs.")]
+    public int levelNumber = 1;
+
     // Danh sách lưu trữ câu hỏi sau khi tải từ API và lọc sạch
     private List<APIQuestionItem> activeQuestionList = new List<APIQuestionItem>();
 
@@ -81,6 +87,21 @@ public class QuizManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        SetupLevelNumberFromScene();
+    }
+
+    private void SetupLevelNumberFromScene()
+    {
+        string sceneName = SceneManager.GetActiveScene().name;
+        Match match = Regex.Match(sceneName, @"(\d+)");
+        if (match.Success && int.TryParse(match.Value, out int parsedLevel) && parsedLevel > 0)
+        {
+            levelNumber = parsedLevel;
+        }
+        else
+        {
+            Debug.LogWarning($"QuizManager: Không tìm thấy số level trong tên scene '{sceneName}', dùng levelNumber mặc định={levelNumber}.");
+        }
     }
 
     private void Start()
@@ -367,9 +388,11 @@ public class QuizManager : MonoBehaviour
 
     private void TriggerWinUI()
     {
-        PlayerPrefs.SetInt("Level_1_Completed", 1);
-        PlayerPrefs.SetInt("Unlocked_Photo_1", 1);
+        int completedLevel = Mathf.Max(1, levelNumber);
+        PlayerPrefs.SetInt($"Level_{completedLevel}_Completed", 1);
+        PlayerPrefs.SetInt($"Unlocked_Photo_{completedLevel}", 1);
         PlayerPrefs.Save();
+        Debug.Log($"QuizManager: Saved Level_{completedLevel}_Completed and Unlocked_Photo_{completedLevel}");
         UIManager.Instance.ShowYouWinPanel();
     }
 }
