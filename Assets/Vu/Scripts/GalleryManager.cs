@@ -295,13 +295,24 @@ public class GalleryManager : MonoBehaviour
             fullImagePanel.SetActive(false);
         }
 
+        HideAllFullImagePanels();
+        HideAllFullImageDisplays();
         HideAllFullPhotoCharacters();
     }
 
     [ContextMenu("Force Reparent Locks To Canvas (Debug)")]
     private void ForceReparentLocksToCanvas()
     {
-        Canvas canvas = FindObjectOfType<Canvas>();
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null)
+        {
+            Canvas[] canvases = FindObjectsOfType<Canvas>();
+            if (canvases != null && canvases.Length > 0)
+            {
+                canvas = canvases[0];
+            }
+        }
+
         if (canvas == null)
         {
             Debug.LogWarning("GalleryManager: Không tìm thấy Canvas để reparent lock icons.");
@@ -314,7 +325,7 @@ public class GalleryManager : MonoBehaviour
             if (lockIcons[i] == null) continue;
             lockIcons[i].transform.SetParent(canvas.transform, false);
             lockIcons[i].transform.SetAsLastSibling();
-            Debug.Log($"Reparented lockIcon {i+1} to Canvas; activeInHierarchy={lockIcons[i].activeInHierarchy}");
+            Debug.Log($"Reparented lockIcon {i+1} to Canvas '{canvas.name}'; activeInHierarchy={lockIcons[i].activeInHierarchy}");
         }
     }
 
