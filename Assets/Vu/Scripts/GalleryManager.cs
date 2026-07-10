@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class GalleryManager : MonoBehaviour
 {
@@ -8,9 +9,15 @@ public class GalleryManager : MonoBehaviour
     public GameObject[] lockIcons;  // Các Object hình Ổ khóa che lên trên ảnh thật
 
     [Header("Hiển thị ảnh lớn khi click")]
-    public GameObject fullImagePanel; // Panel chứa ảnh lớn
-    public Image fullImageDisplay;   // Image component để hiện ảnh lớn
+    public GameObject fullImagePanel; // Legacy: Panel chứa ảnh lớn nếu chỉ dùng 1 panel chung
+    public Image fullImageDisplay;   // Legacy: Image component để hiện ảnh lớn nếu chỉ dùng 1 display chung
+    public GameObject[] fullImagePanels; // Nhiều panel full image cho mỗi level
+    public Image[] fullImageDisplays;   // Nhiều Image component cho mỗi level
     public Sprite[] fullPhotoSprites; // Sprite ảnh full tương ứng với mỗi photoItem
+
+    [Header("Char theo mỗi ảnh lớn")]
+    public GameObject[] fullPhotoCharacterObjects; // object char riêng cho mỗi full photo
+
     [Header("Debug (dev only)")]
     public bool debugForceReparent = false;
 
@@ -28,6 +35,17 @@ public class GalleryManager : MonoBehaviour
         if (fullImagePanel != null)
         {
             fullImagePanel.SetActive(false);
+        }
+
+        if (fullImagePanels != null)
+        {
+            for (int i = 0; i < fullImagePanels.Length; i++)
+            {
+                if (fullImagePanels[i] != null)
+                {
+                    fullImagePanels[i].SetActive(false);
+                }
+            }
         }
     }
 
@@ -101,22 +119,173 @@ public class GalleryManager : MonoBehaviour
             return;
         }
 
-        if (fullImagePanel == null || fullImageDisplay == null)
-        {
-            Debug.LogWarning("GalleryManager: Thiếu fullImagePanel hoặc fullImageDisplay.");
-            return;
-        }
+        Debug.Log($"GalleryManager: ShowFullPhoto index={index}, level={index + 1}");
+        HideAllFullPhotoCharacters();
+        ShowFullPhotoCharacter(index);
 
-        if (index >= 0 && index < fullPhotoSprites.Length && fullPhotoSprites[index] != null)
+        if (fullImagePanels != null && index >= 0 && index < fullImagePanels.Length && fullImagePanels[index] != null)
         {
-            fullImageDisplay.sprite = fullPhotoSprites[index];
+            HideAllFullImagePanels();
+            HideAllFullImageDisplays();
+            if (index < fullPhotoSprites.Length && fullPhotoSprites[index] != null)
+            {
+                if (fullImageDisplays != null && index < fullImageDisplays.Length && fullImageDisplays[index] != null)
+                {
+                    fullImageDisplays[index].sprite = fullPhotoSprites[index];
+                    fullImageDisplays[index].gameObject.SetActive(true);
+                }
+                else
+                {
+                    Debug.LogWarning($"GalleryManager: fullImageDisplays[{index}] chưa gán dù dùng fullImagePanels.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"GalleryManager: Chưa gán fullPhotoSprites[{index}] hoặc index vượt quá.");
+            }
+            fullImagePanels[index].SetActive(true);
+        }
+        else if (fullImageDisplays != null && index >= 0 && index < fullImageDisplays.Length && fullImageDisplays[index] != null)
+        {
+            HideAllFullImageDisplays();
+            fullImageDisplays[index].sprite = null;
+            if (index < fullPhotoSprites.Length && fullPhotoSprites[index] != null)
+            {
+                fullImageDisplays[index].sprite = fullPhotoSprites[index];
+            }
+            else
+            {
+                Debug.LogWarning($"GalleryManager: Chưa gán fullPhotoSprites[{index}] hoặc index vượt quá.");
+            }
+            fullImageDisplays[index].gameObject.SetActive(true);
+        }
+        else if (fullImagePanel != null && fullImageDisplay != null)
+        {
+            HideAllFullImageDisplays();
+            fullImageDisplay.sprite = null;
+            if (index >= 0 && index < fullPhotoSprites.Length && fullPhotoSprites[index] != null)
+            {
+                fullImageDisplay.sprite = fullPhotoSprites[index];
+            }
+            else
+            {
+                Debug.LogWarning($"GalleryManager: Chưa gán fullPhotoSprites[{index}] hoặc index vượt quá. fullImageDisplay sẽ bị xóa ảnh cũ.");
+            }
+            fullImagePanel.SetActive(true);
         }
         else
         {
-            Debug.LogWarning($"GalleryManager: Chưa gán fullPhotoSprites[{index}] hoặc index vượt quá.");
+            Debug.LogWarning("GalleryManager: Thiếu fullImagePanels/fullImageDisplays hoặc fullImagePanel/fullImageDisplay.");
+        }
+    }
+
+    public void ShowFullPhotoByLevel(int level)
+    {
+        int index = level - 1;
+        Debug.Log($"GalleryManager: ShowFullPhotoByLevel level={level}, index={index}");
+        ShowFullPhoto(index);
+    }
+
+    public void ShowFullPhotoLevel1()
+    {
+        ShowFullPhotoByLevel(1);
+    }
+
+    public void ShowFullPhotoLevel2()
+    {
+        ShowFullPhotoByLevel(2);
+    }
+
+    public void ShowFullPhotoLevel3()
+    {
+        ShowFullPhotoByLevel(3);
+    }
+
+    public void ShowFullPhotoByButton(GameObject clickedThumbnail)
+    {
+        if (clickedThumbnail == null)
+        {
+            Debug.LogWarning("GalleryManager: clickedThumbnail là null.");
+            return;
         }
 
-        fullImagePanel.SetActive(true);
+        int index = System.Array.IndexOf(photoItems, clickedThumbnail);
+        if (index < 0)
+        {
+            Debug.LogWarning($"GalleryManager: clickedThumbnail không tìm thấy trong photoItems: {clickedThumbnail.name}");
+            return;
+        }
+
+        Debug.Log($"GalleryManager: ShowFullPhotoByButton clickedThumbnail={clickedThumbnail.name}, index={index}");
+        ShowFullPhoto(index);
+    }
+
+    private void ShowFullPhotoCharacter(int index)
+    {
+        if (fullPhotoCharacterObjects == null)
+        {
+            Debug.LogWarning("GalleryManager: fullPhotoCharacterObjects chưa gán.");
+            return;
+        }
+        if (index < 0 || index >= fullPhotoCharacterObjects.Length)
+        {
+            Debug.LogWarning($"GalleryManager: ShowFullPhotoCharacter index {index} ngoài phạm vi.");
+            return;
+        }
+        if (fullPhotoCharacterObjects[index] == null)
+        {
+            Debug.LogWarning($"GalleryManager: fullPhotoCharacterObjects[{index}] là null.");
+            return;
+        }
+
+        Debug.Log($"GalleryManager: Activate fullPhotoCharacterObjects[{index}] = {fullPhotoCharacterObjects[index].name}");
+        fullPhotoCharacterObjects[index].SetActive(true);
+    }
+
+    private void HideAllFullPhotoCharacters()
+    {
+        if (fullPhotoCharacterObjects == null) return;
+
+        for (int i = 0; i < fullPhotoCharacterObjects.Length; i++)
+        {
+            if (fullPhotoCharacterObjects[i] != null)
+            {
+                fullPhotoCharacterObjects[i].SetActive(false);
+            }
+        }
+    }
+
+    private void HideAllFullImageDisplays()
+    {
+        if (fullImageDisplays != null)
+        {
+            for (int i = 0; i < fullImageDisplays.Length; i++)
+            {
+                if (fullImageDisplays[i] != null)
+                {
+                    fullImageDisplays[i].gameObject.SetActive(false);
+                }
+            }
+        }
+
+        if (fullImagePanel != null)
+        {
+            fullImagePanel.SetActive(false);
+        }
+    }
+
+    private void HideAllFullImagePanels()
+    {
+        if (fullImagePanels != null)
+        {
+            for (int i = 0; i < fullImagePanels.Length; i++)
+            {
+                if (fullImagePanels[i] != null)
+                {
+                    fullImagePanels[i].SetActive(false);
+                }
+            }
+        }
     }
 
     public void CloseFullPhoto()
@@ -125,6 +294,8 @@ public class GalleryManager : MonoBehaviour
         {
             fullImagePanel.SetActive(false);
         }
+
+        HideAllFullPhotoCharacters();
     }
 
     [ContextMenu("Force Reparent Locks To Canvas (Debug)")]
