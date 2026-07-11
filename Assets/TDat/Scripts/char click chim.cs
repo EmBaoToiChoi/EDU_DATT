@@ -14,10 +14,15 @@ public class charclickchim : MonoBehaviour, IPointerClickHandler
     public float objectLifetime = 2f;
 
     [Header("Sound")]
+    public AudioClip charClickSound;
     public AudioClip chickenSound;
     public AudioClip cowSound;
     public AudioClip rabbitSound;
     public AudioSource audioSource;
+
+    [Header("VFX")]
+    public GameObject spawnVfxPrefab;
+    public float vfxDestroyDelay = 2f;
 
     [Header("Button support")]
     public Button button;
@@ -45,12 +50,28 @@ public class charclickchim : MonoBehaviour, IPointerClickHandler
         {
             return;
         }
+        PlayCharClickSound();
         SpawnStaticObject();
     }
 
     public void OnButtonPressed()
     {
+        PlayCharClickSound();
         SpawnStaticObject();
+    }
+
+    private void PlayCharClickSound()
+    {
+        if (charClickSound == null) return;
+
+        if (audioSource != null)
+        {
+            audioSource.PlayOneShot(charClickSound);
+        }
+        else
+        {
+            AudioSource.PlayClipAtPoint(charClickSound, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
+        }
     }
 
     private void SpawnStaticObject()
@@ -140,6 +161,8 @@ public class charclickchim : MonoBehaviour, IPointerClickHandler
         }
         clickable.clickSound = sound;
         clickable.audioSource = audioSource;
+        clickable.vfxPrefab = spawnVfxPrefab;
+        clickable.vfxDestroyDelay = vfxDestroyDelay;
     }
 }
 
@@ -157,6 +180,8 @@ public class ClickableSpawnedObject : MonoBehaviour, IPointerClickHandler
 {
     public AudioClip clickSound;
     public AudioSource audioSource;
+    public GameObject vfxPrefab;
+    public float vfxDestroyDelay = 2f;
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -180,6 +205,47 @@ public class ClickableSpawnedObject : MonoBehaviour, IPointerClickHandler
             {
                 AudioSource.PlayClipAtPoint(clickSound, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
             }
+        }
+        // spawn VFX if assigned
+        if (vfxPrefab != null)
+        {
+            GameObject vfx = Instantiate(vfxPrefab, transform.parent);
+
+            // position and bring to front in hierarchy
+            if (vfx.transform is RectTransform && transform is RectTransform)
+            {
+                var vfxRect = vfx.transform as RectTransform;
+                var srcRect = transform as RectTransform;
+                vfxRect.SetParent(transform.parent, false);
+                vfxRect.anchoredPosition = srcRect.anchoredPosition;
+                vfxRect.SetAsLastSibling();
+            }
+            else
+            {
+                vfx.transform.SetParent(transform.parent, false);
+                vfx.transform.position = transform.position;
+                vfx.transform.SetAsLastSibling();
+            }
+
+            // raise particle renderers' sorting order so they appear above UI/world objects
+            var psRenderers = vfx.GetComponentsInChildren<ParticleSystemRenderer>(true);
+            foreach (var pr in psRenderers)
+            {
+                try { pr.sortingOrder = 1000; } catch { }
+            }
+
+            // if there's a Canvas in the VFX prefab, force it to override sorting
+            var vfxCanvas = vfx.GetComponentInChildren<Canvas>(true);
+            if (vfxCanvas != null)
+            {
+                vfxCanvas.overrideSorting = true;
+                vfxCanvas.sortingOrder = 1000;
+            }
+
+            // play particles
+            var parts = vfx.GetComponentsInChildren<ParticleSystem>(true);
+            foreach (var ps in parts) { ps.gameObject.SetActive(true); ps.Play(true); }
+            Destroy(vfx, vfxDestroyDelay);
         }
         Destroy(gameObject);
     }

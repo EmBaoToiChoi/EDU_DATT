@@ -10,20 +10,26 @@ public class charclickdog : MonoBehaviour, IPointerClickHandler
     [Header("Chest stage sprites")]
     public Sprite chestStage1Sprite;
     public Sprite chestStage2Sprite;
-    public Sprite chestStage3Sprite;
+    public Sprite chestBombStage3Sprite;
+    public Sprite chestTreasureStage3Sprite;
 
     [Header("Spawn settings")]
     public Transform spawnParent;
     public RectTransform spawnAreaRect;
     public Vector2 spawnPositionOffset = Vector2.zero;
     public float objectLifetime = 5f;
-    public int clicksToOpen = 3;
+    public int clicksToOpen = 2;
 
     [Header("Sounds")]
+    public AudioClip charClickSound;
     public AudioClip closedChestClickSound;
     public AudioClip treasureOpenSound;
     public AudioClip bombOpenSound;
     public AudioSource audioSource;
+
+    [Header("VFX")]
+    public GameObject chestBombVfxPrefab;
+    public GameObject chestTreasureVfxPrefab;
 
     [Header("Button support")]
     public Button button;
@@ -54,11 +60,13 @@ public class charclickdog : MonoBehaviour, IPointerClickHandler
         {
             return;
         }
+        PlayClickSound(charClickSound);
         HandleDogClick();
     }
 
     public void OnButtonPressed()
     {
+        PlayClickSound(charClickSound);
         HandleDogClick();
     }
 
@@ -134,7 +142,7 @@ public class charclickdog : MonoBehaviour, IPointerClickHandler
 
         openedAsBomb = Random.value < 0.5f;
         objectOpened = true;
-        SetChestStage(currentObject, chestStage3Sprite);
+        SetChestStage(currentObject, openedAsBomb ? chestBombStage3Sprite : chestTreasureStage3Sprite);
 
         var clickable = currentObject.GetComponent<DogSpawnedObject>();
         if (clickable != null)
@@ -145,6 +153,56 @@ public class charclickdog : MonoBehaviour, IPointerClickHandler
         }
 
         PlaySound(openedAsBomb ? bombOpenSound : treasureOpenSound);
+        PlayOpenVfx(currentObject, openedAsBomb);
+    }
+
+    private void PlayOpenVfx(GameObject chestObject, bool bomb)
+    {
+        if (chestObject == null) return;
+        GameObject vfxPrefab = bomb ? chestBombVfxPrefab : chestTreasureVfxPrefab;
+        if (vfxPrefab == null) return;
+
+        Transform parent = chestObject.transform.parent != null ? chestObject.transform.parent : null;
+        GameObject vfx = Instantiate(vfxPrefab, parent);
+
+        // make sure VFX is parented under the same parent and rendered on top
+        vfx.transform.SetParent(parent, false);
+        PositionVfx(vfx, chestObject);
+        vfx.transform.SetAsLastSibling();
+
+        // raise particle renderers' sorting order so they appear above UI/world objects
+        var psRenderers = vfx.GetComponentsInChildren<ParticleSystemRenderer>(true);
+        foreach (var pr in psRenderers)
+        {
+            pr.sortingOrder = 1000;
+        }
+
+        // if there's a Canvas in the VFX prefab, force it to override sorting
+        var vfxCanvas = vfx.GetComponentInChildren<Canvas>(true);
+        if (vfxCanvas != null)
+        {
+            vfxCanvas.overrideSorting = true;
+            vfxCanvas.sortingOrder = 1000;
+        }
+
+        vfx.SetActive(true);
+    }
+
+    private void PositionVfx(GameObject vfxObject, GameObject targetObject)
+    {
+        if (vfxObject == null || targetObject == null) return;
+
+        if (vfxObject.transform is RectTransform vfxRect && targetObject.transform is RectTransform targetRect)
+        {
+            vfxRect.SetParent(targetObject.transform.parent, false);
+            vfxRect.anchoredPosition = targetRect.anchoredPosition;
+            vfxRect.localRotation = Quaternion.identity;
+            return;
+        }
+
+        vfxObject.transform.SetParent(targetObject.transform.parent, false);
+        vfxObject.transform.position = targetObject.transform.position;
+        vfxObject.transform.rotation = targetObject.transform.rotation;
     }
 
     private void SetChestStage(GameObject obj, Sprite sprite)
@@ -199,7 +257,7 @@ public class charclickdog : MonoBehaviour, IPointerClickHandler
         openedAsBomb = false;
     }
 
-    private void PlaySound(AudioClip clip)
+    private void PlayClickSound(AudioClip clip)
     {
         if (clip == null) return;
         if (audioSource != null)
@@ -210,6 +268,11 @@ public class charclickdog : MonoBehaviour, IPointerClickHandler
         {
             AudioSource.PlayClipAtPoint(clip, Camera.main != null ? Camera.main.transform.position : Vector3.zero);
         }
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        PlayClickSound(clip);
     }
 }
 
@@ -241,17 +304,13 @@ public class DogSpawnedObject : MonoBehaviour, IPointerClickHandler
 
     private void HandleClick()
     {
-        if (!isOpened)
+        if (isOpened)
         {
-            PlaySound(clickSound);
-            onChestClicked?.Invoke();
             return;
         }
 
-        PlaySound(openSound);
-        destroyedByClick = true;
-        Destroy(gameObject);
-        onOpenedDestroy?.Invoke();
+        PlaySound(clickSound);
+        onChestClicked?.Invoke();
     }
 
     private void OnDestroy()
