@@ -100,6 +100,12 @@ public class DragDropPiece : MonoBehaviour, IPointerDownHandler, IBeginDragHandl
             {
                 quizManager.OnPiecePlacedCorrectly();
             }
+
+            handclick tutorial = FindObjectOfType<handclick>();
+            if (tutorial != null)
+            {
+                tutorial.HideTutorial();
+            }
         }
         else
         {

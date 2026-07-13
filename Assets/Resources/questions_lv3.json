@@ -1,0 +1,47 @@
+{
+  "data": [
+    { "id": 17, "questionName": "Có 14 quả táo, số quả lê nhiều hơn táo 2 lần. Hỏi có bao nhiêu quả lê?", "typeQuestion": 100, "status": "advanced",
+      "answers": [
+        { "answerName": "16", "isAnswer": false },
+        { "answerName": "28", "isAnswer": true },
+        { "answerName": "12", "isAnswer": false }
+      ]
+    },
+    { "id": 18, "questionName": "Có 15 bạn nam, số bạn nữ ít hơn nam 5 bạn. Hỏi có bao nhiêu bạn nữ?", "typeQuestion": 100, "status": "advanced",
+      "answers": [
+        { "answerName": "10", "isAnswer": true },
+        { "answerName": "20", "isAnswer": false },
+        { "answerName": "12", "isAnswer": false }
+      ]
+    },
+    { "id": 19, "questionName": "Trong công viên có 12 cây xanh, số bồn hoa nhiều hơn cây xanh 6 bồn. Hỏi có bao nhiêu bồn hoa?", "typeQuestion": 100, "status": "advanced",
+      "answers": [
+        { "answerName": "16", "isAnswer": false },
+        { "answerName": "17", "isAnswer": false },
+        { "answerName": "18", "isAnswer": true }
+      ]
+    },
+    { "id": 20, "questionName": "Có 18 học sinh khối 2, khối 3 nhiều hơn 5 bạn. Tổng số học sinh hai khối là:", "typeQuestion": 100, "status": "advanced",
+      "answers": [
+        { "answerName": "23", "isAnswer": false },
+        { "answerName": "41", "isAnswer": true },
+        { "answerName": "43", "isAnswer": false }
+      ]
+    },
+    { "id": 21, "questionName": "Có 25 con cá, số tôm ít hơn cá 8 con. Hỏi có bao nhiêu con tôm?", "typeQuestion": 100, "status": "advanced",
+      "answers": [
+        { "answerName": "33", "isAnswer": false },
+        { "answerName": "17", "isAnswer": true },
+        { "answerName": "18", "isAnswer": false }
+      ]
+    },
+    { "id": 67, "questionName": "2 + 3 = ?", "typeQuestion": 100, "status": "advanced",
+      "answers": [
+        { "answerName": "4", "isAnswer": false },
+        { "answerName": "5", "isAnswer": true },
+        { "answerName": "6", "isAnswer": false },
+        { "answerName": "7", "isAnswer": false }
+      ]
+    }
+  ]
+}

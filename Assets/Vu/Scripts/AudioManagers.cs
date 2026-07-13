@@ -9,7 +9,7 @@ public class AudioManagers : MonoBehaviour
     [SerializeField] private AudioSource sfxSource;   
 
     [Header("--- ĐIỀU CHỈNH ÂM LƯỢNG TỪNG ÂM THANH (0 = Tắt, 1 = Tối đa) ---")]
-    [Range(0f, 1f)] public float volumeBackgroundMusic = 0.5f;
+    [Range(0f, 1f)] public float volumeBackgroundMusic = 0.2f;
     [Range(0f, 1f)] public float volumeClickSound = 1f;
     [Range(0f, 1f)] public float volumeHoverSound = 0.8f;
     [Range(0f, 1f)] public float volumeCorrectSound = 1f;

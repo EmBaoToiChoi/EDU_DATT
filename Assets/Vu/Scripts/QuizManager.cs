@@ -122,64 +122,39 @@ public class QuizManager : MonoBehaviour
         if (answerPanel != null) answerPanel.SetActive(false);
 
         // Kích hoạt tiến trình tải câu hỏi từ API trực tuyến
-        StartCoroutine(FetchQuestionsFromSwagger());
+        LoadQuestionsFromLocal();
     }
 
-    private IEnumerator FetchQuestionsFromSwagger()
+private void LoadQuestionsFromLocal()
+{
+    string sceneName = SceneManager.GetActiveScene().name;
+    string fileName = "";
+
+    if (sceneName.Contains("1"))
+        fileName = "questions_lv1";
+    else if (sceneName.Contains("2"))
+        fileName = "questions_lv2";
+    else if (sceneName.Contains("3"))
+        fileName = "questions_lv3";
+
+    TextAsset jsonFile = Resources.Load<TextAsset>(fileName);
+
+    if (jsonFile == null)
     {
-        Debug.Log("Đang tải dữ liệu câu hỏi từ API Swagger...");
-        using (UnityWebRequest webRequest = UnityWebRequest.Get(swaggerApiURL))
-        {
-            // Chờ phản hồi từ server mạng
-            yield return webRequest.SendWebRequest();
-
-            // Kiểm tra nếu xảy ra lỗi kết nối internet hoặc lỗi từ phía server
-            if (webRequest.result == UnityWebRequest.Result.ConnectionError || webRequest.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError("Không thể kết nối đến API Swagger hoặc lỗi Server. Lỗi: " + webRequest.error);
-                // ĐÃ BỎ HOÀN TOÀN CÂU HỎI OFFLINE THEO YÊU CẦU
-            }
-            else
-            {
-                string jsonResponse = webRequest.downloadHandler.text;
-                try
-                {
-                    // Giải mã chuỗi JSON nhận về đổ vào Wrapper Class
-                    SwaggerResponseWrapper wrapper = JsonUtility.FromJson<SwaggerResponseWrapper>(jsonResponse);
-                    
-                    if (wrapper != null && wrapper.data != null)
-                    {
-                        activeQuestionList.Clear();
-                        
-                        // LỌC DỮ LIỆU: Chỉ lấy câu hỏi Trắc nghiệm (100) VÀ có status trùng khớp với Inspector
-                        foreach (var item in wrapper.data)
-                        {
-                            bool matchStatus = !string.IsNullOrEmpty(item.status) && 
-                                               item.status.ToLower().Trim() == statusToFilter.ToLower().Trim();
-
-                            // Điều kiện: Là câu trắc nghiệm, khớp status và phải có ít nhất 1 đáp án trở lên
-                            if (item.typeQuestion == 100 && matchStatus && item.answers != null && item.answers.Count > 0)
-                            {
-                                activeQuestionList.Add(item);
-                            }
-                        }
-
-                        Debug.Log($"Đã tải thành công và lọc được {activeQuestionList.Count} câu trắc nghiệm có status '{statusToFilter}'!");
-                        
-                        // Nếu số câu hỏi lấy về từ API ít hơn số lượng thẻ bài ban đầu, cập nhật lại tổng số màn
-                        if (activeQuestionList.Count < totalQuestions)
-                        {
-                            totalQuestions = activeQuestionList.Count;
-                        }
-                    }
-                }
-                catch (System.Exception e)
-                {
-                    Debug.LogError("Lỗi phân rã chuỗi JSON từ Swagger: " + e.Message);
-                }
-            }
-        }
+        Debug.LogError("Không load được file: " + fileName);
+        return;
     }
+
+    SwaggerResponseWrapper wrapper = JsonUtility.FromJson<SwaggerResponseWrapper>(jsonFile.text);
+
+    if (wrapper != null && wrapper.data != null)
+    {
+        activeQuestionList = wrapper.data;
+        totalQuestions = activeQuestionList.Count;  // ✅ THÊM DÒNG NÀY
+
+        Debug.Log($"{sceneName} load thành công {activeQuestionList.Count} câu hỏi!");
+    }
+}
 
     private void Update()
     {

@@ -1,0 +1,54 @@
+{
+  "data": [
+    { "id": 9, "questionName": "Có 8 bạn nữ, số bạn nam ít hơn 3 bạn. Hỏi có bao nhiêu bạn nam?", "typeQuestion": 100, "status": "level",
+      "answers": [
+        { "answerName": "11", "isAnswer": false },
+        { "answerName": "5", "isAnswer": true },
+        { "answerName": "6", "isAnswer": false }
+      ]
+    },
+    { "id": 10, "questionName": "Có 10 quả táo, số quả cam nhiều hơn táo 5 quả. Có bao nhiêu quả cam?", "typeQuestion": 100, "status": "level",
+      "answers": [
+        { "answerName": "15", "isAnswer": true },
+        { "answerName": "14", "isAnswer": false },
+        { "answerName": "10", "isAnswer": false }
+      ]
+    },
+    { "id": 11, "questionName": "Trong lớp có 7 bạn chơi cầu lông, số bạn chơi đá bóng nhiều hơn 4 bạn. Hỏi có bao nhiêu bạn chơi đá bóng?", "typeQuestion": 100, "status": "level",
+      "answers": [
+        { "answerName": "10", "isAnswer": false },
+        { "answerName": "11", "isAnswer": true },
+        { "answerName": "12", "isAnswer": false }
+      ]
+    },
+    { "id": 12, "questionName": "Có 6 cây xanh, số chậu hoa ít hơn cây xanh 2 chậu. Có bao nhiêu chậu hoa?", "typeQuestion": 100, "status": "level",
+      "answers": [
+        { "answerName": "4", "isAnswer": true },
+        { "answerName": "6", "isAnswer": false },
+        { "answerName": "8", "isAnswer": false }
+      ]
+    },
+    { "id": 15, "questionName": "Có 13 bạn trong tổ 1, tổ 2 nhiều hơn tổ 1 là 4 bạn. Hỏi tổ 2 có bao nhiêu bạn?", "typeQuestion": 100, "status": "level",
+      "answers": [
+        { "answerName": "16", "isAnswer": false },
+        { "answerName": "17", "isAnswer": true },
+        { "answerName": "18", "isAnswer": false }
+      ]
+    },
+    { "id": 16, "questionName": "Số bút của Lan nhiều hơn Hoa 3 cây, Hoa có 7 cây. Hỏi Lan có bao nhiêu cây bút?", "typeQuestion": 100, "status": "level",
+      "answers": [
+        { "answerName": "9", "isAnswer": false },
+        { "answerName": "10", "isAnswer": true },
+        { "answerName": "11", "isAnswer": false }
+      ]
+    },
+    { "id": 71, "questionName": "3 + 4 = ?", "typeQuestion": 100, "status": "level",
+      "answers": [
+        { "answerName": "6", "isAnswer": false },
+        { "answerName": "7", "isAnswer": true },
+        { "answerName": "8", "isAnswer": false },
+        { "answerName": "5", "isAnswer": false }
+      ]
+    }
+  ]
+}

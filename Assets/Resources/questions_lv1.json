@@ -1,0 +1,66 @@
+{
+  "data": [
+    { "id": 2, "questionName": "Có 6 bông hoa màu đỏ, số bông hoa màu vàng nhiều hơn số hoa đỏ 3 bông. Hỏi có bao nhiêu bông hoa vàng?", "typeQuestion": 100, "status": "basic",
+      "answers": [
+        { "answerName": "6", "isAnswer": false },
+        { "answerName": "7", "isAnswer": false },
+        { "answerName": "8", "isAnswer": false },
+        { "answerName": "9", "isAnswer": true }
+      ]
+    },
+    { "id": 3, "questionName": "Có 9 bạn nam, số bạn nữ nhiều hơn nam 2 bạn. Hỏi có bao nhiêu bạn nữ?", "typeQuestion": 100, "status": "basic",
+      "answers": [
+        { "answerName": "11", "isAnswer": true },
+        { "answerName": "7", "isAnswer": false },
+        { "answerName": "8", "isAnswer": false },
+        { "answerName": "10", "isAnswer": false }
+      ]
+    },
+    { "id": 4, "questionName": "Trong phép cộng 6 + 3 = 9, số 3 là gì?", "typeQuestion": 100, "status": "basic",
+      "answers": [
+        { "answerName": "Số hạng", "isAnswer": true },
+        { "answerName": "Tổng", "isAnswer": false },
+        { "answerName": "Hiệu", "isAnswer": false }
+      ]
+    },
+    { "id": 5, "questionName": "“Nhiều hơn một số đơn vị” nghĩa là", "typeQuestion": 100, "status": "basic",
+      "answers": [
+        { "answerName": "Cộng thêm", "isAnswer": true },
+        { "answerName": "Trừ đi", "isAnswer": false },
+        { "answerName": "Bằng nhau", "isAnswer": false }
+      ]
+    },
+    { "id": 68, "questionName": "5 + 4 = ?", "typeQuestion": 100, "status": "basic",
+      "answers": [
+        { "answerName": "8", "isAnswer": false },
+        { "answerName": "9", "isAnswer": true },
+        { "answerName": "10", "isAnswer": false },
+        { "answerName": "7", "isAnswer": false }
+      ]
+    },
+    { "id": 69, "questionName": "7 + 2 = ?", "typeQuestion": 100, "status": "basic",
+      "answers": [
+        { "answerName": "8", "isAnswer": false },
+        { "answerName": "9", "isAnswer": true },
+        { "answerName": "10", "isAnswer": false },
+        { "answerName": "7", "isAnswer": false }
+      ]
+    },
+    { "id": 70, "questionName": "1 + 6 = ?", "typeQuestion": 100, "status": "basic",
+      "answers": [
+        { "answerName": "6", "isAnswer": false },
+        { "answerName": "7", "isAnswer": true },
+        { "answerName": "8", "isAnswer": false },
+        { "answerName": "5", "isAnswer": false }
+      ]
+    },
+    { "id": 72, "questionName": "0 + 8 = ?", "typeQuestion": 100, "status": "basic",
+      "answers": [
+        { "answerName": "7", "isAnswer": false },
+        { "answerName": "8", "isAnswer": true },
+        { "answerName": "9", "isAnswer": false },
+        { "answerName": "10", "isAnswer": false }
+      ]
+    }
+  ]
+}
