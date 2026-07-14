@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 3c1e61a879a24ec4ca78e69587422e01
+guid: f95acad78e1119b44968d9a1f3fb6ed2
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 307593839175399184
-    second: button learn_0
+      213: 169767998597821622
+    second: panel question eng_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,23 +113,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: button learn_0
+      name: panel question eng_0
       rect:
         serializedVersion: 2
-        x: 159
-        y: 114
-        width: 229
-        height: 128
+        x: 0
+        y: 0
+        width: 1536
+        height: 1024
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 017f52f87fac44400800000000000000
-      internalID: 307593839175399184
+      spriteID: 6b4f6a268132b5200800000000000000
+      internalID: 169767998597821622
       vertices: []
       indices: 
       edges: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 31b1be9ae41eb7b4dad318950e271419
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -148,7 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      button learn_0: 307593839175399184
+      panel question eng_0: 169767998597821622
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
