@@ -20,9 +20,11 @@ public class Enemy : MonoBehaviour
     private MazeNavigator navigator;
 
     private Vector3Int startCell;
-    private float defaultSpeed;
-    private bool hasSavedDefaultSpeed = false;
     private Vector3 originalLocalScale = Vector3.one;
+    private bool isFearful;
+    private float fearTimer;
+    private float slowMultiplier = 1f;
+    private float slowTimer;
 
     private void Awake()
     {
@@ -31,16 +33,6 @@ public class Enemy : MonoBehaviour
 
     public void Spawn(Vector3Int spawnCell, GamePlay gp)
     {
-        if (!hasSavedDefaultSpeed)
-        {
-            defaultSpeed = speed;
-            hasSavedDefaultSpeed = true;
-        }
-        else
-        {
-            speed = defaultSpeed;
-        }
-
         startCell = spawnCell;
         gamePlay = gp;
         navigator = gp.navigator;
@@ -75,7 +67,6 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        // If stunned, tick down timer and stand still
         if (isStunned)
         {
             stunTimer -= Time.deltaTime;
@@ -86,6 +77,24 @@ public class Enemy : MonoBehaviour
             return;
         }
 
+        if (isFearful)
+        {
+            fearTimer -= Time.deltaTime;
+            if (fearTimer <= 0f)
+            {
+                isFearful = false;
+            }
+        }
+
+        if (slowTimer > 0f)
+        {
+            slowTimer -= Time.deltaTime;
+            if (slowTimer <= 0f)
+            {
+                slowMultiplier = 1f;
+            }
+        }
+
         // If game is waiting for a question to be answered, stand still
         if (gamePlay.waitingForAnswer)
         {
@@ -93,8 +102,14 @@ public class Enemy : MonoBehaviour
         }
 
         // Move towards target cell
+        float moveSpeed = speed * slowMultiplier;
+        if (isFearful)
+        {
+            moveSpeed *= 0.7f;
+        }
+
         Vector3 targetWorld = walkableTilemap.GetCellCenterWorld(targetCell);
-        transform.position = Vector3.MoveTowards(transform.position, targetWorld, speed * Time.deltaTime);
+        transform.position = Vector3.MoveTowards(transform.position, targetWorld, moveSpeed * Time.deltaTime);
 
         // When reaching target cell, calculate the next cell towards player
         if (Vector3.Distance(transform.position, targetWorld) <= 0.05f)
@@ -120,6 +135,24 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    public void Stun(float duration)
+    {
+        isStunned = true;
+        stunTimer = duration;
+    }
+
+    public void ApplySlow(float multiplier, float duration)
+    {
+        slowMultiplier = multiplier;
+        slowTimer = duration;
+    }
+
+    public void FearFromPlayer(float duration)
+    {
+        isFearful = true;
+        fearTimer = duration;
+    }
+
     void TriggerQuestionPrompt()
     {
         // Safety check to ensure we only trigger when game is not already asking a question
@@ -130,18 +163,23 @@ public class Enemy : MonoBehaviour
 
         if (gamePlay.questionManager != null)
         {
-            gamePlay.questionManager.ShowRandomQuestion((correct) =>
+            gamePlay.questionManager.ShowRandomQuestion((result) =>
             {
-                if (correct)
+                if (result == QuestionResult.Correct)
                 {
                     Debug.Log("Enemy touched player: Answered CORRECT. Enemy resets to start.");
                     ResetToStart();
                 }
-                else
+                else if (result == QuestionResult.Timeout)
                 {
-                    Debug.Log("Enemy touched player: Answered INCORRECT. Player loses 1 HP, Enemy resets to start and moves 2% faster.");
+                    Debug.Log("Enemy touched player: Timed out. Player loses 1 HP, Enemy resets to start and moves 2% faster.");
                     gamePlay.TakeDamage(1);
                     speed *= 1.02f;
+                    ResetToStart();
+                }
+                else
+                {
+                    Debug.Log("Enemy touched player: Answered INCORRECT. Enemy resets to start.");
                     ResetToStart();
                 }
 

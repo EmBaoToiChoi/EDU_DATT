@@ -2,6 +2,13 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum QuestionResult
+{
+    Correct,
+    Incorrect,
+    Timeout
+}
+
 [Serializable]
 public class Question
 {
@@ -13,6 +20,7 @@ public class Question
 public class QuestionManager : MonoBehaviour
 {
     public List<Question> questions = new List<Question>();
+    public float questionTimeLimit = 8f;
 
     System.Random rnd = new System.Random();
 
@@ -27,13 +35,13 @@ public class QuestionManager : MonoBehaviour
         }
     }
 
-    // Hiển thị câu hỏi ngẫu nhiên, trả về true/false qua callback
-    public void ShowRandomQuestion(Action<bool> resultCallback)
+    // Hiển thị câu hỏi ngẫu nhiên, trả về QuestionResult qua callback
+    public void ShowRandomQuestion(Action<QuestionResult> resultCallback)
     {
         if (questions == null || questions.Count == 0)
         {
             Debug.LogWarning("No questions assigned. Default to correct.");
-            resultCallback?.Invoke(true);
+            resultCallback?.Invoke(QuestionResult.Correct);
             return;
         }
 
@@ -43,15 +51,21 @@ public class QuestionManager : MonoBehaviour
         SimpleUI ui = FindObjectOfType<SimpleUI>();
         if (ui != null)
         {
-            ui.ShowQuestion(q, (choice) => {
+            ui.ShowQuestion(q, questionTimeLimit, (choice) => {
+                if (choice < 0)
+                {
+                    resultCallback?.Invoke(QuestionResult.Timeout);
+                    return;
+                }
+
                 bool ok = (choice == q.correctIndex);
-                resultCallback?.Invoke(ok);
+                resultCallback?.Invoke(ok ? QuestionResult.Correct : QuestionResult.Incorrect);
             });
         }
         else
         {
             Debug.LogWarning("SimpleUI not found in scene. Assuming correct.");
-            resultCallback?.Invoke(true);
+            resultCallback?.Invoke(QuestionResult.Correct);
         }
     }
 }

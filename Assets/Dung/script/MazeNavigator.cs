@@ -204,6 +204,29 @@ public class MazeNavigator : MonoBehaviour
         return longCells.Contains(cell);
     }
 
+    public List<Vector3Int> GetAllDeadEndCells()
+    {
+        var result = new List<Vector3Int>();
+        if (walkableTilemap == null) return result;
+
+        var bounds = walkableTilemap.cellBounds;
+        for (int x = bounds.xMin; x <= bounds.xMax; x++)
+        {
+            for (int y = bounds.yMin; y <= bounds.yMax; y++)
+            {
+                Vector3Int cell = new Vector3Int(x, y, 0);
+                if (!walkableTilemap.HasTile(cell)) continue;
+                if (cell == GetStartCell() || cell == GetGoalCell()) continue;
+                if (IsDeadEndTerminal(cell))
+                {
+                    result.Add(cell);
+                }
+            }
+        }
+
+        return result;
+    }
+
     public Vector3Int ChooseNextCell(Vector3Int currentCell, Vector3Int previousCell, bool correct, int consecutiveWrong)
     {
         if (generateRandomMaze)
