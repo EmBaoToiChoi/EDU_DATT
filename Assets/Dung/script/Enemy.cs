@@ -25,6 +25,8 @@ public class Enemy : MonoBehaviour
     private float fearTimer;
     private float slowMultiplier = 1f;
     private float slowTimer;
+    private bool isShrunk = false;
+    private float shrinkTimer = 0f;
 
     private void Awake()
     {
@@ -95,6 +97,16 @@ public class Enemy : MonoBehaviour
             }
         }
 
+        if (isShrunk)
+        {
+            shrinkTimer -= Time.deltaTime;
+            if (shrinkTimer <= 0f)
+            {
+                isShrunk = false;
+                transform.localScale = originalLocalScale;
+            }
+        }
+
         // If game is waiting for a question to be answered, stand still
         if (gamePlay.waitingForAnswer)
         {
@@ -120,7 +132,14 @@ public class Enemy : MonoBehaviour
             Vector3Int playerCell = walkableTilemap.WorldToCell(gamePlay.transform.position);
             if (currentCell != playerCell)
             {
-                targetCell = GetNextStep(currentCell, playerCell);
+                if (isFearful)
+                {
+                    targetCell = GetNextStepAway(currentCell, playerCell);
+                }
+                else
+                {
+                    targetCell = GetNextStep(currentCell, playerCell);
+                }
             }
         }
 
@@ -144,6 +163,18 @@ public class Enemy : MonoBehaviour
     public void ApplySlow(float multiplier, float duration)
     {
         slowMultiplier = multiplier;
+        slowTimer = duration;
+    }
+
+    public void ApplyShrinkAndSlow(float scaleMultiplier, float duration)
+    {
+        if (!isShrunk)
+        {
+            isShrunk = true;
+            transform.localScale = originalLocalScale * scaleMultiplier;
+        }
+        shrinkTimer = duration;
+        slowMultiplier = scaleMultiplier;
         slowTimer = duration;
     }
 
@@ -179,7 +210,8 @@ public class Enemy : MonoBehaviour
                 }
                 else
                 {
-                    Debug.Log("Enemy touched player: Answered INCORRECT. Enemy resets to start.");
+                    Debug.Log("Enemy touched player: Answered INCORRECT. Player loses 1 HP, enemy resets to start.");
+                    gamePlay.TakeDamage(1);
                     ResetToStart();
                 }
 
@@ -239,6 +271,53 @@ public class Enemy : MonoBehaviour
 
         // Reconstruct path to find the first step from start towards target
         Vector3Int step = target;
+        while (parentMap.ContainsKey(step) && parentMap[step] != start)
+        {
+            step = parentMap[step];
+        }
+
+        return step;
+    }
+
+    private Vector3Int GetNextStepAway(Vector3Int start, Vector3Int player)
+    {
+        if (start == player) return start;
+
+        Queue<Vector3Int> queue = new Queue<Vector3Int>();
+        Dictionary<Vector3Int, Vector3Int> parentMap = new Dictionary<Vector3Int, Vector3Int>();
+        HashSet<Vector3Int> visited = new HashSet<Vector3Int>();
+
+        queue.Enqueue(start);
+        visited.Add(start);
+
+        Vector3Int[] dirs = new Vector3Int[] { Vector3Int.up, Vector3Int.down, Vector3Int.left, Vector3Int.right };
+        Vector3Int best = start;
+        float bestDistance = Vector3.Distance(walkableTilemap.GetCellCenterWorld(start), gamePlay.transform.position);
+
+        while (queue.Count > 0)
+        {
+            Vector3Int curr = queue.Dequeue();
+            float dist = Vector3.Distance(walkableTilemap.GetCellCenterWorld(curr), gamePlay.transform.position);
+            if (dist > bestDistance)
+            {
+                bestDistance = dist;
+                best = curr;
+            }
+
+            foreach (var d in dirs)
+            {
+                Vector3Int next = curr + d;
+                if (!walkableTilemap.HasTile(next) || visited.Contains(next)) continue;
+
+                visited.Add(next);
+                parentMap[next] = curr;
+                queue.Enqueue(next);
+            }
+        }
+
+        if (best == start) return start;
+
+        Vector3Int step = best;
         while (parentMap.ContainsKey(step) && parentMap[step] != start)
         {
             step = parentMap[step];

@@ -19,7 +19,7 @@ public class GamePlay : MonoBehaviour
 {
     public MazeNavigator navigator;
     public QuestionManager questionManager;
-    public SimpleUI ui;
+    // SimpleUI reference removed to avoid compile-time dependency; UI interaction uses QuestionManager/SimpleUI at runtime.
     public GameObject startScreen;
     public float speed = 2f;
     public float reachThreshold = 0.1f;
@@ -66,13 +66,36 @@ public class GamePlay : MonoBehaviour
     public GameObject thoPlayer;
     public GameObject gaPlayer;
     public GameObject rongPlayer;
+    public Sprite boSprite;
+    public Sprite hoSprite;
+    public Sprite ranSprite;
+    public Sprite thoSprite;
+    public Sprite gaSprite;
+    public Sprite rongSprite;
+    public Transform playerVisualRoot;
+    public SpriteRenderer playerSpriteRenderer;
     public PlayerAnimalType currentAnimalType = PlayerAnimalType.Bo;
+    public PlayerAnimalType currentGoalAnimalType = PlayerAnimalType.Ho;
+    private GameObject activePlayerVisual;
+    public Transform goalVisualRoot;
+    public SpriteRenderer goalSpriteRenderer;
     public GameObject skillPickupPrefab;
     public int skillPickupsPerMap = 1;
     public float skillPickupSpawnOffset = 0.2f;
+    public float skillSpawnInterval = 8f;
+    public float initialSkillDelay = 5f;
+    private float skillSpawnTimer;
     public float activeSkillDuration = 6f;
     private bool hasActiveSkill;
     private float activeSkillTimer;
+
+    [Header("Animal Score Pickup Effects")]
+    public float snakeScoreSlowDuration = 4f;
+    public float rabbitDeadEndClearRadius = 1.5f;
+    public float dragonFearDuration = 5f;
+    private bool snakeSlowActive;
+    private float snakeSlowTimer;
+    private Vector3 playerVisualOriginalScale;
 
     [Header("UI Settings")]
     public TextMeshProUGUI scoreText;
@@ -145,22 +168,25 @@ public class GamePlay : MonoBehaviour
             enemy.gameObject.SetActive(false);
         }
 
-        SelectRandomAnimal();
+        playerVisualOriginalScale = playerVisualRoot != null ? playerVisualRoot.localScale : transform.localScale;
+        InitializeAnimalCycle();
 
         if (navigator != null)
         {
             if (navigator.generateRandomMaze)
             {
                 navigator.GenerateMaze();
+                UpdateGoalVisual();
             }
             else
             {
                 navigator.RefreshNodes();
+                UpdateGoalVisual();
             }
             walkableTilemap = navigator.walkableTilemap;
             SpawnDeadEndQuestionTriggers();
             SpawnScorePickups();
-            SpawnSkillPickups();
+            ResetSkillSpawnTimer(true);
             currentCell = navigator.GetStartCell();
             if (walkableTilemap != null)
             {
@@ -195,15 +221,8 @@ public class GamePlay : MonoBehaviour
             return;
         }
 
-        if (hasActiveSkill)
-        {
-            activeSkillTimer -= Time.deltaTime;
-            if (activeSkillTimer <= 0f)
-            {
-                hasActiveSkill = false;
-                speed = basePlayerSpeed;
-            }
-        }
+        UpdatePlayerEffects();
+        UpdateSkillSpawnTimer();
 
         if (moveQueue.Count > 0)
         {
@@ -484,7 +503,7 @@ public class GamePlay : MonoBehaviour
 
         if (candidateCells.Count == 0) return;
 
-        int spawnCount = Mathf.Min(Mathf.Max(1, skillPickupsPerMap), candidateCells.Count);
+        int spawnCount = 1;
         for (int i = 0; i < spawnCount; i++)
         {
             int index = UnityEngine.Random.Range(0, candidateCells.Count);
@@ -528,6 +547,104 @@ public class GamePlay : MonoBehaviour
         Debug.Log($"Score: {currentScore}");
     }
 
+    void ActivateDragonFear()
+    {
+        if (enemy != null)
+        {
+            enemy.FearFromPlayer(dragonFearDuration);
+            Debug.Log("Dragon skill effect: enemy frightened and runs away.");
+        }
+    }
+
+    void ClearNearbyDeadEnds()
+    {
+        if (navigator == null) return;
+
+        Transform triggerRoot = navigator.transform.Find("DeadEndTriggers");
+        if (triggerRoot == null) return;
+
+        var children = new List<Transform>();
+        foreach (Transform child in triggerRoot)
+        {
+            if (child.name.Contains("DeadEndTrigger"))
+                children.Add(child);
+        }
+
+        foreach (Transform child in children)
+        {
+            if (Vector3.Distance(transform.position, child.position) <= rabbitDeadEndClearRadius)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        Debug.Log("Rabbit score effect: nearby dead-end triggers removed.");
+    }
+
+    void UpdatePlayerEffects()
+    {
+        if (hasActiveSkill)
+        {
+            activeSkillTimer -= Time.deltaTime;
+            if (activeSkillTimer <= 0f)
+            {
+                hasActiveSkill = false;
+            }
+        }
+
+        if (hasActiveSkill && currentAnimalType == PlayerAnimalType.Ga)
+        {
+            speed = basePlayerSpeed * 1.5f;
+        }
+        else if (!hasActiveSkill)
+        {
+            speed = basePlayerSpeed;
+        }
+    }
+
+    void ClearSkillPickups()
+    {
+        if (navigator == null) return;
+
+        Transform pickupRoot = navigator.transform.Find("SkillPickups");
+        if (pickupRoot == null) return;
+
+        for (int i = pickupRoot.childCount - 1; i >= 0; i--)
+        {
+            Destroy(pickupRoot.GetChild(i).gameObject);
+        }
+    }
+
+    void ResetSkillSpawnTimer(bool initialDelay = false)
+    {
+        if (initialDelay)
+        {
+            ClearSkillPickups();
+        }
+
+        skillSpawnTimer = initialDelay ? initialSkillDelay : skillSpawnInterval;
+    }
+
+    void UpdateSkillSpawnTimer()
+    {
+        if (skillPickupPrefab == null || navigator == null || walkableTilemap == null)
+            return;
+
+        skillSpawnTimer -= Time.deltaTime;
+        if (skillSpawnTimer > 0f)
+            return;
+
+        Transform pickupRoot = navigator.transform.Find("SkillPickups");
+        bool hasPickup = pickupRoot != null && pickupRoot.childCount > 0;
+
+        if (!hasPickup)
+        {
+            SpawnSkillPickups();
+        }
+
+        ResetSkillSpawnTimer(false);
+    }
+
     public void GrantSkill()
     {
         hasActiveSkill = true;
@@ -550,7 +667,7 @@ public class GamePlay : MonoBehaviour
             case PlayerAnimalType.Ran:
                 if (enemy != null)
                 {
-                    enemy.ApplySlow(0.6f, 5f);
+                    enemy.ApplyShrinkAndSlow(0.5f, activeSkillDuration);
                 }
                 break;
             case PlayerAnimalType.Tho:
@@ -566,6 +683,8 @@ public class GamePlay : MonoBehaviour
                 }
                 break;
         }
+
+        ResetSkillSpawnTimer(false);
     }
 
     void ConvertNearestDeadEnd()
@@ -588,9 +707,10 @@ public class GamePlay : MonoBehaviour
             }
         }
 
-        if (closest != null && closestDistance <= 1.2f)
+        if (closest != null)
         {
             Destroy(closest.gameObject);
+            Debug.Log("Rabbit skill: removed closest dead-end trigger.");
         }
     }
 
@@ -653,6 +773,125 @@ public class GamePlay : MonoBehaviour
         }
     }
 
+    PlayerAnimalType GetRandomAnimal()
+    {
+        var values = Enum.GetValues(typeof(PlayerAnimalType));
+        return (PlayerAnimalType)values.GetValue(UnityEngine.Random.Range(0, values.Length));
+    }
+
+    PlayerAnimalType GetRandomAnimalExcept(PlayerAnimalType excluded)
+    {
+        var values = new List<PlayerAnimalType>((PlayerAnimalType[])Enum.GetValues(typeof(PlayerAnimalType)));
+        values.Remove(excluded);
+        if (values.Count == 0) return excluded;
+        return values[UnityEngine.Random.Range(0, values.Count)];
+    }
+
+    void UpdateActivePlayerModel()
+    {
+        UpdatePlayerVisual();
+    }
+
+    void UpdatePlayerVisual()
+    {
+        if (playerSpriteRenderer != null)
+        {
+            playerSpriteRenderer.sprite = GetAnimalSprite(currentAnimalType);
+        }
+
+        if (playerVisualRoot == null)
+            playerVisualRoot = transform;
+
+        GameObject selectedModel = GetAnimalModel(currentAnimalType);
+
+        // Deactivate all scene player models as needed.
+        var animalModels = new GameObject[] { boPlayer, hoPlayer, ranPlayer, thoPlayer, gaPlayer, rongPlayer };
+        foreach (var model in animalModels)
+        {
+            if (model == null) continue;
+            if (model.scene.IsValid())
+            {
+                model.SetActive(model == selectedModel);
+            }
+        }
+
+        if (activePlayerVisual != null)
+        {
+            Destroy(activePlayerVisual);
+            activePlayerVisual = null;
+        }
+
+        if (selectedModel == null)
+            return;
+
+        if (!selectedModel.scene.IsValid())
+        {
+            activePlayerVisual = Instantiate(selectedModel, playerVisualRoot);
+            activePlayerVisual.transform.localPosition = Vector3.zero;
+            activePlayerVisual.transform.localRotation = Quaternion.identity;
+            activePlayerVisual.transform.localScale = Vector3.one;
+        }
+        else
+        {
+            activePlayerVisual = selectedModel;
+        }
+    }
+
+    void UpdateGoalVisual()
+    {
+        if (navigator == null) return;
+
+        GameObject goalModel = GetAnimalModel(currentGoalAnimalType);
+        navigator.goalVisualPrefab = goalModel;
+
+        if (goalSpriteRenderer != null)
+        {
+            goalSpriteRenderer.sprite = GetAnimalSprite(currentGoalAnimalType);
+        }
+
+        if (goalVisualRoot == null && navigator.goalPoint != null)
+            goalVisualRoot = navigator.goalPoint;
+
+        if (goalVisualRoot != null && goalModel != null)
+        {
+            foreach (Transform child in goalVisualRoot)
+            {
+                Destroy(child.gameObject);
+            }
+
+            GameObject visual = Instantiate(goalModel, goalVisualRoot);
+            visual.transform.localPosition = Vector3.zero;
+            visual.transform.localRotation = Quaternion.identity;
+            visual.transform.localScale = Vector3.one;
+        }
+    }
+
+    void InitializeAnimalCycle()
+    {
+        currentAnimalType = GetRandomAnimal();
+        currentGoalAnimalType = GetRandomAnimalExcept(currentAnimalType);
+        UpdateActivePlayerModel();
+    }
+
+    void SelectRandomGoalAnimal(PlayerAnimalType exclude)
+    {
+        currentGoalAnimalType = GetRandomAnimalExcept(exclude);
+    }
+
+    Sprite GetAnimalSprite(PlayerAnimalType type)
+    {
+        switch (type)
+        {
+            case PlayerAnimalType.Bo: return boSprite;
+            case PlayerAnimalType.Ho: return hoSprite;
+            case PlayerAnimalType.Ran: return ranSprite;
+            case PlayerAnimalType.Tho: return thoSprite;
+            case PlayerAnimalType.Ga: return gaSprite;
+            case PlayerAnimalType.Rong: return rongSprite;
+            default: return null;
+        }
+    }
+
     string GetAnimalName(PlayerAnimalType type)
     {
         switch (type)
@@ -665,20 +904,6 @@ public class GamePlay : MonoBehaviour
             case PlayerAnimalType.Rong: return "Rồng";
             default: return "Không rõ";
         }
-    }
-
-    void SelectRandomAnimal()
-    {
-        currentAnimalType = (PlayerAnimalType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(PlayerAnimalType)).Length);
-        if (navigator != null)
-        {
-            var model = GetAnimalModel(currentAnimalType);
-            if (model != null)
-            {
-                navigator.goalVisualPrefab = model;
-            }
-        }
-        Debug.Log($"Selected animal: {GetAnimalName(currentAnimalType)}");
     }
 
     void ApplyLevelSettings()
@@ -718,7 +943,10 @@ public class GamePlay : MonoBehaviour
 
     void GenerateNextLevel()
     {
-        SelectRandomAnimal();
+        currentAnimalType = currentGoalAnimalType;
+        UpdateActivePlayerModel();
+        SelectRandomGoalAnimal(currentAnimalType);
+        UpdateGoalVisual();
 
         if (navigator != null)
         {
@@ -726,7 +954,7 @@ public class GamePlay : MonoBehaviour
             walkableTilemap = navigator.walkableTilemap;
             SpawnDeadEndQuestionTriggers();
             SpawnScorePickups();
-            SpawnSkillPickups();
+            ResetSkillSpawnTimer(true);
             currentCell = navigator.GetStartCell();
             if (walkableTilemap != null)
             {
@@ -765,22 +993,33 @@ public class GamePlay : MonoBehaviour
         if (enemySpawnCoroutine != null) StopCoroutine(enemySpawnCoroutine);
         ResetEnemySpawnState();
 
-        SelectRandomAnimal();
+        if (playerVisualRoot == null)
+            playerVisualRoot = transform;
+
+        if (playerVisualRoot == null)
+            playerVisualRoot = transform;
+
+        InitializeAnimalCycle();
 
         if (navigator != null)
         {
+            if (goalVisualRoot == null && navigator.goalPoint != null)
+                goalVisualRoot = navigator.goalPoint;
+
             if (navigator.generateRandomMaze)
             {
                 navigator.GenerateMaze();
+                UpdateGoalVisual();
             }
             else
             {
                 navigator.RefreshNodes();
+                UpdateGoalVisual();
             }
             walkableTilemap = navigator.walkableTilemap;
             SpawnDeadEndQuestionTriggers();
             SpawnScorePickups();
-            SpawnSkillPickups();
+            ResetSkillSpawnTimer(true);
             currentCell = navigator.GetStartCell();
             if (walkableTilemap != null)
             {

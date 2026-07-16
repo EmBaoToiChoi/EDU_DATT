@@ -9,63 +9,181 @@ public enum QuestionResult
     Timeout
 }
 
+public enum QuestionPresentationMode
+{
+    ImageGrid,
+    CardSwipe
+}
+
 [Serializable]
 public class Question
 {
+    [Tooltip("Image shown at top of card")]
+    public Sprite cardImage;
+
+    [Tooltip("Vocabulary/text shown in middle of card (e.g. 'dog')")]
     public string prompt;
-    public string[] choices;
-    public int correctIndex = 0;
+
+    [Tooltip("Optional: sprite shown in middle of card instead of text (e.g. an object icon)")]
+    public Sprite promptSprite;
+    
+    [Tooltip("Optional RectTransform anchor describing where to place the prompt image on the card. Drag a UI RectTransform from the scene.")]
+    public RectTransform promptAnchor;
+
+    [Tooltip("If true: image and text match. Player should swipe right when the card is correct, left when it is wrong.")]
+    public bool isMatch = true;
+}
+
+[Serializable]
+public class CardData
+{
+    [Tooltip("Image asset for this card")]
+    public Sprite cardImage;
+
+    [Tooltip("Correct vocabulary word for this image")]
+    public string correctWord;
+
+    [Tooltip("Sprite used as the label/prompt for this image. If set, UI will show this sprite instead of text.")]
+    public Sprite labelSprite;
+
+    [Tooltip("Optional RectTransform in the scene to specify prompt position/size/pivot. Drag your desired UI object here.")]
+    public RectTransform labelAnchor;
 }
 
 public class QuestionManager : MonoBehaviour
 {
+    [Tooltip("If CardData list is filled, questions are generated randomly from image-word pairs.")]
+    public List<CardData> cardData = new List<CardData>();
+
+    [Tooltip("Optional manual questions. Used only when CardData is empty.")]
     public List<Question> questions = new List<Question>();
+
     public float questionTimeLimit = 8f;
 
     System.Random rnd = new System.Random();
 
-    // Nếu Inspector chưa có câu hỏi, tạo ví dụ để thuận tiện thử nghiệm
     void OnValidate()
     {
         if (questions == null) questions = new List<Question>();
-        if (questions.Count == 0)
-        {
-            questions.Add(new Question() { prompt = "Con gì kêu meo meo?", choices = new string[] { "Chó", "Mèo", "Gà" }, correctIndex = 1 });
-            questions.Add(new Question() { prompt = "Từ 'apple' nghĩa là gì?", choices = new string[] { "Táo", "Cam", "Cây" }, correctIndex = 0 });
-        }
+        if (cardData == null) cardData = new List<CardData>();
     }
 
-    // Hiển thị câu hỏi ngẫu nhiên, trả về QuestionResult qua callback
+    Question CreateRandomQuestionFromCardData()
+    {
+        if (cardData == null || cardData.Count == 0)
+            return null;
+
+        int idx = rnd.Next(cardData.Count);
+        CardData selected = cardData[idx];
+
+        bool isMatch = rnd.Next(2) == 0;
+        Sprite promptSprite = null;
+        string promptText = null;
+
+        if (isMatch)
+        {
+            promptSprite = selected.labelSprite;
+            promptText = selected.correctWord;
+        }
+        else
+        {
+            // pick a different card's label as incorrect prompt
+            CardData other = GetRandomDifferentCardData(selected);
+            if (other != null)
+            {
+                promptSprite = other.labelSprite;
+                promptText = other.correctWord;
+            }
+            else
+            {
+                promptSprite = selected.labelSprite;
+                promptText = selected.correctWord;
+            }
+        }
+
+        return new Question
+        {
+            cardImage = selected.cardImage,
+            prompt = promptText,
+            promptSprite = promptSprite,
+            promptAnchor = selected.labelAnchor,
+            isMatch = isMatch
+        };
+    }
+
+    CardData GetRandomDifferentCardData(CardData exclude)
+    {
+        if (cardData == null || cardData.Count <= 1) return null;
+        var candidates = new List<CardData>();
+        foreach (var c in cardData)
+        {
+            if (c != exclude) candidates.Add(c);
+        }
+        if (candidates.Count == 0) return null;
+        return candidates[rnd.Next(candidates.Count)];
+    }
+
+    string GetRandomIncorrectWord(string correctWord)
+    {
+        if (cardData == null || cardData.Count <= 1)
+            return correctWord;
+
+        var candidates = new System.Collections.Generic.List<string>();
+        foreach (var pair in cardData)
+        {
+            if (!string.IsNullOrWhiteSpace(pair.correctWord) && pair.correctWord != correctWord)
+            {
+                candidates.Add(pair.correctWord);
+            }
+        }
+
+        if (candidates.Count == 0)
+            return correctWord;
+
+        return candidates[rnd.Next(candidates.Count)];
+    }
+
+    // Present a random card-swipe question (always card mode)
     public void ShowRandomQuestion(Action<QuestionResult> resultCallback)
     {
-        if (questions == null || questions.Count == 0)
+        Question q = null;
+
+        if (cardData != null && cardData.Count > 0)
         {
-            Debug.LogWarning("No questions assigned. Default to correct.");
+            q = CreateRandomQuestionFromCardData();
+        }
+        else if (questions != null && questions.Count > 0)
+        {
+            int idx = rnd.Next(questions.Count);
+            q = questions[idx];
+        }
+        else
+        {
+            Debug.LogWarning("QuestionManager: no questions assigned. Defaulting to correct.");
             resultCallback?.Invoke(QuestionResult.Correct);
             return;
         }
 
-        int idx = rnd.Next(questions.Count);
-        Question q = questions[idx];
-
         SimpleUI ui = FindObjectOfType<SimpleUI>();
-        if (ui != null)
+        if (ui == null)
         {
-            ui.ShowQuestion(q, questionTimeLimit, (choice) => {
-                if (choice < 0)
-                {
-                    resultCallback?.Invoke(QuestionResult.Timeout);
-                    return;
-                }
+            GameObject uiObject = new GameObject("SimpleUI_Root");
+            ui = uiObject.AddComponent<SimpleUI>();
+        }
 
-                bool ok = (choice == q.correctIndex);
-                resultCallback?.Invoke(ok ? QuestionResult.Correct : QuestionResult.Incorrect);
-            });
-        }
-        else
-        {
-            Debug.LogWarning("SimpleUI not found in scene. Assuming correct.");
-            resultCallback?.Invoke(QuestionResult.Correct);
-        }
+        ui.ShowQuestion(q, questionTimeLimit, (choice) => {
+            if (choice < 0)
+            {
+                resultCallback?.Invoke(QuestionResult.Timeout);
+                return;
+            }
+
+            // In SimpleUI swipe returns 1 for right, 0 for left
+            bool swipedRight = (choice == 1);
+
+            bool correct = (swipedRight && q.isMatch) || (!swipedRight && !q.isMatch);
+
+            resultCallback?.Invoke(correct ? QuestionResult.Correct : QuestionResult.Incorrect);
+        }, QuestionPresentationMode.CardSwipe);
     }
 }

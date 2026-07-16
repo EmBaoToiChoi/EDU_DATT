@@ -59,7 +59,8 @@ public class DeadEndQuestionTrigger : MonoBehaviour
                 }
                 else if (result == QuestionResult.Incorrect)
                 {
-                    Debug.Log("Dead-end trigger answered incorrectly. No damage, just removed.");
+                    Debug.Log("Dead-end trigger answered incorrectly. Player loses 1 HP.");
+                    gamePlay.TakeDamage(1);
                 }
 
                 if (gameObject != null)
