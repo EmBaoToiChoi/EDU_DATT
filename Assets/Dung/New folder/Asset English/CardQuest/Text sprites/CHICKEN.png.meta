@@ -1,10 +1,22 @@
 fileFormatVersion: 2
-guid: 8f1e53039e345d44bb74affe88c4829f
+guid: fa9efaf288306ad4badaacb9d7cc9df7
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6168083732550661486
-    second: cow_0
+      213: -7442052964665986110
+    second: CHICKEN_0
+  - first:
+      213: -2110516928119612638
+    second: CHICKEN_1
+  - first:
+      213: -7022900547579012010
+    second: CHICKEN_2
+  - first:
+      213: 4153559097129518543
+    second: CHICKEN_3
+  - first:
+      213: 7804080357672473978
+    second: CHICKEN_4
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,23 +125,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cow_0
+      name: CHICKEN_0
       rect:
         serializedVersion: 2
-        x: 375
+        x: 241
         y: 1047
-        width: 319
+        width: 590
         height: 113
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e653c8f897f699550800000000000000
-      internalID: 6168083732550661486
+      spriteID: 2c3f071224488b890800000000000000
+      internalID: -7442052964665986110
       vertices: []
       indices: 
       edges: []
@@ -148,7 +160,11 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      cow_0: 6168083732550661486
+      CHICKEN_0: -7442052964665986110
+      CHICKEN_1: -2110516928119612638
+      CHICKEN_2: -7022900547579012010
+      CHICKEN_3: 4153559097129518543
+      CHICKEN_4: 7804080357672473978
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

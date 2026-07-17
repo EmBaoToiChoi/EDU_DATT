@@ -1,10 +1,16 @@
 fileFormatVersion: 2
-guid: 8f1e53039e345d44bb74affe88c4829f
+guid: fc7f5cef5891b3d45ad8e8acf37ae812
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6168083732550661486
-    second: cow_0
+      213: 3546224026007287755
+    second: DRAGON_0
+  - first:
+      213: 7807418435343773767
+    second: DRAGON_1
+  - first:
+      213: -2786839182867601557
+    second: DRAGON_2
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -113,23 +119,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: cow_0
+      name: DRAGON_1
       rect:
         serializedVersion: 2
-        x: 375
+        x: 247
         y: 1047
-        width: 319
+        width: 579
         height: 113
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e653c8f897f699550800000000000000
-      internalID: 6168083732550661486
+      spriteID: 740708393b5895c60800000000000000
+      internalID: 7807418435343773767
       vertices: []
       indices: 
       edges: []
@@ -148,7 +154,9 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      cow_0: 6168083732550661486
+      DRAGON_0: 3546224026007287755
+      DRAGON_1: 7807418435343773767
+      DRAGON_2: -2786839182867601557
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
