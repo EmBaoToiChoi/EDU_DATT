@@ -32,6 +32,12 @@ public class Question
 
     [Tooltip("If true: image and text match. Player should swipe right when the card is correct, left when it is wrong.")]
     public bool isMatch = true;
+
+    [Tooltip("Text of the correct answer to show when the player answers incorrectly.")]
+    public string correctAnswerText;
+
+    [Tooltip("Sprite of the correct answer to show when the player answers incorrectly.")]
+    public Sprite correctAnswerSprite;
 }
 
 [Serializable]
@@ -59,6 +65,18 @@ public class QuestionManager : MonoBehaviour
     public List<Question> questions = new List<Question>();
 
     public float questionTimeLimit = 8f;
+
+    [Tooltip("Animation object to show when the swipe answer is correct.")]
+    public GameObject correctSwipeAnimation;
+
+    [Tooltip("Animation object to show when the swipe answer is incorrect.")]
+    public GameObject incorrectSwipeAnimation;
+
+    [Tooltip("Prefab used to display the correct answer when the player answers incorrectly.")]
+    public GameObject correctAnswerDisplayPrefab;
+
+    [Tooltip("Single animation object to show for either correct or incorrect swipe. If set, it will be used as a fallback for both.")]
+    public GameObject swipeAnimationObject;
 
     System.Random rnd = new System.Random();
 
@@ -107,7 +125,9 @@ public class QuestionManager : MonoBehaviour
             prompt = promptText,
             promptSprite = promptSprite,
             promptAnchor = selected.labelAnchor,
-            isMatch = isMatch
+            isMatch = isMatch,
+            correctAnswerText = selected.correctWord,
+            correctAnswerSprite = selected.cardImage
         };
     }
 
@@ -171,19 +191,14 @@ public class QuestionManager : MonoBehaviour
             ui = uiObject.AddComponent<SimpleUI>();
         }
 
-        ui.ShowQuestion(q, questionTimeLimit, (choice) => {
-            if (choice < 0)
-            {
-                resultCallback?.Invoke(QuestionResult.Timeout);
-                return;
-            }
+        if (ui != null)
+        {
+            ui.correctAnimationObject = correctSwipeAnimation;
+            ui.incorrectAnimationObject = incorrectSwipeAnimation;
+            ui.correctAnswerDisplayPrefab = correctAnswerDisplayPrefab;
+            ui.swipeAnimationObject = swipeAnimationObject;
+        }
 
-            // In SimpleUI swipe returns 1 for right, 0 for left
-            bool swipedRight = (choice == 1);
-
-            bool correct = (swipedRight && q.isMatch) || (!swipedRight && !q.isMatch);
-
-            resultCallback?.Invoke(correct ? QuestionResult.Correct : QuestionResult.Incorrect);
-        }, QuestionPresentationMode.CardSwipe);
+        ui.ShowQuestion(q, questionTimeLimit, resultCallback, QuestionPresentationMode.CardSwipe);
     }
 }

@@ -8,9 +8,22 @@ public class SimpleUI : MonoBehaviour
 {
     private Canvas uiCanvas;
     private GameObject activeCardContainer;
-    private Action<int> currentChoiceCallback;
+    private Action<QuestionResult> currentResultCallback;
+    private Question currentQuestion;
     private float timeRemaining;
     private bool questionActive;
+
+    [Tooltip("Animation object shown when the swipe result is correct.")]
+    public GameObject correctAnimationObject;
+
+    [Tooltip("Animation object shown when the swipe result is incorrect.")]
+    public GameObject incorrectAnimationObject;
+
+    [Tooltip("Prefab used to display the correct answer when the player answers incorrectly.")]
+    public GameObject correctAnswerDisplayPrefab;
+
+    [Tooltip("Single animation object used for both correct and incorrect swipe results when the dedicated fields are not set.")]
+    public GameObject swipeAnimationObject;
 
     void Awake()
     {
@@ -29,20 +42,21 @@ public class SimpleUI : MonoBehaviour
         }
     }
 
-    public void ShowQuestion(Question question, float timeLimit, Action<int> resultCallback, QuestionPresentationMode mode)
+    public void ShowQuestion(Question question, float timeLimit, Action<QuestionResult> resultCallback, QuestionPresentationMode mode)
     {
         EnsureUI();
 
         if (question == null)
         {
-            resultCallback?.Invoke(-1);
+            resultCallback?.Invoke(QuestionResult.Timeout);
             return;
         }
 
         DestroyActiveCard();
 
         activeCardContainer = CreateCardUI(question);
-        currentChoiceCallback = resultCallback;
+        currentQuestion = question;
+        currentResultCallback = resultCallback;
         timeRemaining = Mathf.Max(0.1f, timeLimit);
         questionActive = true;
     }
@@ -57,9 +71,24 @@ public class SimpleUI : MonoBehaviour
 
     private void SubmitChoiceInternal(int choice)
     {
+        QuestionResult result;
+        if (choice < 0 || currentQuestion == null)
+        {
+            result = QuestionResult.Timeout;
+        }
+        else
+        {
+            bool swipedRight = (choice == 1);
+            result = (swipedRight && currentQuestion.isMatch) || (!swipedRight && !currentQuestion.isMatch)
+                ? QuestionResult.Correct
+                : QuestionResult.Incorrect;
+        }
+
+        ShowResultAnimation(result, currentQuestion);
         DestroyActiveCard();
-        currentChoiceCallback?.Invoke(choice);
-        currentChoiceCallback = null;
+        currentResultCallback?.Invoke(result);
+        currentResultCallback = null;
+        currentQuestion = null;
     }
 
     private void DestroyActiveCard()
@@ -235,5 +264,104 @@ public class SimpleUI : MonoBehaviour
         rect.pivot = pivot;
         rect.sizeDelta = size;
         rect.anchoredPosition = new Vector2(anchor.x < 0.5f ? -120f : 120f, 40f);
+    }
+
+    private void ShowResultAnimation(QuestionResult result, Question question)
+    {
+        GameObject animationObject = result == QuestionResult.Correct ? correctAnimationObject : incorrectAnimationObject;
+        if (animationObject == null)
+        {
+            animationObject = swipeAnimationObject;
+        }
+        if (animationObject == null) return;
+
+        Canvas canvas = uiCanvas ?? UnityEngine.Object.FindAnyObjectByType<Canvas>();
+        GameObject instance = Instantiate(animationObject);
+        instance.SetActive(true);
+
+        RectTransform rt = instance.GetComponent<RectTransform>();
+        if (rt != null && canvas != null)
+        {
+            instance.transform.SetParent(canvas.transform, false);
+            instance.transform.SetAsLastSibling();
+            rt.anchorMin = result == QuestionResult.Incorrect ? new Vector2(0.2f, 0.5f) : new Vector2(0.5f, 0.5f);
+            rt.anchorMax = result == QuestionResult.Incorrect ? new Vector2(0.2f, 0.5f) : new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = result == QuestionResult.Incorrect ? new Vector2(-120f, 0f) : Vector2.zero;
+            rt.sizeDelta = new Vector2(260f, 260f);
+            rt.localScale = Vector3.one;
+        }
+        else
+        {
+            Camera cam = Camera.main ?? Camera.current;
+            instance.transform.SetParent(null);
+            if (cam != null)
+            {
+                Vector3 screenCenter = new Vector3(Screen.width * (result == QuestionResult.Incorrect ? 0.25f : 0.5f), Screen.height * 0.5f, 10f);
+                instance.transform.position = cam.ScreenToWorldPoint(screenCenter);
+            }
+
+            if (instance.TryGetComponent(out SpriteRenderer spriteRenderer))
+            {
+                spriteRenderer.sortingOrder = 32767;
+            }
+        }
+
+        if (instance.TryGetComponent(out ParticleSystem particleSystem))
+        {
+            particleSystem.Play(true);
+        }
+
+        if (instance.TryGetComponent(out Animator animator))
+        {
+            animator.enabled = true;
+            animator.Play(0, -1, 0f);
+        }
+
+        if (instance.TryGetComponent(out Animation animationComponent))
+        {
+            animationComponent.Play();
+        }
+
+        if (result == QuestionResult.Incorrect && question != null)
+        {
+            ShowCorrectAnswerFeedback(question);
+        }
+
+        Destroy(instance, 2f);
+    }
+
+    private void ShowCorrectAnswerFeedback(Question question)
+    {
+        if (correctAnswerDisplayPrefab == null) return;
+
+        GameObject feedback = Instantiate(correctAnswerDisplayPrefab, uiCanvas != null ? uiCanvas.transform : null, false);
+        feedback.SetActive(true);
+
+        RectTransform rt = feedback.GetComponent<RectTransform>();
+        if (rt != null)
+        {
+            rt.anchorMin = new Vector2(0.75f, 0.2f);
+            rt.anchorMax = new Vector2(0.75f, 0.2f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.anchoredPosition = Vector2.zero;
+            rt.localScale = Vector3.one;
+        }
+
+        var textComponent = feedback.GetComponentInChildren<TextMeshProUGUI>();
+        if (textComponent != null)
+        {
+            textComponent.text = question.correctAnswerText;
+        }
+
+        var imageComponent = feedback.GetComponentInChildren<Image>();
+        if (imageComponent != null && question.correctAnswerSprite != null)
+        {
+            imageComponent.sprite = question.correctAnswerSprite;
+            imageComponent.color = Color.white;
+            imageComponent.preserveAspect = true;
+        }
+
+        Destroy(feedback, 2f);
     }
 }

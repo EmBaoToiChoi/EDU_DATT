@@ -11,8 +11,6 @@ public class CardQuestion : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     public TextMeshProUGUI statusText;
     public Image cardImage;
     public Image promptImage;
-    public GameObject correctAnimationObject;
-    public GameObject incorrectAnimationObject;
     public float swipeThreshold = 120f;
     public float swipeAnimationDuration = 0.35f;
 
@@ -73,7 +71,6 @@ public class CardQuestion : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         if (Mathf.Abs(horizontal) >= swipeThreshold)
         {
             pendingChoice = horizontal > 0 ? 1 : 0;
-            ShowSwipeAnimation(horizontal > 0 ? 1 : -1);
             StartSwipeAnimation(horizontal > 0 ? 1 : -1);
         }
         else
@@ -87,32 +84,6 @@ public class CardQuestion : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         }
     }
 
-    private void ShowSwipeAnimation(int direction)
-    {
-        GameObject animationObject = direction > 0 ? correctAnimationObject : incorrectAnimationObject;
-        if (animationObject == null) return;
-
-        Canvas canvas = GetComponentInParent<Canvas>();
-        if (canvas == null) return;
-
-        GameObject instance = Instantiate(animationObject, canvas.transform, false);
-        RectTransform rt = instance.GetComponent<RectTransform>();
-        if (rt == null)
-        {
-            rt = instance.AddComponent<RectTransform>();
-        }
-
-        rt.anchorMin = new Vector2(0.5f, 0.5f);
-        rt.anchorMax = new Vector2(0.5f, 0.5f);
-        rt.pivot = new Vector2(0.5f, 0.5f);
-        rt.anchoredPosition = direction > 0
-            ? new Vector2(420f, 0f)
-            : new Vector2(-420f, 0f);
-        rt.sizeDelta = new Vector2(220f, 220f);
-        rt.localScale = Vector3.one;
-
-        Destroy(instance, 0.7f);
-    }
 
     private void StartSwipeAnimation(int direction)
     {
