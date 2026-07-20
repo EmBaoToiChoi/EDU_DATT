@@ -25,6 +25,12 @@ public class SimpleUI : MonoBehaviour
     [Tooltip("Single animation object used for both correct and incorrect swipe results when the dedicated fields are not set.")]
     public GameObject swipeAnimationObject;
 
+    [Tooltip("Optional per-card animation prefab shown when the swipe result is correct.")]
+    public GameObject questionCorrectResultAnimationPrefab;
+
+    [Tooltip("Optional per-card animation prefab shown when the swipe result is incorrect.")]
+    public GameObject questionIncorrectResultAnimationPrefab;
+
     void Awake()
     {
         EnsureUI();
@@ -268,7 +274,16 @@ public class SimpleUI : MonoBehaviour
 
     private void ShowResultAnimation(QuestionResult result, Question question)
     {
-        GameObject animationObject = result == QuestionResult.Correct ? correctAnimationObject : incorrectAnimationObject;
+        GameObject animationObject = null;
+        if (result == QuestionResult.Correct)
+        {
+            animationObject = question?.correctResultAnimationPrefab ?? correctAnimationObject;
+        }
+        else if (result == QuestionResult.Incorrect)
+        {
+            animationObject = question?.incorrectResultAnimationPrefab ?? incorrectAnimationObject;
+        }
+
         if (animationObject == null)
         {
             animationObject = swipeAnimationObject;
@@ -280,25 +295,66 @@ public class SimpleUI : MonoBehaviour
         instance.SetActive(true);
 
         RectTransform rt = instance.GetComponent<RectTransform>();
-        if (rt != null && canvas != null)
+
+        // Parent to canvas so UI animations render in screen space.
+        if (canvas != null)
         {
             instance.transform.SetParent(canvas.transform, false);
             instance.transform.SetAsLastSibling();
-            rt.anchorMin = result == QuestionResult.Incorrect ? new Vector2(0.2f, 0.5f) : new Vector2(0.5f, 0.5f);
-            rt.anchorMax = result == QuestionResult.Incorrect ? new Vector2(0.2f, 0.5f) : new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = result == QuestionResult.Incorrect ? new Vector2(-120f, 0f) : Vector2.zero;
-            rt.sizeDelta = new Vector2(260f, 260f);
-            rt.localScale = Vector3.one;
         }
-        else
+
+        // Preserve per-card prefab layout if the instantiated animation came from a card-specific prefab.
+        bool preservePrefabLayout = (question != null && (animationObject == question.correctResultAnimationPrefab || animationObject == question.incorrectResultAnimationPrefab));
+
+        bool isFallbackSwipe = animationObject == swipeAnimationObject;
+
+        if (rt != null && canvas != null)
         {
-            Camera cam = Camera.main ?? Camera.current;
+            if (!preservePrefabLayout)
+            {
+                if (isFallbackSwipe)
+                {
+                    // Keep generic swipe animation centered
+                    rt.anchorMin = new Vector2(0.5f, 0.5f);
+                    rt.anchorMax = new Vector2(0.5f, 0.5f);
+                    rt.pivot = new Vector2(0.5f, 0.5f);
+                    rt.anchoredPosition = Vector2.zero;
+                    rt.sizeDelta = new Vector2(260f, 260f);
+                }
+                else
+                {
+                    // Global correct/incorrect animations should appear at screen sides
+                    Vector2 sideAnchor = result == QuestionResult.Incorrect ? new Vector2(0.1f, 0.5f) : new Vector2(0.9f, 0.5f);
+                    rt.anchorMin = sideAnchor;
+                    rt.anchorMax = sideAnchor;
+                    rt.pivot = new Vector2(0.5f, 0.5f);
+                    rt.anchoredPosition = result == QuestionResult.Incorrect ? new Vector2(-80f, 0f) : new Vector2(80f, 0f);
+                    rt.sizeDelta = new Vector2(260f, 260f);
+                }
+            }
+
+            if (rt.localScale == Vector3.zero)
+            {
+                rt.localScale = Vector3.one;
+            }
+        }
+        else if (canvas == null)
+        {
+            // World-space fallback: position at screen side/center when not preserving prefab layout
             instance.transform.SetParent(null);
+            Camera cam = Camera.main ?? Camera.current;
             if (cam != null)
             {
-                Vector3 screenCenter = new Vector3(Screen.width * (result == QuestionResult.Incorrect ? 0.25f : 0.5f), Screen.height * 0.5f, 10f);
-                instance.transform.position = cam.ScreenToWorldPoint(screenCenter);
+                float xFactor = isFallbackSwipe ? 0.5f : (result == QuestionResult.Incorrect ? 0.25f : 0.75f);
+                if (preservePrefabLayout)
+                {
+                    // keep prefab world position (do nothing)
+                }
+                else
+                {
+                    Vector3 screenCenter = new Vector3(Screen.width * xFactor, Screen.height * 0.5f, 10f);
+                    instance.transform.position = cam.ScreenToWorldPoint(screenCenter);
+                }
             }
 
             if (instance.TryGetComponent(out SpriteRenderer spriteRenderer))
@@ -341,25 +397,129 @@ public class SimpleUI : MonoBehaviour
         RectTransform rt = feedback.GetComponent<RectTransform>();
         if (rt != null)
         {
-            rt.anchorMin = new Vector2(0.75f, 0.2f);
-            rt.anchorMax = new Vector2(0.75f, 0.2f);
+            // Center the feedback in the middle of the screen so the text/image appears clearly
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
             rt.pivot = new Vector2(0.5f, 0.5f);
             rt.anchoredPosition = Vector2.zero;
-            rt.localScale = Vector3.one;
+            if (rt.sizeDelta == Vector2.zero)
+            {
+                rt.sizeDelta = new Vector2(700f, 220f);
+            }
+            if (rt.localScale == Vector3.zero)
+            {
+                rt.localScale = Vector3.one;
+            }
         }
 
-        var textComponent = feedback.GetComponentInChildren<TextMeshProUGUI>();
-        if (textComponent != null)
+        string answerText = question != null ? question.correctAnswerText : string.Empty;
+        bool hasSprite = question != null && question.correctAnswerSprite != null;
+
+        var textComponents = feedback.GetComponentsInChildren<TextMeshProUGUI>(true);
+        Image imageComponent = null;
+
+        // Prefer child named LabelImage
+        var labelTransform = feedback.transform.Find("LabelImage");
+        if (labelTransform != null)
         {
-            textComponent.text = question.correctAnswerText;
+            imageComponent = labelTransform.GetComponent<Image>();
         }
 
-        var imageComponent = feedback.GetComponentInChildren<Image>();
-        if (imageComponent != null && question.correctAnswerSprite != null)
+        // Otherwise prefer any child Image (not the root)
+        if (imageComponent == null)
         {
-            imageComponent.sprite = question.correctAnswerSprite;
-            imageComponent.color = Color.white;
-            imageComponent.preserveAspect = true;
+            var imgs = feedback.GetComponentsInChildren<Image>(true);
+            foreach (var img in imgs)
+            {
+                if (img.gameObject == feedback) continue; // skip root for now
+                imageComponent = img;
+                break;
+            }
+        }
+
+        // Fallback to root Image if nothing else found
+        if (imageComponent == null)
+        {
+            imageComponent = feedback.GetComponent<Image>();
+        }
+
+        if (hasSprite)
+        {
+            // Hide all text components
+            foreach (var t in textComponents) { t.text = string.Empty; t.enabled = false; }
+
+            // Try to find a child Image whose sprite already matches the desired sprite
+            Image matchingImage = null;
+            var allImages = feedback.GetComponentsInChildren<Image>(true);
+            foreach (var img in allImages)
+            {
+                if (img.sprite == question.correctAnswerSprite)
+                {
+                    matchingImage = img;
+                    break;
+                }
+            }
+
+            // If none matched by reference, try matching by name
+            if (matchingImage == null && question.correctAnswerSprite != null)
+            {
+                foreach (var img in allImages)
+                {
+                    if (img.sprite != null && img.sprite.name == question.correctAnswerSprite.name)
+                    {
+                        matchingImage = img;
+                        break;
+                    }
+                }
+            }
+
+            if (matchingImage != null)
+            {
+                // Disable other child images (but keep root background if present)
+                foreach (var img in allImages)
+                {
+                    if (img == matchingImage) continue;
+                    if (img.gameObject == feedback) continue;
+                    img.enabled = false;
+                }
+                matchingImage.enabled = true;
+                matchingImage.sprite = question.correctAnswerSprite;
+                matchingImage.color = Color.white;
+                matchingImage.preserveAspect = true;
+            }
+            else if (imageComponent != null)
+            {
+                // No matching child found; use the selected imageComponent as the single display
+                var allImgs = feedback.GetComponentsInChildren<Image>(true);
+                foreach (var img in allImgs)
+                {
+                    if (img.gameObject == feedback) continue;
+                    img.enabled = false;
+                }
+                imageComponent.sprite = question.correctAnswerSprite;
+                imageComponent.color = Color.white;
+                imageComponent.preserveAspect = true;
+                imageComponent.enabled = true;
+            }
+            else
+            {
+                Debug.LogWarning("ShowCorrectAnswerFeedback: no Image found in prefab to show correctAnswerSprite.");
+            }
+        }
+        else
+        {
+            // Show text; do not disable root image (background). Disable only non-root images to avoid hiding prefab background.
+            var allImages = feedback.GetComponentsInChildren<Image>(true);
+            foreach (var img in allImages)
+            {
+                if (img.gameObject == feedback) continue; // keep root
+                img.enabled = false;
+            }
+            foreach (var t in textComponents)
+            {
+                t.text = answerText;
+                t.enabled = true;
+            }
         }
 
         Destroy(feedback, 2f);

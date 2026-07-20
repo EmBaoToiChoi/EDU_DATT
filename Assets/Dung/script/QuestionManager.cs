@@ -38,6 +38,12 @@ public class Question
 
     [Tooltip("Sprite of the correct answer to show when the player answers incorrectly.")]
     public Sprite correctAnswerSprite;
+
+    [Tooltip("Optional animation prefab to show when this card is answered correctly.")]
+    public GameObject correctResultAnimationPrefab;
+
+    [Tooltip("Optional animation prefab to show when this card is answered incorrectly.")]
+    public GameObject incorrectResultAnimationPrefab;
 }
 
 [Serializable]
@@ -54,6 +60,15 @@ public class CardData
 
     [Tooltip("Optional RectTransform in the scene to specify prompt position/size/pivot. Drag your desired UI object here.")]
     public RectTransform labelAnchor;
+
+    [Tooltip("Optional per-card animation prefab to show when this card is swiped.")]
+    public GameObject cardAnimationPrefab;
+
+    [Tooltip("Optional animation prefab to show when this card is answered correctly.")]
+    public GameObject correctResultAnimationPrefab;
+
+    [Tooltip("Optional animation prefab to show when this card is answered incorrectly.")]
+    public GameObject incorrectResultAnimationPrefab;
 }
 
 public class QuestionManager : MonoBehaviour
@@ -127,7 +142,9 @@ public class QuestionManager : MonoBehaviour
             promptAnchor = selected.labelAnchor,
             isMatch = isMatch,
             correctAnswerText = selected.correctWord,
-            correctAnswerSprite = selected.cardImage
+            correctAnswerSprite = selected.cardImage,
+            correctResultAnimationPrefab = selected.correctResultAnimationPrefab != null ? selected.correctResultAnimationPrefab : selected.cardAnimationPrefab,
+            incorrectResultAnimationPrefab = selected.incorrectResultAnimationPrefab != null ? selected.incorrectResultAnimationPrefab : selected.cardAnimationPrefab
         };
     }
 
