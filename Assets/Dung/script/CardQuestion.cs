@@ -14,9 +14,27 @@ public class CardQuestion : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     public float swipeThreshold = 120f;
     public float swipeAnimationDuration = 0.35f;
 
+    [Header("Swipe feedback buttons")]
+    public RectTransform rejectButton;
+    public RectTransform acceptButton;
+    [Tooltip("Optional animation prefab/object shown when dragging the card toward one side.")]
+    public GameObject swipeFeedbackAnimationPrefab;
+    [Tooltip("Object that scales when dragging left/right to reject/accept.")]
+    public GameObject rejectHoldObject;
+    [Tooltip("Object that scales when dragging left/right to reject/accept.")]
+    public GameObject acceptHoldObject;
+    [Tooltip("How much the button scales while dragging.")]
+    public float buttonScaleOnDrag = 1.35f;
+    [Tooltip("How quickly the button reaches the full scale while dragging.")]
+    public float buttonScaleSpeed = 10f;
+
     private RectTransform rectTransform;
     private Vector2 startPointerPosition;
     private Vector3 originalPosition;
+    private Vector3 rejectHoldOriginalScale = Vector3.one;
+    private GameObject activeSwipeAnimation;
+    private int activeSwipeDirection = 0;
+    private Vector3 acceptHoldOriginalScale = Vector3.one;
     private bool dragging;
     private bool animating;
     private Coroutine animateCoroutine;
@@ -26,12 +44,32 @@ public class CardQuestion : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
     {
         rectTransform = GetComponent<RectTransform>();
         originalPosition = rectTransform.anchoredPosition;
+
+        if (rejectHoldObject != null)
+        {
+            rejectHoldOriginalScale = rejectHoldObject.transform.localScale == Vector3.zero ? Vector3.one : rejectHoldObject.transform.localScale;
+        }
+
+        if (acceptHoldObject != null)
+        {
+            acceptHoldOriginalScale = acceptHoldObject.transform.localScale == Vector3.zero ? Vector3.one : acceptHoldObject.transform.localScale;
+        }
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
         dragging = true;
         startPointerPosition = eventData.position;
+
+        if (rejectButton != null)
+        {
+            rejectButton.gameObject.SetActive(true);
+        }
+
+        if (acceptButton != null)
+        {
+            acceptButton.gameObject.SetActive(true);
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -43,6 +81,9 @@ public class CardQuestion : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
 
         float tilt = Mathf.Clamp(delta.x / 320f, -1f, 1f) * 18f;
         rectTransform.localRotation = Quaternion.Euler(0f, 0f, tilt);
+
+        float dragRatio = Mathf.Clamp(delta.x / swipeThreshold, -1f, 1f);
+        UpdateSwipeButtons(dragRatio);
 
         if (statusText != null)
         {
@@ -77,6 +118,7 @@ public class CardQuestion : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         {
             rectTransform.anchoredPosition = originalPosition;
             rectTransform.localRotation = Quaternion.identity;
+            ResetSwipeButtons();
             if (statusText != null)
             {
                 statusText.text = "Kéo thẻ để trả lời";
@@ -84,6 +126,118 @@ public class CardQuestion : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         }
     }
 
+    private void UpdateSwipeButtons(float dragRatio)
+    {
+        float normalized = Mathf.Clamp01(Mathf.Abs(dragRatio));
+        float targetScale = 1f + (buttonScaleOnDrag - 1f) * normalized;
+        float tilt = Mathf.Lerp(0f, 10f, normalized);
+
+        bool isLeft = dragRatio < -0.05f;
+        bool isRight = dragRatio > 0.05f;
+
+        if (rejectButton != null)
+        {
+            float rejectScale = isLeft ? targetScale : 1f;
+            rejectButton.localScale = Vector3.one * rejectScale;
+            rejectButton.localRotation = Quaternion.Euler(0f, 0f, isLeft ? -tilt : 0f);
+        }
+
+        if (acceptButton != null)
+        {
+            float acceptScale = isRight ? targetScale : 1f;
+            acceptButton.localScale = Vector3.one * acceptScale;
+            acceptButton.localRotation = Quaternion.Euler(0f, 0f, isRight ? tilt : 0f);
+        }
+
+        if (rejectHoldObject != null)
+        {
+            float rejectScale = isLeft ? targetScale : 1f;
+            rejectHoldObject.transform.localScale = rejectHoldOriginalScale * rejectScale;
+        }
+
+        if (acceptHoldObject != null)
+        {
+            float acceptScale = isRight ? targetScale : 1f;
+            acceptHoldObject.transform.localScale = acceptHoldOriginalScale * acceptScale;
+        }
+
+        if (isLeft)
+        {
+            PlaySwipeFeedbackAnimation(rejectButton, -1);
+        }
+        else if (isRight)
+        {
+            PlaySwipeFeedbackAnimation(acceptButton, 1);
+        }
+    }
+
+    private void ResetSwipeButtons()
+    {
+        if (rejectButton != null)
+        {
+            rejectButton.localScale = Vector3.one;
+            rejectButton.localRotation = Quaternion.identity;
+        }
+
+        if (acceptButton != null)
+        {
+            acceptButton.localScale = Vector3.one;
+            acceptButton.localRotation = Quaternion.identity;
+        }
+
+        if (rejectHoldObject != null)
+        {
+            rejectHoldObject.transform.localScale = rejectHoldOriginalScale;
+        }
+
+        if (acceptHoldObject != null)
+        {
+            acceptHoldObject.transform.localScale = acceptHoldOriginalScale;
+        }
+
+        if (activeSwipeAnimation != null)
+        {
+            Destroy(activeSwipeAnimation);
+            activeSwipeAnimation = null;
+        }
+
+        activeSwipeDirection = 0;
+    }
+
+    private void PlaySwipeFeedbackAnimation(RectTransform targetButton, int direction)
+    {
+        if (swipeFeedbackAnimationPrefab == null || targetButton == null) return;
+        if (activeSwipeAnimation != null && activeSwipeDirection == direction) return;
+
+        if (activeSwipeAnimation != null)
+        {
+            Destroy(activeSwipeAnimation);
+        }
+
+        activeSwipeAnimation = Instantiate(swipeFeedbackAnimationPrefab, targetButton, false);
+        activeSwipeAnimation.transform.localPosition = Vector3.zero;
+        activeSwipeAnimation.transform.localRotation = Quaternion.identity;
+        activeSwipeAnimation.transform.localScale = Vector3.one;
+        activeSwipeAnimation.SetActive(true);
+
+        if (activeSwipeAnimation.TryGetComponent(out Animator animator))
+        {
+            animator.enabled = true;
+            animator.Play(0, -1, 0f);
+        }
+
+        if (activeSwipeAnimation.TryGetComponent(out Animation animationComponent))
+        {
+            animationComponent.Play();
+        }
+
+        if (activeSwipeAnimation.TryGetComponent(out ParticleSystem particleSystem))
+        {
+            particleSystem.Play(true);
+        }
+
+        activeSwipeDirection = direction;
+    }
 
     private void StartSwipeAnimation(int direction)
     {
@@ -95,6 +249,27 @@ public class CardQuestion : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
             StopCoroutine(animateCoroutine);
         }
         animateCoroutine = StartCoroutine(AnimateSwipe(direction));
+    }
+
+    private void HideSwipeFeedback()
+    {
+        if (rejectButton != null)
+        {
+            rejectButton.gameObject.SetActive(false);
+        }
+
+        if (acceptButton != null)
+        {
+            acceptButton.gameObject.SetActive(false);
+        }
+
+        if (activeSwipeAnimation != null)
+        {
+            Destroy(activeSwipeAnimation);
+            activeSwipeAnimation = null;
+        }
+
+        activeSwipeDirection = 0;
     }
 
     private IEnumerator AnimateSwipe(int direction)
@@ -122,6 +297,7 @@ public class CardQuestion : MonoBehaviour, IBeginDragHandler, IDragHandler, IEnd
         {
             int choiceToReport = pendingChoice;
             pendingChoice = -1;
+            HideSwipeFeedback();
             onChoice?.Invoke(choiceToReport);
         }
         animating = false;

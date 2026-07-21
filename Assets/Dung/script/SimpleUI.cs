@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -11,7 +12,10 @@ public class SimpleUI : MonoBehaviour
     private Action<QuestionResult> currentResultCallback;
     private Question currentQuestion;
     private float timeRemaining;
+    private float currentTimeLimit;
     private bool questionActive;
+    private RectTransform rejectButtonRect;
+    private RectTransform acceptButtonRect;
 
     [Tooltip("Animation object shown when the swipe result is correct.")]
     public GameObject correctAnimationObject;
@@ -31,6 +35,30 @@ public class SimpleUI : MonoBehaviour
     [Tooltip("Optional per-card animation prefab shown when the swipe result is incorrect.")]
     public GameObject questionIncorrectResultAnimationPrefab;
 
+    [Tooltip("Sprite used for the red reject button on the card UI.")]
+    public Sprite rejectButtonSprite;
+
+    [Tooltip("Sprite used for the green accept button on the card UI.")]
+    public Sprite acceptButtonSprite;
+
+    [Tooltip("Position of the reject button relative to the card center.")]
+    public Vector2 rejectButtonPosition = new Vector2(-70f, -240f);
+
+    [Tooltip("Position of the accept button relative to the card center.")]
+    public Vector2 acceptButtonPosition = new Vector2(70f, -240f);
+
+    [Tooltip("Optional animation prefab/object shown when dragging the card toward one side.")]
+    public GameObject swipeFeedbackAnimationPrefab;
+
+    [Tooltip("Audio clip played when the answer is correct.")]
+    public AudioClip correctAnswerAudio;
+
+    [Tooltip("Audio clip played when the answer is incorrect.")]
+    public AudioClip incorrectAnswerAudio;
+
+    [Tooltip("Optional UI object shown as the timer image on the card.")]
+    public GameObject timerDisplayObject;
+
     void Awake()
     {
         EnsureUI();
@@ -41,6 +69,16 @@ public class SimpleUI : MonoBehaviour
         if (!questionActive) return;
 
         timeRemaining -= Time.deltaTime;
+
+        if (activeCardContainer != null)
+        {
+            var timerBar = activeCardContainer.GetComponentInChildren<bartime>(true);
+            if (timerBar != null)
+            {
+                timerBar.SetTimeRemaining(timeRemaining);
+            }
+        }
+
         if (timeRemaining <= 0f)
         {
             questionActive = false;
@@ -63,8 +101,19 @@ public class SimpleUI : MonoBehaviour
         activeCardContainer = CreateCardUI(question);
         currentQuestion = question;
         currentResultCallback = resultCallback;
-        timeRemaining = Mathf.Max(0.1f, timeLimit);
+        currentTimeLimit = Mathf.Max(0.1f, timeLimit);
+        timeRemaining = currentTimeLimit;
         questionActive = true;
+
+        if (activeCardContainer != null)
+        {
+            var timerBar = activeCardContainer.GetComponentInChildren<bartime>(true);
+            if (timerBar != null)
+            {
+                timerBar.ResetTimer(currentTimeLimit);
+                timerBar.SetTimeRemaining(timeRemaining);
+            }
+        }
     }
 
     public void SubmitChoice(int choice)
@@ -72,7 +121,35 @@ public class SimpleUI : MonoBehaviour
         if (!questionActive) return;
 
         questionActive = false;
+        
+        // Animate button scale based on choice
+        if (choice == 1 && acceptButtonRect != null)
+        {
+            StartCoroutine(AnimateButtonScale(acceptButtonRect));
+        }
+        else if (choice == -1 && rejectButtonRect != null)
+        {
+            StartCoroutine(AnimateButtonScale(rejectButtonRect));
+        }
+
         SubmitChoiceInternal(choice);
+    }
+
+    private IEnumerator AnimateButtonScale(RectTransform buttonRect)
+    {
+        Vector3 startScale = buttonRect.localScale;
+        Vector3 targetScale = startScale * 1.5f;
+        float duration = 0.3f;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            buttonRect.localScale = Vector3.Lerp(startScale, targetScale, elapsed / duration);
+            yield return null;
+        }
+
+        buttonRect.localScale = targetScale;
     }
 
     private void SubmitChoiceInternal(int choice)
@@ -90,7 +167,14 @@ public class SimpleUI : MonoBehaviour
                 : QuestionResult.Incorrect;
         }
 
+        PlayAnswerAudio(result);
         ShowResultAnimation(result, currentQuestion);
+        StartCoroutine(WaitThenFinishResult(result));
+    }
+
+    private IEnumerator WaitThenFinishResult(QuestionResult result)
+    {
+        yield return new WaitForSeconds(2.1f);
         DestroyActiveCard();
         currentResultCallback?.Invoke(result);
         currentResultCallback = null;
@@ -153,12 +237,13 @@ public class SimpleUI : MonoBehaviour
         overlay.transform.SetParent(container.transform, false);
         var overlayImage = overlay.GetComponent<Image>();
         overlayImage.color = new Color(0f, 0f, 0f, 0.55f);
-        overlayImage.raycastTarget = true;
+        overlayImage.raycastTarget = false;
         var overlayRect = overlay.GetComponent<RectTransform>();
         overlayRect.anchorMin = Vector2.zero;
         overlayRect.anchorMax = Vector2.one;
         overlayRect.offsetMin = Vector2.zero;
         overlayRect.offsetMax = Vector2.zero;
+        overlay.transform.SetAsFirstSibling();  // Ensure Overlay renders behind everything
 
         GameObject card = new GameObject("CardPanel", typeof(RectTransform), typeof(Image));
         card.transform.SetParent(container.transform, false);
@@ -174,6 +259,7 @@ public class SimpleUI : MonoBehaviour
         var dragCard = card.AddComponent<CardQuestion>();
         dragCard.onChoice = SubmitChoice;
         dragCard.swipeThreshold = 120f;
+        dragCard.buttonScaleOnDrag = 1.12f;
 
         // Use the provided sprite directly as the card artwork (no extra white background created by script)
         if (question.cardImage != null)
@@ -231,6 +317,110 @@ public class SimpleUI : MonoBehaviour
         dragCard.cardImage = cardImage;
         dragCard.promptImage = promptImage;
 
+        // Create Reject (X) button on the left
+        GameObject rejectButton = new GameObject("RejectButton", typeof(RectTransform), typeof(Image));
+        rejectButton.transform.SetParent(container.transform, false);
+        rejectButtonRect = rejectButton.GetComponent<RectTransform>();
+        rejectButtonRect.anchorMin = new Vector2(0.5f, 0.15f);
+        rejectButtonRect.anchorMax = new Vector2(0.5f, 0.15f);
+        rejectButtonRect.pivot = new Vector2(0.5f, 0.5f);
+        rejectButtonRect.sizeDelta = new Vector2(100f, 100f);
+        rejectButtonRect.anchoredPosition = rejectButtonPosition;
+        var rejectImage = rejectButton.GetComponent<Image>();
+        if (rejectButtonSprite != null)
+        {
+            rejectImage.sprite = rejectButtonSprite;
+            rejectImage.color = Color.white;
+            rejectImage.preserveAspect = true;
+        }
+        else
+        {
+            rejectImage.color = new Color(1f, 0.3f, 0.3f, 0.8f);  // Red-ish
+        }
+        rejectImage.raycastTarget = false;
+
+        // Create Accept (Check) button on the right
+        GameObject acceptButton = new GameObject("AcceptButton", typeof(RectTransform), typeof(Image));
+        acceptButton.transform.SetParent(container.transform, false);
+        acceptButtonRect = acceptButton.GetComponent<RectTransform>();
+        acceptButtonRect.anchorMin = new Vector2(0.5f, 0.15f);
+        acceptButtonRect.anchorMax = new Vector2(0.5f, 0.15f);
+        acceptButtonRect.pivot = new Vector2(0.5f, 0.5f);
+        acceptButtonRect.sizeDelta = new Vector2(100f, 100f);
+        acceptButtonRect.anchoredPosition = acceptButtonPosition;
+        var acceptImage = acceptButton.GetComponent<Image>();
+        if (acceptButtonSprite != null)
+        {
+            acceptImage.sprite = acceptButtonSprite;
+            acceptImage.color = Color.white;
+            acceptImage.preserveAspect = true;
+        }
+        else
+        {
+            acceptImage.color = new Color(0.3f, 1f, 0.3f, 0.8f);  // Green-ish
+        }
+        acceptImage.raycastTarget = false;
+
+        dragCard.rejectButton = rejectButtonRect;
+        dragCard.acceptButton = acceptButtonRect;
+        dragCard.swipeFeedbackAnimationPrefab = swipeFeedbackAnimationPrefab;
+
+        if (timerDisplayObject != null)
+        {
+            GameObject timerObject = Instantiate(timerDisplayObject, card.transform, false);
+            timerObject.name = "TimerDisplay";
+            timerObject.SetActive(true);
+
+            RectTransform timerRect = timerObject.GetComponent<RectTransform>();
+            if (timerRect == null)
+            {
+                timerRect = timerObject.AddComponent<RectTransform>();
+            }
+
+            timerRect.anchorMin = new Vector2(0.5f, 1f);
+            timerRect.anchorMax = new Vector2(0.5f, 1f);
+            timerRect.pivot = new Vector2(0.5f, 1f);
+            timerRect.sizeDelta = new Vector2(120f, 120f);
+            timerRect.anchoredPosition = new Vector2(0f, -40f);
+            timerRect.SetAsLastSibling();
+
+            Image timerImage = timerObject.GetComponent<Image>();
+            if (timerImage == null)
+            {
+                var childImages = timerObject.GetComponentsInChildren<Image>(true);
+                if (childImages.Length > 0)
+                {
+                    timerImage = childImages[0];
+                }
+            }
+
+            if (timerImage != null)
+            {
+                Sprite timerSprite = null;
+                if (timerDisplayObject.TryGetComponent(out Image sourceImage) && sourceImage.sprite != null)
+                {
+                    timerSprite = sourceImage.sprite;
+                }
+                else if (timerDisplayObject.TryGetComponent(out SpriteRenderer sourceSpriteRenderer) && sourceSpriteRenderer.sprite != null)
+                {
+                    timerSprite = sourceSpriteRenderer.sprite;
+                }
+
+                if (timerSprite != null)
+                {
+                    timerImage.sprite = timerSprite;
+                }
+
+                timerImage.color = Color.white;
+                timerImage.preserveAspect = true;
+                timerImage.raycastTarget = false;
+            }
+
+            var timerBar = timerObject.GetComponent<bartime>() ?? timerObject.AddComponent<bartime>();
+            timerBar.SetDuration(currentTimeLimit);
+            timerBar.SetTimeRemaining(currentTimeLimit);
+        }
+
         return container;
     }
 
@@ -272,6 +462,18 @@ public class SimpleUI : MonoBehaviour
         rect.anchoredPosition = new Vector2(anchor.x < 0.5f ? -120f : 120f, 40f);
     }
 
+    private void PlayAnswerAudio(QuestionResult result)
+    {
+        if (result == QuestionResult.Correct && correctAnswerAudio != null)
+        {
+            AudioSource.PlayClipAtPoint(correctAnswerAudio, Camera.main ? Camera.main.transform.position : Vector3.zero);
+        }
+        else if (result == QuestionResult.Incorrect && incorrectAnswerAudio != null)
+        {
+            AudioSource.PlayClipAtPoint(incorrectAnswerAudio, Camera.main ? Camera.main.transform.position : Vector3.zero);
+        }
+    }
+
     private void ShowResultAnimation(QuestionResult result, Question question)
     {
         GameObject animationObject = null;
@@ -291,70 +493,96 @@ public class SimpleUI : MonoBehaviour
         if (animationObject == null) return;
 
         Canvas canvas = uiCanvas ?? UnityEngine.Object.FindAnyObjectByType<Canvas>();
+
+        // Instantiate and then copy prefab transform/RectTransform values to preserve editor layout.
         GameObject instance = Instantiate(animationObject);
         instance.SetActive(true);
 
+        // If the prefab is a UI RectTransform, copy its layout values so it appears where you configured it in the prefab.
+        RectTransform prefabRT = animationObject.GetComponent<RectTransform>();
         RectTransform rt = instance.GetComponent<RectTransform>();
 
         // Parent to canvas so UI animations render in screen space.
         if (canvas != null)
         {
+            // Add animation directly to Canvas with high sorting order, not to CardUI
             instance.transform.SetParent(canvas.transform, false);
-            instance.transform.SetAsLastSibling();
+            instance.transform.SetAsLastSibling();  // Ensure animation renders on top
+            instance.transform.localPosition = animationObject.transform.localPosition;
+            instance.transform.localRotation = animationObject.transform.localRotation;
+            instance.transform.localScale = animationObject.transform.localScale;
+
+            if (prefabRT != null && rt != null)
+            {
+                rt.anchorMin = prefabRT.anchorMin;
+                rt.anchorMax = prefabRT.anchorMax;
+                rt.pivot = prefabRT.pivot;
+                rt.sizeDelta = prefabRT.sizeDelta;
+                rt.anchoredPosition = prefabRT.anchoredPosition;
+                rt.localPosition = prefabRT.localPosition;
+                rt.localRotation = prefabRT.localRotation;
+                rt.localScale = prefabRT.localScale;
+            }
+            else if (prefabRT == null && rt == null)
+            {
+                // Non-UI prefab: copy local position, scale and rotation from prefab to instance
+                instance.transform.localPosition = animationObject.transform.localPosition;
+                instance.transform.localScale = animationObject.transform.localScale;
+                instance.transform.localRotation = animationObject.transform.localRotation;
+            }
+
+            // Set high Canvas sort order for animation
+            Canvas animCanvas = instance.GetComponent<Canvas>();
+            if (animCanvas != null)
+            {
+                animCanvas.overrideSorting = true;
+                animCanvas.sortingOrder = 32767;
+            }
         }
 
-        // Preserve per-card prefab layout if the instantiated animation came from a card-specific prefab.
-        bool preservePrefabLayout = (question != null && (animationObject == question.correctResultAnimationPrefab || animationObject == question.incorrectResultAnimationPrefab));
-
         bool isFallbackSwipe = animationObject == swipeAnimationObject;
+        bool preservePrefabLayout = !isFallbackSwipe;
 
         if (rt != null && canvas != null)
         {
-            if (!preservePrefabLayout)
+            if (isFallbackSwipe)
             {
-                if (isFallbackSwipe)
-                {
-                    // Keep generic swipe animation centered
-                    rt.anchorMin = new Vector2(0.5f, 0.5f);
-                    rt.anchorMax = new Vector2(0.5f, 0.5f);
-                    rt.pivot = new Vector2(0.5f, 0.5f);
-                    rt.anchoredPosition = Vector2.zero;
-                    rt.sizeDelta = new Vector2(260f, 260f);
-                }
-                else
-                {
-                    // Global correct/incorrect animations should appear at screen sides
-                    Vector2 sideAnchor = result == QuestionResult.Incorrect ? new Vector2(0.1f, 0.5f) : new Vector2(0.9f, 0.5f);
-                    rt.anchorMin = sideAnchor;
-                    rt.anchorMax = sideAnchor;
-                    rt.pivot = new Vector2(0.5f, 0.5f);
-                    rt.anchoredPosition = result == QuestionResult.Incorrect ? new Vector2(-80f, 0f) : new Vector2(80f, 0f);
-                    rt.sizeDelta = new Vector2(260f, 260f);
-                }
+                // Keep generic swipe animation centered
+                rt.anchorMin = new Vector2(0.5f, 0.5f);
+                rt.anchorMax = new Vector2(0.5f, 0.5f);
+                rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.anchoredPosition = Vector2.zero;
+                rt.sizeDelta = new Vector2(260f, 260f);
+            }
+            else if (!preservePrefabLayout)
+            {
+                Vector2 sideAnchor = result == QuestionResult.Incorrect ? new Vector2(0.1f, 0.5f) : new Vector2(0.9f, 0.5f);
+                rt.anchorMin = sideAnchor;
+                rt.anchorMax = sideAnchor;
+                rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.anchoredPosition = result == QuestionResult.Incorrect ? new Vector2(-80f, 0f) : new Vector2(80f, 0f);
+                rt.sizeDelta = new Vector2(260f, 260f);
             }
 
             if (rt.localScale == Vector3.zero)
             {
                 rt.localScale = Vector3.one;
             }
+
+            // Ensure SpriteRenderer renders above overlay
+            if (instance.TryGetComponent(out SpriteRenderer spriteRenderer))
+            {
+                spriteRenderer.sortingOrder = 32767;
+            }
         }
         else if (canvas == null)
         {
-            // World-space fallback: position at screen side/center when not preserving prefab layout
             instance.transform.SetParent(null);
             Camera cam = Camera.main ?? Camera.current;
-            if (cam != null)
+            if (cam != null && !preservePrefabLayout)
             {
-                float xFactor = isFallbackSwipe ? 0.5f : (result == QuestionResult.Incorrect ? 0.25f : 0.75f);
-                if (preservePrefabLayout)
-                {
-                    // keep prefab world position (do nothing)
-                }
-                else
-                {
-                    Vector3 screenCenter = new Vector3(Screen.width * xFactor, Screen.height * 0.5f, 10f);
-                    instance.transform.position = cam.ScreenToWorldPoint(screenCenter);
-                }
+                Vector3 screenCenter = new Vector3(Screen.width * (isFallbackSwipe ? 0.5f : (result == QuestionResult.Incorrect ? 0.25f : 0.75f)), Screen.height * 0.5f, 10f);
+                instance.transform.position = cam.ScreenToWorldPoint(screenCenter);
             }
 
             if (instance.TryGetComponent(out SpriteRenderer spriteRenderer))
@@ -379,7 +607,22 @@ public class SimpleUI : MonoBehaviour
             animationComponent.Play();
         }
 
-        if (result == QuestionResult.Incorrect && question != null)
+        // Ensure all child Images and SpriteRenderers are enabled and visible
+        foreach (Image img in instance.GetComponentsInChildren<Image>())
+        {
+            img.enabled = true;
+            if (img.color.a < 0.1f)
+                img.color = new Color(img.color.r, img.color.g, img.color.b, 1f);
+        }
+
+        foreach (SpriteRenderer sr in instance.GetComponentsInChildren<SpriteRenderer>())
+        {
+            sr.enabled = true;
+            if (sr.color.a < 0.1f)
+                sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 1f);
+        }
+
+        if (question != null)
         {
             ShowCorrectAnswerFeedback(question);
         }

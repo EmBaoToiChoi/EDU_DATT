@@ -142,7 +142,7 @@ public class QuestionManager : MonoBehaviour
             promptAnchor = selected.labelAnchor,
             isMatch = isMatch,
             correctAnswerText = selected.correctWord,
-            correctAnswerSprite = selected.cardImage,
+            correctAnswerSprite = selected.labelSprite != null ? selected.labelSprite : selected.cardImage,
             correctResultAnimationPrefab = selected.correctResultAnimationPrefab != null ? selected.correctResultAnimationPrefab : selected.cardAnimationPrefab,
             incorrectResultAnimationPrefab = selected.incorrectResultAnimationPrefab != null ? selected.incorrectResultAnimationPrefab : selected.cardAnimationPrefab
         };
