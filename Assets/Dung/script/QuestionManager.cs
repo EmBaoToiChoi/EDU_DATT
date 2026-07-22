@@ -12,7 +12,8 @@ public enum QuestionResult
 public enum QuestionPresentationMode
 {
     ImageGrid,
-    CardSwipe
+    CardSwipe,
+    ChooseImage
 }
 
 [Serializable]
@@ -44,6 +45,12 @@ public class Question
 
     [Tooltip("Optional animation prefab to show when this card is answered incorrectly.")]
     public GameObject incorrectResultAnimationPrefab;
+
+    [Tooltip("Sprites used for multiple-choice options (includes correct sprite).")]
+    public Sprite[] multipleChoiceOptions;
+
+    [Tooltip("Index in multipleChoiceOptions that is the correct answer.")]
+    public int correctOptionIndex;
 }
 
 [Serializable]
@@ -134,6 +141,53 @@ public class QuestionManager : MonoBehaviour
             }
         }
 
+        // Build multiple-choice options: include the correct sprite and up to 3 random other sprites
+        var options = new System.Collections.Generic.List<Sprite>();
+        Sprite correctSprite = selected.labelSprite != null ? selected.labelSprite : selected.cardImage;
+        options.Add(correctSprite);
+
+        // gather candidate sprites from other CardData
+        var spriteCandidates = new System.Collections.Generic.List<Sprite>();
+        foreach (var c in cardData)
+        {
+            if (c == selected) continue;
+            if (c.labelSprite != null) spriteCandidates.Add(c.labelSprite);
+            else if (c.cardImage != null) spriteCandidates.Add(c.cardImage);
+        }
+
+        // shuffle and take up to 3
+        for (int i = 0; i < 3 && spriteCandidates.Count > 0; i++)
+        {
+            int pick = rnd.Next(spriteCandidates.Count);
+            options.Add(spriteCandidates[pick]);
+            spriteCandidates.RemoveAt(pick);
+        }
+
+        // If not enough wrong options, duplicate placeholders (will still show something)
+        while (options.Count < 4)
+        {
+            options.Add(correctSprite);
+        }
+
+        // Shuffle options and record index of correct one
+        for (int i = 0; i < options.Count; i++)
+        {
+            int j = rnd.Next(i, options.Count);
+            var tmp = options[i];
+            options[i] = options[j];
+            options[j] = tmp;
+        }
+
+        int correctIndex = 0;
+        for (int i = 0; i < options.Count; i++)
+        {
+            if (options[i] == correctSprite)
+            {
+                correctIndex = i;
+                break;
+            }
+        }
+
         return new Question
         {
             cardImage = selected.cardImage,
@@ -142,9 +196,11 @@ public class QuestionManager : MonoBehaviour
             promptAnchor = selected.labelAnchor,
             isMatch = isMatch,
             correctAnswerText = selected.correctWord,
-            correctAnswerSprite = selected.labelSprite != null ? selected.labelSprite : selected.cardImage,
-            correctResultAnimationPrefab = selected.correctResultAnimationPrefab != null ? selected.correctResultAnimationPrefab : selected.cardAnimationPrefab,
-            incorrectResultAnimationPrefab = selected.incorrectResultAnimationPrefab != null ? selected.incorrectResultAnimationPrefab : selected.cardAnimationPrefab
+            correctAnswerSprite = correctSprite,
+            correctResultAnimationPrefab = selected.correctResultAnimationPrefab,
+            incorrectResultAnimationPrefab = selected.incorrectResultAnimationPrefab,
+            multipleChoiceOptions = options.ToArray(),
+            correctOptionIndex = correctIndex
         };
     }
 
@@ -201,7 +257,7 @@ public class QuestionManager : MonoBehaviour
             return;
         }
 
-        SimpleUI ui = FindObjectOfType<SimpleUI>();
+        SimpleUI ui = UnityEngine.Object.FindAnyObjectByType<SimpleUI>();
         if (ui == null)
         {
             GameObject uiObject = new GameObject("SimpleUI_Root");
@@ -216,6 +272,8 @@ public class QuestionManager : MonoBehaviour
             ui.swipeAnimationObject = swipeAnimationObject;
         }
 
-        ui.ShowQuestion(q, questionTimeLimit, resultCallback, QuestionPresentationMode.CardSwipe);
+        // Randomly pick presentation mode between CardSwipe and ChooseImage
+        QuestionPresentationMode mode = rnd.Next(2) == 0 ? QuestionPresentationMode.CardSwipe : QuestionPresentationMode.ChooseImage;
+        ui.ShowQuestion(q, questionTimeLimit, resultCallback, mode);
     }
 }

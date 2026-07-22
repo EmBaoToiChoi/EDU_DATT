@@ -35,11 +35,21 @@ public class SimpleUI : MonoBehaviour
     [Tooltip("Optional per-card animation prefab shown when the swipe result is incorrect.")]
     public GameObject questionIncorrectResultAnimationPrefab;
 
-    [Tooltip("Sprite used for the red reject button on the card UI.")]
-    public Sprite rejectButtonSprite;
+    [Header("Fallback animal feedback")]
+    [Tooltip("Optional list of animal animation prefabs to show for correct answers when no specific animation is assigned.")]
+    public GameObject[] correctFallbackFeedbackPrefabs;
 
-    [Tooltip("Sprite used for the green accept button on the card UI.")]
-    public Sprite acceptButtonSprite;
+    [Tooltip("Optional list of animal animation prefabs to show for incorrect answers when no specific animation is assigned.")]
+    public GameObject[] incorrectFallbackFeedbackPrefabs;
+
+    [Tooltip("If enabled, a random prefab will be picked from the fallback list for each result.")]
+    public bool useRandomFallbackAnimal = true;
+
+    [Tooltip("Object containing the sprite and optional animation for the X button. Drag a GameObject with Image/SpriteRenderer and Animator here.")]
+    public GameObject rejectButtonVisualObject;
+
+    [Tooltip("Object containing the sprite and optional animation for the check button. Drag a GameObject with Image/SpriteRenderer and Animator here.")]
+    public GameObject acceptButtonVisualObject;
 
     [Tooltip("Position of the reject button relative to the card center.")]
     public Vector2 rejectButtonPosition = new Vector2(-70f, -240f);
@@ -58,6 +68,24 @@ public class SimpleUI : MonoBehaviour
 
     [Tooltip("Optional UI object shown as the timer image on the card.")]
     public GameObject timerDisplayObject;
+
+    [Header("Choose-image Question UI")]
+    [Tooltip("Prefab used for one choose-option button. Should contain Image and Button components.")]
+    public GameObject chooseOptionButtonPrefab;
+
+    [Tooltip("Size of each option button in pixels.")]
+    public Vector2 chooseOptionSize = new Vector2(220f, 220f);
+    [Tooltip("If true, use the RectTransform anchors provided in 'Choose Option Anchors' instead of auto layout.")]
+    public bool useCustomOptionAnchors = false;
+
+    [Tooltip("Four RectTransform anchors to use as parents/positions for option buttons when 'Use Custom Option Anchors' is true.")]
+    public RectTransform[] chooseOptionAnchors = new RectTransform[4];
+
+    [Tooltip("Optional override sprites for the 4 option slots. If set, these sprites will be used instead of the generated options.")]
+    public Sprite[] overrideChooseOptionSprites = new Sprite[4];
+
+    [Tooltip("Optional GameObjects to use directly for the 4 option slots. These objects can contain their own scale, Image, and layout.")]
+    public GameObject[] chooseOptionObjects = new GameObject[4];
 
     void Awake()
     {
@@ -98,20 +126,27 @@ public class SimpleUI : MonoBehaviour
 
         DestroyActiveCard();
 
-        activeCardContainer = CreateCardUI(question);
         currentQuestion = question;
         currentResultCallback = resultCallback;
         currentTimeLimit = Mathf.Max(0.1f, timeLimit);
         timeRemaining = currentTimeLimit;
         questionActive = true;
 
-        if (activeCardContainer != null)
+        if (mode == QuestionPresentationMode.ChooseImage)
         {
-            var timerBar = activeCardContainer.GetComponentInChildren<bartime>(true);
-            if (timerBar != null)
+            activeCardContainer = CreateChooseQuestionUI(question);
+        }
+        else
+        {
+            activeCardContainer = CreateCardUI(question);
+            if (activeCardContainer != null)
             {
-                timerBar.ResetTimer(currentTimeLimit);
-                timerBar.SetTimeRemaining(timeRemaining);
+                var timerBar = activeCardContainer.GetComponentInChildren<bartime>(true);
+                if (timerBar != null)
+                {
+                    timerBar.ResetTimer(currentTimeLimit);
+                    timerBar.SetTimeRemaining(timeRemaining);
+                }
             }
         }
     }
@@ -126,13 +161,46 @@ public class SimpleUI : MonoBehaviour
         if (choice == 1 && acceptButtonRect != null)
         {
             StartCoroutine(AnimateButtonScale(acceptButtonRect));
+            PlayButtonAnimation(acceptButtonVisualObject, acceptButtonRect);
         }
         else if (choice == -1 && rejectButtonRect != null)
         {
             StartCoroutine(AnimateButtonScale(rejectButtonRect));
+            PlayButtonAnimation(rejectButtonVisualObject, rejectButtonRect);
         }
 
         SubmitChoiceInternal(choice);
+    }
+
+    private void PlayButtonAnimation(GameObject visualSource, RectTransform buttonRect)
+    {
+        if (buttonRect == null) return;
+
+        // Prefer animator on a child instance (created by ApplyButtonVisual)
+        var childAnimator = buttonRect.GetComponentInChildren<Animator>(true);
+        if (childAnimator != null && childAnimator.runtimeAnimatorController != null)
+        {
+            childAnimator.Play(0);
+            return;
+        }
+
+        // Fallback: copy runtime controller to button GameObject Animator
+        var buttonObject = buttonRect.gameObject;
+        var animator = buttonObject.GetComponent<Animator>() ?? buttonObject.AddComponent<Animator>();
+
+        if (visualSource != null)
+        {
+            var sourceAnimator = visualSource.GetComponent<Animator>();
+            if (sourceAnimator != null && sourceAnimator.runtimeAnimatorController != null)
+            {
+                animator.runtimeAnimatorController = sourceAnimator.runtimeAnimatorController;
+            }
+        }
+
+        if (animator.runtimeAnimatorController != null)
+        {
+            animator.Play(0);
+        }
     }
 
     private IEnumerator AnimateButtonScale(RectTransform buttonRect)
@@ -327,16 +395,7 @@ public class SimpleUI : MonoBehaviour
         rejectButtonRect.sizeDelta = new Vector2(100f, 100f);
         rejectButtonRect.anchoredPosition = rejectButtonPosition;
         var rejectImage = rejectButton.GetComponent<Image>();
-        if (rejectButtonSprite != null)
-        {
-            rejectImage.sprite = rejectButtonSprite;
-            rejectImage.color = Color.white;
-            rejectImage.preserveAspect = true;
-        }
-        else
-        {
-            rejectImage.color = new Color(1f, 0.3f, 0.3f, 0.8f);  // Red-ish
-        }
+        ApplyButtonVisual(rejectImage, rejectButton, rejectButtonVisualObject, new Color(1f, 0.3f, 0.3f, 0.8f));
         rejectImage.raycastTarget = false;
 
         // Create Accept (Check) button on the right
@@ -349,16 +408,7 @@ public class SimpleUI : MonoBehaviour
         acceptButtonRect.sizeDelta = new Vector2(100f, 100f);
         acceptButtonRect.anchoredPosition = acceptButtonPosition;
         var acceptImage = acceptButton.GetComponent<Image>();
-        if (acceptButtonSprite != null)
-        {
-            acceptImage.sprite = acceptButtonSprite;
-            acceptImage.color = Color.white;
-            acceptImage.preserveAspect = true;
-        }
-        else
-        {
-            acceptImage.color = new Color(0.3f, 1f, 0.3f, 0.8f);  // Green-ish
-        }
+        ApplyButtonVisual(acceptImage, acceptButton, acceptButtonVisualObject, new Color(0.3f, 1f, 0.3f, 0.8f));
         acceptImage.raycastTarget = false;
 
         dragCard.rejectButton = rejectButtonRect;
@@ -424,6 +474,232 @@ public class SimpleUI : MonoBehaviour
         return container;
     }
 
+    private GameObject CreateChooseQuestionUI(Question question)
+    {
+        GameObject container = new GameObject("ChooseQuestionUI", typeof(RectTransform));
+        container.transform.SetParent(uiCanvas.transform, false);
+        var rect = container.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.offsetMin = Vector2.zero;
+        rect.offsetMax = Vector2.zero;
+
+        // dark overlay
+        GameObject overlay = new GameObject("Overlay", typeof(RectTransform), typeof(Image));
+        overlay.transform.SetParent(container.transform, false);
+        var overlayImage = overlay.GetComponent<Image>();
+        overlayImage.color = new Color(0f, 0f, 0f, 0.55f);
+        overlayImage.raycastTarget = true;
+        var overlayRect = overlay.GetComponent<RectTransform>();
+        overlayRect.anchorMin = Vector2.zero;
+        overlayRect.anchorMax = Vector2.one;
+        overlayRect.offsetMin = Vector2.zero;
+        overlayRect.offsetMax = Vector2.zero;
+
+        // Center prompt text or image
+        if (question.promptSprite != null)
+        {
+            GameObject promptImage = new GameObject("PromptImage", typeof(RectTransform), typeof(Image));
+            promptImage.transform.SetParent(container.transform, false);
+            var promptImg = promptImage.GetComponent<Image>();
+            promptImg.sprite = question.promptSprite;
+            promptImg.preserveAspect = true;
+            promptImg.color = Color.white;
+            promptImg.raycastTarget = false;
+            var promptRect = promptImage.GetComponent<RectTransform>();
+            promptRect.anchorMin = new Vector2(0.5f, 0.5f);
+            promptRect.anchorMax = new Vector2(0.5f, 0.5f);
+            promptRect.pivot = new Vector2(0.5f, 0.5f);
+            promptRect.anchoredPosition = new Vector2(0f, 100f);
+            promptRect.sizeDelta = new Vector2(320f, 320f);
+        }
+        else
+        {
+            GameObject center = new GameObject("PromptText", typeof(RectTransform));
+            center.transform.SetParent(container.transform, false);
+            var tmp = center.AddComponent<TextMeshProUGUI>();
+            tmp.text = !string.IsNullOrEmpty(question.prompt) ? question.prompt : (question.correctAnswerText ?? "");
+            tmp.fontSize = 64;
+            tmp.alignment = TextAlignmentOptions.Center;
+            tmp.raycastTarget = false;
+            var centerRect = center.GetComponent<RectTransform>();
+            centerRect.anchorMin = new Vector2(0.5f, 0.5f);
+            centerRect.anchorMax = new Vector2(0.5f, 0.5f);
+            centerRect.anchoredPosition = new Vector2(0f, 100f);
+            centerRect.sizeDelta = new Vector2(800f, 140f);
+        }
+
+        // Options grid (2x2)
+        float spacing = 40f;
+        Vector2 size = chooseOptionSize;
+        Vector2[] offsets = new Vector2[4]
+        {
+            new Vector2(-size.x/2 - spacing/2, -100f + size.y/2),
+            new Vector2(size.x/2 + spacing/2, -100f + size.y/2),
+            new Vector2(-size.x/2 - spacing/2, -100f - size.y/2 - spacing),
+            new Vector2(size.x/2 + spacing/2, -100f - size.y/2 - spacing)
+        };
+
+        Sprite[] opts = question.multipleChoiceOptions ?? new Sprite[0];
+        for (int i = 0; i < 4; i++)
+        {
+            GameObject btnObj;
+            bool useCustomOptionObject = chooseOptionObjects != null && i < chooseOptionObjects.Length && chooseOptionObjects[i] != null;
+
+            if (useCustomOptionObject)
+            {
+                btnObj = Instantiate(chooseOptionObjects[i], container.transform, false);
+            }
+            else if (chooseOptionButtonPrefab != null)
+            {
+                btnObj = Instantiate(chooseOptionButtonPrefab, container.transform, false);
+            }
+            else
+            {
+                btnObj = new GameObject($"OptionButton_{i}", typeof(RectTransform), typeof(Image), typeof(UnityEngine.UI.Button));
+                btnObj.transform.SetParent(container.transform, false);
+            }
+
+            var btnRect = btnObj.GetComponent<RectTransform>();
+            if (btnRect == null)
+                btnRect = btnObj.AddComponent<RectTransform>();
+
+            if (!useCustomOptionObject)
+            {
+                btnRect.sizeDelta = size;
+                btnRect.localScale = Vector3.one;
+            }
+            else if (btnRect.localScale == Vector3.zero)
+            {
+                btnRect.localScale = Vector3.one;
+            }
+
+            Sprite optionSprite = null;
+            if (overrideChooseOptionSprites != null && i < overrideChooseOptionSprites.Length && overrideChooseOptionSprites[i] != null)
+            {
+                optionSprite = overrideChooseOptionSprites[i];
+            }
+            else if (i < opts.Length && opts[i] != null)
+            {
+                optionSprite = opts[i];
+            }
+
+            if (useCustomOptionAnchors && chooseOptionAnchors != null && i < chooseOptionAnchors.Length && chooseOptionAnchors[i] != null)
+            {
+                btnObj.transform.SetParent(chooseOptionAnchors[i], false);
+                btnRect.anchorMin = chooseOptionAnchors[i].anchorMin;
+                btnRect.anchorMax = chooseOptionAnchors[i].anchorMax;
+                btnRect.pivot = chooseOptionAnchors[i].pivot;
+                btnRect.anchoredPosition = Vector2.zero;
+            }
+            else
+            {
+                btnObj.transform.SetParent(container.transform, false);
+                btnRect.anchorMin = new Vector2(0.5f, 0.5f);
+                btnRect.anchorMax = new Vector2(0.5f, 0.5f);
+                btnRect.pivot = new Vector2(0.5f, 0.5f);
+                btnRect.anchoredPosition = offsets[i];
+                if (useCustomOptionObject && btnRect.sizeDelta == Vector2.zero)
+                    btnRect.sizeDelta = size;
+            }
+
+            if (useCustomOptionObject)
+            {
+                btnRect.localScale = chooseOptionObjects[i].transform.localScale;
+                var image = btnObj.GetComponent<Image>();
+                if (image != null && optionSprite != null)
+                {
+                    image.sprite = optionSprite;
+                    image.color = Color.white;
+                    image.preserveAspect = true;
+                }
+                else if (image == null)
+                {
+                    var childImage = btnObj.GetComponentInChildren<Image>();
+                    if (childImage != null && optionSprite != null)
+                    {
+                        childImage.sprite = optionSprite;
+                        childImage.color = Color.white;
+                        childImage.preserveAspect = true;
+                    }
+                }
+            }
+            else
+            {
+                var img = btnObj.GetComponent<Image>();
+                if (img != null)
+                {
+                    img.preserveAspect = true;
+                    img.color = Color.white;
+                    if (optionSprite != null)
+                        img.sprite = optionSprite;
+                }
+            }
+
+            var btn = btnObj.GetComponent<UnityEngine.UI.Button>();
+            if (btn == null)
+                btn = btnObj.AddComponent<UnityEngine.UI.Button>();
+
+            int idx = i;
+            btn.onClick.AddListener(() => { OnChooseOptionPressed(question, idx); });
+        }
+
+        return container;
+    }
+
+    private void OnChooseOptionPressed(Question question, int selectedIndex)
+    {
+        if (question == null) return;
+        bool correct = selectedIndex == question.correctOptionIndex;
+        QuestionResult result = correct ? QuestionResult.Correct : QuestionResult.Incorrect;
+        PlayAnswerAudio(result);
+        ShowResultAnimation(result, question);
+        StartCoroutine(WaitThenFinishResult(result));
+    }
+
+    private void ApplyButtonVisual(Image targetImage, GameObject buttonObject, GameObject visualSource, Color fallbackColor)
+    {
+        if (targetImage == null || buttonObject == null) return;
+
+        if (visualSource != null)
+        {
+            // Instantiate a copy of the provided visual object under the button so its Animator/child layout works.
+            GameObject instance = Instantiate(visualSource, buttonObject.transform, false);
+            instance.SetActive(true);
+
+            RectTransform instRect = instance.GetComponent<RectTransform>();
+            if (instRect != null)
+            {
+                instRect.anchorMin = new Vector2(0.5f, 0.5f);
+                instRect.anchorMax = new Vector2(0.5f, 0.5f);
+                instRect.pivot = new Vector2(0.5f, 0.5f);
+                instRect.sizeDelta = targetImage.rectTransform.sizeDelta;
+                instRect.anchoredPosition = Vector2.zero;
+            }
+
+            // If the visual instance has an Image with a sprite, sync it to the target Image and disable underlying image so animation visuals are visible.
+            var instImage = instance.GetComponent<Image>();
+            if (instImage != null && instImage.sprite != null)
+            {
+                targetImage.sprite = instImage.sprite;
+                targetImage.color = Color.white;
+                targetImage.preserveAspect = true;
+                targetImage.enabled = false; // show instance's image/animation instead
+            }
+
+            // Play Animator if present on the instance
+            var instAnimator = instance.GetComponent<Animator>();
+            if (instAnimator != null && instAnimator.runtimeAnimatorController != null)
+            {
+                instAnimator.Play(0);
+            }
+
+            return;
+        }
+
+        targetImage.color = fallbackColor;
+    }
+
     private void CreateHeaderText(Transform parent, string name, string text, int fontSize, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector2 anchoredPosition, Vector2 size)
     {
         GameObject header = new GameObject(name, typeof(RectTransform));
@@ -479,16 +755,24 @@ public class SimpleUI : MonoBehaviour
         GameObject animationObject = null;
         if (result == QuestionResult.Correct)
         {
-            animationObject = question?.correctResultAnimationPrefab ?? correctAnimationObject;
+            animationObject = question?.correctResultAnimationPrefab
+                ?? questionCorrectResultAnimationPrefab
+                ?? correctAnimationObject;
         }
         else if (result == QuestionResult.Incorrect)
         {
-            animationObject = question?.incorrectResultAnimationPrefab ?? incorrectAnimationObject;
+            animationObject = question?.incorrectResultAnimationPrefab
+                ?? questionIncorrectResultAnimationPrefab
+                ?? incorrectAnimationObject;
         }
 
         if (animationObject == null)
         {
             animationObject = swipeAnimationObject;
+        }
+        if (animationObject == null)
+        {
+            animationObject = GetFallbackFeedbackObject(result);
         }
         if (animationObject == null) return;
 
@@ -498,12 +782,11 @@ public class SimpleUI : MonoBehaviour
         GameObject instance = Instantiate(animationObject);
         instance.SetActive(true);
 
-        // If the prefab is a UI RectTransform, copy its layout values so it appears where you configured it in the prefab.
         RectTransform prefabRT = animationObject.GetComponent<RectTransform>();
         RectTransform rt = instance.GetComponent<RectTransform>();
+        bool isUIPrefab = prefabRT != null || instance.GetComponent<Canvas>() != null;
 
-        // Parent to canvas so UI animations render in screen space.
-        if (canvas != null)
+        if (isUIPrefab && canvas != null)
         {
             // Add animation directly to Canvas with high sorting order, not to CardUI
             instance.transform.SetParent(canvas.transform, false);
@@ -525,18 +808,31 @@ public class SimpleUI : MonoBehaviour
             }
             else if (prefabRT == null && rt == null)
             {
-                // Non-UI prefab: copy local position, scale and rotation from prefab to instance
                 instance.transform.localPosition = animationObject.transform.localPosition;
                 instance.transform.localScale = animationObject.transform.localScale;
                 instance.transform.localRotation = animationObject.transform.localRotation;
             }
 
-            // Set high Canvas sort order for animation
             Canvas animCanvas = instance.GetComponent<Canvas>();
             if (animCanvas != null)
             {
                 animCanvas.overrideSorting = true;
                 animCanvas.sortingOrder = 32767;
+            }
+        }
+        else
+        {
+            // Non-UI prefab: keep it in the scene root so SpriteRenderers and world-space objects can display normally.
+            instance.transform.SetParent(null);
+            instance.transform.localScale = animationObject.transform.localScale;
+            instance.transform.localRotation = animationObject.transform.localRotation;
+            instance.transform.position = animationObject.transform.position;
+
+            Camera cam = Camera.main ?? Camera.current;
+            if (cam != null)
+            {
+                Vector3 screenCenter = new Vector3(Screen.width * 0.5f, Screen.height * 0.5f, cam.nearClipPlane + 1f);
+                instance.transform.position = cam.ScreenToWorldPoint(screenCenter);
             }
         }
 
@@ -628,6 +924,23 @@ public class SimpleUI : MonoBehaviour
         }
 
         Destroy(instance, 2f);
+    }
+
+    private GameObject GetFallbackFeedbackObject(QuestionResult result)
+    {
+        GameObject[] candidates = result == QuestionResult.Correct
+            ? correctFallbackFeedbackPrefabs
+            : incorrectFallbackFeedbackPrefabs;
+
+        if (candidates == null || candidates.Length == 0)
+        {
+            return null;
+        }
+
+        int index = useRandomFallbackAnimal ? UnityEngine.Random.Range(0, candidates.Length) : 0;
+        GameObject selected = candidates[Mathf.Clamp(index, 0, candidates.Length - 1)];
+        Debug.Log($"SimpleUI: selected fallback feedback prefab [{index}] = {selected?.name ?? "null"} for result {result}");
+        return selected;
     }
 
     private void ShowCorrectAnswerFeedback(Question question)
