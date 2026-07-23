@@ -12,8 +12,7 @@ public enum QuestionResult
 public enum QuestionPresentationMode
 {
     ImageGrid,
-    CardSwipe,
-    ChooseImage
+    CardSwipe
 }
 
 [Serializable]
@@ -272,8 +271,6 @@ public class QuestionManager : MonoBehaviour
             ui.swipeAnimationObject = swipeAnimationObject;
         }
 
-        // Randomly pick presentation mode between CardSwipe and ChooseImage
-        QuestionPresentationMode mode = rnd.Next(2) == 0 ? QuestionPresentationMode.CardSwipe : QuestionPresentationMode.ChooseImage;
-        ui.ShowQuestion(q, questionTimeLimit, resultCallback, mode);
+        ui.ShowQuestion(q, questionTimeLimit, resultCallback, QuestionPresentationMode.CardSwipe);
     }
 }

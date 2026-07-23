@@ -69,24 +69,6 @@ public class SimpleUI : MonoBehaviour
     [Tooltip("Optional UI object shown as the timer image on the card.")]
     public GameObject timerDisplayObject;
 
-    [Header("Choose-image Question UI")]
-    [Tooltip("Prefab used for one choose-option button. Should contain Image and Button components.")]
-    public GameObject chooseOptionButtonPrefab;
-
-    [Tooltip("Size of each option button in pixels.")]
-    public Vector2 chooseOptionSize = new Vector2(220f, 220f);
-    [Tooltip("If true, use the RectTransform anchors provided in 'Choose Option Anchors' instead of auto layout.")]
-    public bool useCustomOptionAnchors = false;
-
-    [Tooltip("Four RectTransform anchors to use as parents/positions for option buttons when 'Use Custom Option Anchors' is true.")]
-    public RectTransform[] chooseOptionAnchors = new RectTransform[4];
-
-    [Tooltip("Optional override sprites for the 4 option slots. If set, these sprites will be used instead of the generated options.")]
-    public Sprite[] overrideChooseOptionSprites = new Sprite[4];
-
-    [Tooltip("Optional GameObjects to use directly for the 4 option slots. These objects can contain their own scale, Image, and layout.")]
-    public GameObject[] chooseOptionObjects = new GameObject[4];
-
     void Awake()
     {
         EnsureUI();
@@ -132,21 +114,14 @@ public class SimpleUI : MonoBehaviour
         timeRemaining = currentTimeLimit;
         questionActive = true;
 
-        if (mode == QuestionPresentationMode.ChooseImage)
+        activeCardContainer = CreateCardUI(question);
+        if (activeCardContainer != null)
         {
-            activeCardContainer = CreateChooseQuestionUI(question);
-        }
-        else
-        {
-            activeCardContainer = CreateCardUI(question);
-            if (activeCardContainer != null)
+            var timerBar = activeCardContainer.GetComponentInChildren<bartime>(true);
+            if (timerBar != null)
             {
-                var timerBar = activeCardContainer.GetComponentInChildren<bartime>(true);
-                if (timerBar != null)
-                {
-                    timerBar.ResetTimer(currentTimeLimit);
-                    timerBar.SetTimeRemaining(timeRemaining);
-                }
+                timerBar.ResetTimer(currentTimeLimit);
+                timerBar.SetTimeRemaining(timeRemaining);
             }
         }
     }
@@ -472,189 +447,6 @@ public class SimpleUI : MonoBehaviour
         }
 
         return container;
-    }
-
-    private GameObject CreateChooseQuestionUI(Question question)
-    {
-        GameObject container = new GameObject("ChooseQuestionUI", typeof(RectTransform));
-        container.transform.SetParent(uiCanvas.transform, false);
-        var rect = container.GetComponent<RectTransform>();
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.offsetMin = Vector2.zero;
-        rect.offsetMax = Vector2.zero;
-
-        // dark overlay
-        GameObject overlay = new GameObject("Overlay", typeof(RectTransform), typeof(Image));
-        overlay.transform.SetParent(container.transform, false);
-        var overlayImage = overlay.GetComponent<Image>();
-        overlayImage.color = new Color(0f, 0f, 0f, 0.55f);
-        overlayImage.raycastTarget = true;
-        var overlayRect = overlay.GetComponent<RectTransform>();
-        overlayRect.anchorMin = Vector2.zero;
-        overlayRect.anchorMax = Vector2.one;
-        overlayRect.offsetMin = Vector2.zero;
-        overlayRect.offsetMax = Vector2.zero;
-
-        // Center prompt text or image
-        if (question.promptSprite != null)
-        {
-            GameObject promptImage = new GameObject("PromptImage", typeof(RectTransform), typeof(Image));
-            promptImage.transform.SetParent(container.transform, false);
-            var promptImg = promptImage.GetComponent<Image>();
-            promptImg.sprite = question.promptSprite;
-            promptImg.preserveAspect = true;
-            promptImg.color = Color.white;
-            promptImg.raycastTarget = false;
-            var promptRect = promptImage.GetComponent<RectTransform>();
-            promptRect.anchorMin = new Vector2(0.5f, 0.5f);
-            promptRect.anchorMax = new Vector2(0.5f, 0.5f);
-            promptRect.pivot = new Vector2(0.5f, 0.5f);
-            promptRect.anchoredPosition = new Vector2(0f, 100f);
-            promptRect.sizeDelta = new Vector2(320f, 320f);
-        }
-        else
-        {
-            GameObject center = new GameObject("PromptText", typeof(RectTransform));
-            center.transform.SetParent(container.transform, false);
-            var tmp = center.AddComponent<TextMeshProUGUI>();
-            tmp.text = !string.IsNullOrEmpty(question.prompt) ? question.prompt : (question.correctAnswerText ?? "");
-            tmp.fontSize = 64;
-            tmp.alignment = TextAlignmentOptions.Center;
-            tmp.raycastTarget = false;
-            var centerRect = center.GetComponent<RectTransform>();
-            centerRect.anchorMin = new Vector2(0.5f, 0.5f);
-            centerRect.anchorMax = new Vector2(0.5f, 0.5f);
-            centerRect.anchoredPosition = new Vector2(0f, 100f);
-            centerRect.sizeDelta = new Vector2(800f, 140f);
-        }
-
-        // Options grid (2x2)
-        float spacing = 40f;
-        Vector2 size = chooseOptionSize;
-        Vector2[] offsets = new Vector2[4]
-        {
-            new Vector2(-size.x/2 - spacing/2, -100f + size.y/2),
-            new Vector2(size.x/2 + spacing/2, -100f + size.y/2),
-            new Vector2(-size.x/2 - spacing/2, -100f - size.y/2 - spacing),
-            new Vector2(size.x/2 + spacing/2, -100f - size.y/2 - spacing)
-        };
-
-        Sprite[] opts = question.multipleChoiceOptions ?? new Sprite[0];
-        for (int i = 0; i < 4; i++)
-        {
-            GameObject btnObj;
-            bool useCustomOptionObject = chooseOptionObjects != null && i < chooseOptionObjects.Length && chooseOptionObjects[i] != null;
-
-            if (useCustomOptionObject)
-            {
-                btnObj = Instantiate(chooseOptionObjects[i], container.transform, false);
-            }
-            else if (chooseOptionButtonPrefab != null)
-            {
-                btnObj = Instantiate(chooseOptionButtonPrefab, container.transform, false);
-            }
-            else
-            {
-                btnObj = new GameObject($"OptionButton_{i}", typeof(RectTransform), typeof(Image), typeof(UnityEngine.UI.Button));
-                btnObj.transform.SetParent(container.transform, false);
-            }
-
-            var btnRect = btnObj.GetComponent<RectTransform>();
-            if (btnRect == null)
-                btnRect = btnObj.AddComponent<RectTransform>();
-
-            if (!useCustomOptionObject)
-            {
-                btnRect.sizeDelta = size;
-                btnRect.localScale = Vector3.one;
-            }
-            else if (btnRect.localScale == Vector3.zero)
-            {
-                btnRect.localScale = Vector3.one;
-            }
-
-            Sprite optionSprite = null;
-            if (overrideChooseOptionSprites != null && i < overrideChooseOptionSprites.Length && overrideChooseOptionSprites[i] != null)
-            {
-                optionSprite = overrideChooseOptionSprites[i];
-            }
-            else if (i < opts.Length && opts[i] != null)
-            {
-                optionSprite = opts[i];
-            }
-
-            if (useCustomOptionAnchors && chooseOptionAnchors != null && i < chooseOptionAnchors.Length && chooseOptionAnchors[i] != null)
-            {
-                btnObj.transform.SetParent(chooseOptionAnchors[i], false);
-                btnRect.anchorMin = chooseOptionAnchors[i].anchorMin;
-                btnRect.anchorMax = chooseOptionAnchors[i].anchorMax;
-                btnRect.pivot = chooseOptionAnchors[i].pivot;
-                btnRect.anchoredPosition = Vector2.zero;
-            }
-            else
-            {
-                btnObj.transform.SetParent(container.transform, false);
-                btnRect.anchorMin = new Vector2(0.5f, 0.5f);
-                btnRect.anchorMax = new Vector2(0.5f, 0.5f);
-                btnRect.pivot = new Vector2(0.5f, 0.5f);
-                btnRect.anchoredPosition = offsets[i];
-                if (useCustomOptionObject && btnRect.sizeDelta == Vector2.zero)
-                    btnRect.sizeDelta = size;
-            }
-
-            if (useCustomOptionObject)
-            {
-                btnRect.localScale = chooseOptionObjects[i].transform.localScale;
-                var image = btnObj.GetComponent<Image>();
-                if (image != null && optionSprite != null)
-                {
-                    image.sprite = optionSprite;
-                    image.color = Color.white;
-                    image.preserveAspect = true;
-                }
-                else if (image == null)
-                {
-                    var childImage = btnObj.GetComponentInChildren<Image>();
-                    if (childImage != null && optionSprite != null)
-                    {
-                        childImage.sprite = optionSprite;
-                        childImage.color = Color.white;
-                        childImage.preserveAspect = true;
-                    }
-                }
-            }
-            else
-            {
-                var img = btnObj.GetComponent<Image>();
-                if (img != null)
-                {
-                    img.preserveAspect = true;
-                    img.color = Color.white;
-                    if (optionSprite != null)
-                        img.sprite = optionSprite;
-                }
-            }
-
-            var btn = btnObj.GetComponent<UnityEngine.UI.Button>();
-            if (btn == null)
-                btn = btnObj.AddComponent<UnityEngine.UI.Button>();
-
-            int idx = i;
-            btn.onClick.AddListener(() => { OnChooseOptionPressed(question, idx); });
-        }
-
-        return container;
-    }
-
-    private void OnChooseOptionPressed(Question question, int selectedIndex)
-    {
-        if (question == null) return;
-        bool correct = selectedIndex == question.correctOptionIndex;
-        QuestionResult result = correct ? QuestionResult.Correct : QuestionResult.Incorrect;
-        PlayAnswerAudio(result);
-        ShowResultAnimation(result, question);
-        StartCoroutine(WaitThenFinishResult(result));
     }
 
     private void ApplyButtonVisual(Image targetImage, GameObject buttonObject, GameObject visualSource, Color fallbackColor)

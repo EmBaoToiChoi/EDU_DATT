@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public enum PlayerAnimalType
 {
@@ -100,6 +101,30 @@ public class GamePlay : MonoBehaviour
     [Header("UI Settings")]
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI levelText;
+    public TextMeshProUGUI timeText;
+    public TextMeshProUGUI healthText;
+    public Sprite fullHeartSprite;
+    public Sprite emptyHeartSprite;
+
+    [Header("Stat Panel Settings")]
+    public Vector2 levelPanelPosition = new Vector2(-680f, 455f);
+    public Vector2 levelPanelSize = new Vector2(220f, 70f);
+    public Vector3 levelPanelScale = Vector3.one;
+    public Vector2 timePanelPosition = new Vector2(-220f, 455f);
+    public Vector2 timePanelSize = new Vector2(220f, 70f);
+    public Vector3 timePanelScale = Vector3.one;
+    public Vector2 healthPanelPosition = new Vector2(220f, 455f);
+    public Vector2 healthPanelSize = new Vector2(220f, 70f);
+    public Vector3 healthPanelScale = Vector3.one;
+    public Vector2 scorePanelPosition = new Vector2(680f, 455f);
+    public Vector2 scorePanelSize = new Vector2(220f, 70f);
+    public Vector3 scorePanelScale = Vector3.one;
+    public Color statPanelColor = new Color(1f, 1f, 1f, 0.85f);
+    public Sprite levelPanelSprite;
+    public Sprite timePanelSprite;
+    public Sprite healthPanelSprite;
+    public Sprite scorePanelSprite;
+    public bool showLegacyDebugHud = false;
 
     [Header("Dead-End Trigger Settings")]
     public GameObject deadEndQuestionPrefab;
@@ -108,6 +133,11 @@ public class GamePlay : MonoBehaviour
 
     private Animator animator;
     private string currentAnimState = "";
+    private Image levelPanelImage;
+    private Image timePanelImage;
+    private Image healthPanelImage;
+    private Image scorePanelImage;
+    private Transform healthDisplayContainer;
     private Vector3 originalLocalScale = Vector3.one;
     private float currentQuestionTimeLimit;
     private bool isTransitioningToNextLevel;
@@ -206,6 +236,7 @@ public class GamePlay : MonoBehaviour
             }
         }
 
+        SetupStatPanels();
         ApplyLevelSettings();
         UpdateUI();
     }
@@ -1104,6 +1135,95 @@ public class GamePlay : MonoBehaviour
         Debug.Log("Game Lost!");
     }
 
+    void SetupStatPanels()
+    {
+        Canvas uiCanvas = FindAnyObjectByType<Canvas>();
+        if (uiCanvas == null)
+        {
+            Debug.LogError("SetupStatPanels: No Canvas found in scene!");
+            return;
+        }
+
+        // Ensure text components exist; create them if necessary
+        if (levelText == null) levelText = CreateStatText(uiCanvas, "LevelText");
+        if (timeText == null) timeText = CreateStatText(uiCanvas, "TimeText");
+        if (healthText == null) healthText = CreateStatText(uiCanvas, "HealthText");
+        if (scoreText == null) scoreText = CreateStatText(uiCanvas, "ScoreText");
+
+        // Setup panels
+        SetupStatPanel(ref levelPanelImage, levelText, levelPanelPosition, levelPanelSize, levelPanelScale, levelPanelSprite, "LevelPanel", uiCanvas);
+        SetupStatPanel(ref timePanelImage, timeText, timePanelPosition, timePanelSize, timePanelScale, timePanelSprite, "TimePanel", uiCanvas);
+        SetupStatPanel(ref healthPanelImage, healthText, healthPanelPosition, healthPanelSize, healthPanelScale, healthPanelSprite, "HealthPanel", uiCanvas);
+        SetupStatPanel(ref scorePanelImage, scoreText, scorePanelPosition, scorePanelSize, scorePanelScale, scorePanelSprite, "ScorePanel", uiCanvas);
+    }
+
+    TextMeshProUGUI CreateStatText(Canvas canvas, string textName)
+    {
+        GameObject textObj = new GameObject(textName, typeof(RectTransform), typeof(TextMeshProUGUI));
+        textObj.transform.SetParent(canvas.transform, false);
+        
+        TextMeshProUGUI tmp = textObj.GetComponent<TextMeshProUGUI>();
+        var rect = textObj.GetComponent<RectTransform>();
+        
+        rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+        rect.pivot = new Vector2(0.5f, 0.5f);
+        rect.anchoredPosition = Vector2.zero;
+        rect.sizeDelta = new Vector2(300f, 60f);
+        
+        tmp.text = textName;
+        tmp.alignment = TextAlignmentOptions.Center;
+        tmp.fontSize = 26;
+        tmp.textWrappingMode = TextWrappingModes.NoWrap;
+        
+        return tmp;
+    }
+
+    void SetupStatPanel(ref Image panelImage, TextMeshProUGUI statText, Vector2 panelPosition, Vector2 panelSize, Vector3 panelScale, Sprite panelSprite, string panelName, Canvas canvas)
+    {
+        if (statText == null || canvas == null) return;
+
+        // Create panel if doesn't exist
+        if (panelImage == null)
+        {
+            GameObject panelObject = new GameObject(panelName, typeof(RectTransform), typeof(Image));
+            panelObject.transform.SetParent(canvas.transform, false);
+            panelImage = panelObject.GetComponent<Image>();
+        }
+
+        // Setup panel appearance
+        if (panelImage != null)
+        {
+            panelImage.color = statPanelColor;
+            panelImage.sprite = panelSprite;
+            panelImage.type = Image.Type.Sliced;
+            panelImage.preserveAspect = false;
+            panelImage.raycastTarget = false;
+
+            var panelRect = panelImage.rectTransform;
+            panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+            panelRect.pivot = new Vector2(0.5f, 0.5f);
+            panelRect.sizeDelta = panelSize;
+            panelRect.anchoredPosition = panelPosition;
+            panelRect.localScale = panelScale;
+        }
+
+        // Move text inside panel
+        if (statText.transform.parent != panelImage.transform)
+        {
+            statText.transform.SetParent(panelImage.transform, false);
+        }
+
+        var textRect = statText.rectTransform;
+        textRect.anchorMin = textRect.anchorMax = new Vector2(0.5f, 0.5f);
+        textRect.pivot = new Vector2(0.5f, 0.5f);
+        textRect.anchoredPosition = Vector2.zero;
+        textRect.sizeDelta = new Vector2(panelSize.x * 0.9f, panelSize.y * 0.9f);
+        textRect.localScale = Vector3.one;
+        statText.alignment = TextAlignmentOptions.Center;
+        statText.textWrappingMode = TextWrappingModes.NoWrap;
+        statText.fontSize = 26;
+    }
+
     void UpdateUI()
     {
         if (scoreText != null)
@@ -1115,10 +1235,69 @@ public class GamePlay : MonoBehaviour
         {
             levelText.text = $"Lv: {currentLevel}";
         }
+
+        if (timeText != null)
+        {
+            timeText.text = $"Time: {currentQuestionTimeLimit:F1}s";
+        }
+
+        // Update health display with heart icons
+        UpdateHealthDisplay();
+    }
+
+    void UpdateHealthDisplay()
+    {
+        if (healthText == null) return;
+
+        // Create or find health container
+        if (healthDisplayContainer == null)
+        {
+            GameObject containerObj = new GameObject("HealthDisplayContainer", typeof(RectTransform));
+            containerObj.transform.SetParent(healthText.transform.parent, false);
+            
+            var rect = containerObj.GetComponent<RectTransform>();
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(200f, 50f);
+            
+            healthDisplayContainer = containerObj.transform;
+            
+            // Hide the text component if it exists
+            healthText.gameObject.SetActive(false);
+        }
+
+        // Clear existing hearts
+        foreach (Transform child in healthDisplayContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Create heart icons
+        float heartSize = 40f;
+        float spacing = 10f;
+        float startX = -(maxHealth * (heartSize + spacing)) / 2f;
+
+        for (int i = 0; i < maxHealth; i++)
+        {
+            GameObject heartObj = new GameObject($"Heart_{i}", typeof(RectTransform), typeof(Image));
+            heartObj.transform.SetParent(healthDisplayContainer, false);
+            
+            var heartRect = heartObj.GetComponent<RectTransform>();
+            heartRect.sizeDelta = new Vector2(heartSize, heartSize);
+            heartRect.anchoredPosition = new Vector3(startX + i * (heartSize + spacing), 0f, 0f);
+            
+            var heartImage = heartObj.GetComponent<Image>();
+            heartImage.sprite = (i < currentHealth) ? fullHeartSprite : emptyHeartSprite;
+            heartImage.color = Color.white;
+            heartImage.preserveAspect = true;
+            heartImage.raycastTarget = false;
+        }
     }
 
     void OnGUI()
     {
+        if (!showLegacyDebugHud) return;
         if (startScreen != null && startScreen.activeSelf) return;
 
         GUIStyle style = new GUIStyle();
