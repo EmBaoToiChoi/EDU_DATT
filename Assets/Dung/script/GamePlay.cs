@@ -67,6 +67,12 @@ public class GamePlay : MonoBehaviour
     public GameObject thoPlayer;
     public GameObject gaPlayer;
     public GameObject rongPlayer;
+    public GameObject boPlayerAnimation;
+    public GameObject hoPlayerAnimation;
+    public GameObject ranPlayerAnimation;
+    public GameObject thoPlayerAnimation;
+    public GameObject gaPlayerAnimation;
+    public GameObject rongPlayerAnimation;
     public Sprite boSprite;
     public Sprite hoSprite;
     public Sprite ranSprite;
@@ -119,6 +125,22 @@ public class GamePlay : MonoBehaviour
     public Vector2 scorePanelPosition = new Vector2(680f, 455f);
     public Vector2 scorePanelSize = new Vector2(220f, 70f);
     public Vector3 scorePanelScale = Vector3.one;
+    [Header("Screen Half Positioning")]
+    public bool useHalfScreenPositions = false;
+    public float screenHalfOffsetX = 0f;
+    public float screenHalfOffsetY = 0f;
+    public Vector3 levelTextScale = Vector3.one;
+    public Vector3 timeTextScale = Vector3.one;
+    public Vector3 healthTextScale = Vector3.one;
+    public Vector3 scoreTextScale = Vector3.one;
+    public Vector2 levelTextPosition = new Vector2(0f, 2f);
+    public Vector2 timeTextPosition = new Vector2(0f, 2f);
+    public Vector2 healthTextPosition = new Vector2(0f, 2f);
+    public Vector2 scoreTextPosition = new Vector2(0f, 2f);
+    [Header("Heart Icon Settings")]
+    public Vector3 heartScale = Vector3.one;
+    public float heartSize = 40f;
+    public float heartSpacing = 10f;
     public Color statPanelColor = new Color(1f, 1f, 1f, 0.85f);
     public Sprite levelPanelSprite;
     public Sprite timePanelSprite;
@@ -514,7 +536,7 @@ public class GamePlay : MonoBehaviour
             Destroy(pickupRoot.GetChild(i).gameObject);
         }
 
-        if (skillPickupPrefab == null) return;
+        GameObject pickup = null;
 
         List<Vector3Int> candidateCells = new List<Vector3Int>();
         var bounds = walkableTilemap.cellBounds;
@@ -543,7 +565,16 @@ public class GamePlay : MonoBehaviour
 
             Vector3 worldPos = walkableTilemap.GetCellCenterWorld(cell);
             worldPos += Vector3.back * skillPickupSpawnOffset;
-            GameObject pickup = Instantiate(skillPickupPrefab, worldPos, Quaternion.identity, pickupRoot);
+
+            if (skillPickupPrefab != null)
+            {
+                pickup = Instantiate(skillPickupPrefab, worldPos, Quaternion.identity, pickupRoot);
+            }
+            else
+            {
+                pickup = CreateFallbackSkillPickup(worldPos, pickupRoot);
+            }
+
             pickup.name = "SkillPickup_" + cell.x + "_" + cell.y;
 
             var collider = pickup.GetComponent<Collider2D>();
@@ -569,6 +600,66 @@ public class GamePlay : MonoBehaviour
             }
             pickupComp.Initialize(this);
         }
+    }
+
+    GameObject CreateFallbackSkillPickup(Vector3 worldPos, Transform pickupRoot)
+    {
+        GameObject pickup = new GameObject("SkillPickup_Fallback");
+        pickup.transform.SetParent(pickupRoot, false);
+        pickup.transform.position = worldPos;
+
+        SpriteRenderer renderer = pickup.AddComponent<SpriteRenderer>();
+        renderer.sprite = CreateFallbackPickupSprite();
+        renderer.color = Color.yellow;
+        renderer.sortingOrder = 20;
+
+        CircleCollider2D circleCollider = pickup.AddComponent<CircleCollider2D>();
+        circleCollider.isTrigger = true;
+        circleCollider.radius = 0.2f;
+
+        Rigidbody2D rb = pickup.AddComponent<Rigidbody2D>();
+        rb.bodyType = RigidbodyType2D.Kinematic;
+        rb.simulated = true;
+
+        AnimalSkillPickup pickupComp = pickup.AddComponent<AnimalSkillPickup>();
+        pickupComp.Initialize(this);
+
+        return pickup;
+    }
+
+    Sprite CreateFallbackPickupSprite()
+    {
+        Texture2D texture = new Texture2D(64, 64);
+        Color[] pixels = new Color[64 * 64];
+
+        for (int y = 0; y < 64; y++)
+        {
+            for (int x = 0; x < 64; x++)
+            {
+                float dx = x - 32f;
+                float dy = y - 32f;
+                float distance = dx * dx + dy * dy;
+
+                if (distance <= 24f * 24f)
+                {
+                    pixels[y * 64 + x] = Color.yellow;
+                }
+                else if (distance <= 32f * 32f)
+                {
+                    pixels[y * 64 + x] = new Color(1f, 0.9f, 0.2f, 0.5f);
+                }
+                else
+                {
+                    pixels[y * 64 + x] = Color.clear;
+                }
+            }
+        }
+
+        texture.SetPixels(pixels);
+        texture.Apply();
+        texture.filterMode = FilterMode.Point;
+
+        return Sprite.Create(texture, new Rect(0, 0, 64, 64), new Vector2(0.5f, 0.5f), 100f);
     }
 
     public void AddScore(int amount)
@@ -794,13 +885,13 @@ public class GamePlay : MonoBehaviour
     {
         switch (type)
         {
-            case PlayerAnimalType.Bo: return boPlayer;
-            case PlayerAnimalType.Ho: return hoPlayer;
-            case PlayerAnimalType.Ran: return ranPlayer;
-            case PlayerAnimalType.Tho: return thoPlayer;
-            case PlayerAnimalType.Ga: return gaPlayer;
-            case PlayerAnimalType.Rong: return rongPlayer;
-            default: return boPlayer;
+            case PlayerAnimalType.Bo: return boPlayerAnimation != null ? boPlayerAnimation : boPlayer;
+            case PlayerAnimalType.Ho: return hoPlayerAnimation != null ? hoPlayerAnimation : hoPlayer;
+            case PlayerAnimalType.Ran: return ranPlayerAnimation != null ? ranPlayerAnimation : ranPlayer;
+            case PlayerAnimalType.Tho: return thoPlayerAnimation != null ? thoPlayerAnimation : thoPlayer;
+            case PlayerAnimalType.Ga: return gaPlayerAnimation != null ? gaPlayerAnimation : gaPlayer;
+            case PlayerAnimalType.Rong: return rongPlayerAnimation != null ? rongPlayerAnimation : rongPlayer;
+            default: return boPlayerAnimation != null ? boPlayerAnimation : boPlayer;
         }
     }
 
@@ -866,6 +957,8 @@ public class GamePlay : MonoBehaviour
         {
             activePlayerVisual = selectedModel;
         }
+
+        PlayVisualAnimation(activePlayerVisual);
     }
 
     void UpdateGoalVisual()
@@ -894,6 +987,37 @@ public class GamePlay : MonoBehaviour
             visual.transform.localPosition = Vector3.zero;
             visual.transform.localRotation = Quaternion.identity;
             visual.transform.localScale = Vector3.one;
+            PlayVisualAnimation(visual);
+        }
+    }
+
+    void PlayVisualAnimation(GameObject visual)
+    {
+        if (visual == null) return;
+
+        visual.SetActive(true);
+
+        Animator animator = visual.GetComponentInChildren<Animator>(true);
+        if (animator != null)
+        {
+            animator.enabled = true;
+            if (animator.runtimeAnimatorController != null)
+            {
+                try
+                {
+                    animator.Play("Idle", 0, 0f);
+                }
+                catch (System.Exception)
+                {
+                    animator.Play(0, -1, 0f);
+                }
+            }
+        }
+
+        Animation legacyAnimation = visual.GetComponentInChildren<Animation>(true);
+        if (legacyAnimation != null && legacyAnimation.clip != null)
+        {
+            legacyAnimation.Play();
         }
     }
 
@@ -986,6 +1110,7 @@ public class GamePlay : MonoBehaviour
             SpawnDeadEndQuestionTriggers();
             SpawnScorePickups();
             ResetSkillSpawnTimer(true);
+            SpawnSkillPickups();
             currentCell = navigator.GetStartCell();
             if (walkableTilemap != null)
             {
@@ -1151,10 +1276,10 @@ public class GamePlay : MonoBehaviour
         if (scoreText == null) scoreText = CreateStatText(uiCanvas, "ScoreText");
 
         // Setup panels
-        SetupStatPanel(ref levelPanelImage, levelText, levelPanelPosition, levelPanelSize, levelPanelScale, levelPanelSprite, "LevelPanel", uiCanvas);
-        SetupStatPanel(ref timePanelImage, timeText, timePanelPosition, timePanelSize, timePanelScale, timePanelSprite, "TimePanel", uiCanvas);
-        SetupStatPanel(ref healthPanelImage, healthText, healthPanelPosition, healthPanelSize, healthPanelScale, healthPanelSprite, "HealthPanel", uiCanvas);
-        SetupStatPanel(ref scorePanelImage, scoreText, scorePanelPosition, scorePanelSize, scorePanelScale, scorePanelSprite, "ScorePanel", uiCanvas);
+        SetupStatPanel(ref levelPanelImage, levelText, levelPanelPosition, levelPanelSize, levelPanelScale, levelTextScale, levelTextPosition, levelPanelSprite, "LevelPanel", uiCanvas);
+        SetupStatPanel(ref timePanelImage, timeText, timePanelPosition, timePanelSize, timePanelScale, timeTextScale, timeTextPosition, timePanelSprite, "TimePanel", uiCanvas);
+        SetupStatPanel(ref healthPanelImage, healthText, healthPanelPosition, healthPanelSize, healthPanelScale, healthTextScale, healthTextPosition, healthPanelSprite, "HealthPanel", uiCanvas);
+        SetupStatPanel(ref scorePanelImage, scoreText, scorePanelPosition, scorePanelSize, scorePanelScale, scoreTextScale, scoreTextPosition, scorePanelSprite, "ScorePanel", uiCanvas);
     }
 
     TextMeshProUGUI CreateStatText(Canvas canvas, string textName)
@@ -1178,21 +1303,43 @@ public class GamePlay : MonoBehaviour
         return tmp;
     }
 
-    void SetupStatPanel(ref Image panelImage, TextMeshProUGUI statText, Vector2 panelPosition, Vector2 panelSize, Vector3 panelScale, Sprite panelSprite, string panelName, Canvas canvas)
+    void SetupStatPanel(ref Image panelImage, TextMeshProUGUI statText, Vector2 panelPosition, Vector2 panelSize, Vector3 panelScale, Vector3 textScale, Vector2 textPosition, Sprite panelSprite, string panelName, Canvas canvas)
     {
         if (statText == null || canvas == null) return;
+
+        GameObject statRoot = null;
 
         // Create panel if doesn't exist
         if (panelImage == null)
         {
             GameObject panelObject = new GameObject(panelName, typeof(RectTransform), typeof(Image));
-            panelObject.transform.SetParent(canvas.transform, false);
             panelImage = panelObject.GetComponent<Image>();
         }
 
-        // Setup panel appearance
         if (panelImage != null)
         {
+            statRoot = panelImage.transform.parent != null && panelImage.transform.parent.name == $"{panelName}Root"
+                ? panelImage.transform.parent.gameObject
+                : null;
+
+            if (statRoot == null)
+            {
+                statRoot = new GameObject($"{panelName}Root", typeof(RectTransform));
+                statRoot.transform.SetParent(canvas.transform, false);
+                panelImage.transform.SetParent(statRoot.transform, false);
+            }
+
+            Vector2 finalPosition = panelPosition;
+            if (useHalfScreenPositions)
+            {
+                float halfWidth = canvas.GetComponent<RectTransform>().rect.width * 0.5f;
+                float halfHeight = canvas.GetComponent<RectTransform>().rect.height * 0.5f;
+                finalPosition = new Vector2(
+                    panelPosition.x < 0 ? -halfWidth + panelSize.x * 0.5f + screenHalfOffsetX : halfWidth - panelSize.x * 0.5f + screenHalfOffsetX,
+                    panelPosition.y + screenHalfOffsetY
+                );
+            }
+
             panelImage.color = statPanelColor;
             panelImage.sprite = panelSprite;
             panelImage.type = Image.Type.Sliced;
@@ -1203,25 +1350,33 @@ public class GamePlay : MonoBehaviour
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0.5f);
             panelRect.pivot = new Vector2(0.5f, 0.5f);
             panelRect.sizeDelta = panelSize;
-            panelRect.anchoredPosition = panelPosition;
+            panelRect.anchoredPosition = Vector2.zero;
             panelRect.localScale = panelScale;
+
+            var rootRect = statRoot.GetComponent<RectTransform>();
+            rootRect.anchorMin = rootRect.anchorMax = new Vector2(0.5f, 0.5f);
+            rootRect.pivot = new Vector2(0.5f, 0.5f);
+            rootRect.sizeDelta = panelSize;
+            rootRect.anchoredPosition = finalPosition;
+            rootRect.localScale = Vector3.one;
         }
 
-        // Move text inside panel
-        if (statText.transform.parent != panelImage.transform)
+        // Move text into its own container so it can scale independently from the panel.
+        if (statText.transform.parent != statRoot.transform)
         {
-            statText.transform.SetParent(panelImage.transform, false);
+            statText.transform.SetParent(statRoot.transform, false);
         }
 
         var textRect = statText.rectTransform;
         textRect.anchorMin = textRect.anchorMax = new Vector2(0.5f, 0.5f);
         textRect.pivot = new Vector2(0.5f, 0.5f);
-        textRect.anchoredPosition = Vector2.zero;
-        textRect.sizeDelta = new Vector2(panelSize.x * 0.9f, panelSize.y * 0.9f);
-        textRect.localScale = Vector3.one;
+        textRect.anchoredPosition = textPosition;
+        textRect.sizeDelta = new Vector2(panelSize.x * 0.88f, panelSize.y * 0.8f);
+        textRect.localScale = textScale;
         statText.alignment = TextAlignmentOptions.Center;
         statText.textWrappingMode = TextWrappingModes.NoWrap;
-        statText.fontSize = 26;
+        statText.fontSize = 24;
+        statText.enableAutoSizing = false;
     }
 
     void UpdateUI()
@@ -1258,13 +1413,21 @@ public class GamePlay : MonoBehaviour
             var rect = containerObj.GetComponent<RectTransform>();
             rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = Vector2.zero;
+            rect.anchoredPosition = healthTextPosition;
             rect.sizeDelta = new Vector2(200f, 50f);
+            rect.localScale = Vector3.one;
             
             healthDisplayContainer = containerObj.transform;
             
             // Hide the text component if it exists
             healthText.gameObject.SetActive(false);
+        }
+
+        if (healthDisplayContainer != null)
+        {
+            healthDisplayContainer.localScale = healthPanelScale;
+            var heartContainerRect = healthDisplayContainer.GetComponent<RectTransform>();
+            heartContainerRect.anchoredPosition = healthTextPosition;
         }
 
         // Clear existing hearts
@@ -1274,9 +1437,9 @@ public class GamePlay : MonoBehaviour
         }
 
         // Create heart icons
-        float heartSize = 40f;
-        float spacing = 10f;
-        float startX = -(maxHealth * (heartSize + spacing)) / 2f;
+        float size = heartSize;
+        float spacing = heartSpacing;
+        float startX = -(maxHealth * (size + spacing)) / 2f;
 
         for (int i = 0; i < maxHealth; i++)
         {
@@ -1284,8 +1447,9 @@ public class GamePlay : MonoBehaviour
             heartObj.transform.SetParent(healthDisplayContainer, false);
             
             var heartRect = heartObj.GetComponent<RectTransform>();
-            heartRect.sizeDelta = new Vector2(heartSize, heartSize);
-            heartRect.anchoredPosition = new Vector3(startX + i * (heartSize + spacing), 0f, 0f);
+            heartRect.sizeDelta = new Vector2(size, size);
+            heartRect.anchoredPosition = new Vector3(startX + i * (size + spacing), 0f, 0f);
+            heartRect.localScale = heartScale;
             
             var heartImage = heartObj.GetComponent<Image>();
             heartImage.sprite = (i < currentHealth) ? fullHeartSprite : emptyHeartSprite;
