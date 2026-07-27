@@ -198,6 +198,7 @@ public class Enemy : MonoBehaviour
             {
                 if (result == QuestionResult.Correct)
                 {
+                    gamePlay.AddScore(50);
                     Debug.Log("Enemy touched player: Answered CORRECT. Enemy resets to start.");
                     ResetToStart();
                 }

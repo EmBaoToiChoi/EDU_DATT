@@ -103,6 +103,7 @@ public class GamePlay : MonoBehaviour
     private bool snakeSlowActive;
     private float snakeSlowTimer;
     private Vector3 playerVisualOriginalScale;
+    private bool playerFacingRight = true;
 
     [Header("UI Settings")]
     public TextMeshProUGUI scoreText;
@@ -305,6 +306,7 @@ public class GamePlay : MonoBehaviour
                 {
                     previousCell = currentCell;
                     SetQueueToSingleCell(targetCell);
+                    UpdateFlip(direction);
                 }
             }
         }
@@ -321,6 +323,13 @@ public class GamePlay : MonoBehaviour
 
         Vector3Int nextCell = moveQueue[0];
         Vector3 targetWorld = walkableTilemap.GetCellCenterWorld(nextCell);
+
+        Vector3 movementDelta = targetWorld - transform.position;
+        if (Mathf.Abs(movementDelta.x) > Mathf.Abs(movementDelta.y))
+        {
+            UpdateFlip(movementDelta);
+        }
+
         transform.position = Vector3.MoveTowards(transform.position, targetWorld, speed * Time.deltaTime);
 
         if (Vector3.Distance(transform.position, targetWorld) <= reachThreshold)
@@ -370,6 +379,45 @@ public class GamePlay : MonoBehaviour
     {
         moveQueue.Clear();
         moveQueue.Add(cell);
+    }
+
+    void UpdateFlip(Vector3Int direction)
+    {
+        if (direction == Vector3Int.left)
+        {
+            FlipPlayer(false);
+        }
+        else if (direction == Vector3Int.right)
+        {
+            FlipPlayer(true);
+        }
+    }
+
+    void UpdateFlip(Vector3 direction)
+    {
+        if (direction.x < 0f)
+        {
+            FlipPlayer(false);
+        }
+        else if (direction.x > 0f)
+        {
+            FlipPlayer(true);
+        }
+    }
+
+    void FlipPlayer(bool faceRight)
+    {
+        if (playerVisualRoot == null)
+            playerVisualRoot = transform;
+
+        if (playerFacingRight == faceRight)
+            return;
+
+        playerFacingRight = faceRight;
+
+        Vector3 scale = playerVisualRoot.localScale;
+        scale.x = Mathf.Abs(scale.x) * (faceRight ? 1f : -1f);
+        playerVisualRoot.localScale = scale;
     }
 
     public void StopMovement()
@@ -895,6 +943,20 @@ public class GamePlay : MonoBehaviour
         }
     }
 
+    GameObject GetAnimalAnimationPrefab(PlayerAnimalType type)
+    {
+        switch (type)
+        {
+            case PlayerAnimalType.Bo: return boPlayerAnimation;
+            case PlayerAnimalType.Ho: return hoPlayerAnimation;
+            case PlayerAnimalType.Ran: return ranPlayerAnimation;
+            case PlayerAnimalType.Tho: return thoPlayerAnimation;
+            case PlayerAnimalType.Ga: return gaPlayerAnimation;
+            case PlayerAnimalType.Rong: return rongPlayerAnimation;
+            default: return null;
+        }
+    }
+
     PlayerAnimalType GetRandomAnimal()
     {
         var values = Enum.GetValues(typeof(PlayerAnimalType));
@@ -925,9 +987,10 @@ public class GamePlay : MonoBehaviour
             playerVisualRoot = transform;
 
         GameObject selectedModel = GetAnimalModel(currentAnimalType);
+        GameObject animationPrefab = GetAnimalAnimationPrefab(currentAnimalType);
 
-        // Deactivate all scene player models as needed.
-        var animalModels = new GameObject[] { boPlayer, hoPlayer, ranPlayer, thoPlayer, gaPlayer, rongPlayer };
+        // Deactivate any scene player models that are not the selected scene model.
+        var animalModels = new GameObject[] { boPlayer, hoPlayer, ranPlayer, thoPlayer, gaPlayer, rongPlayer, boPlayerAnimation, hoPlayerAnimation, ranPlayerAnimation, thoPlayerAnimation, gaPlayerAnimation, rongPlayerAnimation };
         foreach (var model in animalModels)
         {
             if (model == null) continue;
@@ -937,16 +1000,28 @@ public class GamePlay : MonoBehaviour
             }
         }
 
-        if (activePlayerVisual != null)
+        // Clear any previously spawned clone visuals under the root.
+        for (int i = playerVisualRoot.childCount - 1; i >= 0; i--)
         {
-            Destroy(activePlayerVisual);
-            activePlayerVisual = null;
+            Destroy(playerVisualRoot.GetChild(i).gameObject);
         }
+        activePlayerVisual = null;
 
         if (selectedModel == null)
             return;
 
-        if (!selectedModel.scene.IsValid())
+        if (animationPrefab != null)
+        {
+            activePlayerVisual = Instantiate(animationPrefab, playerVisualRoot);
+            activePlayerVisual.transform.localPosition = Vector3.zero;
+            activePlayerVisual.transform.localRotation = Quaternion.identity;
+            activePlayerVisual.transform.localScale = Vector3.one;
+            if (selectedModel != null && selectedModel.scene.IsValid())
+            {
+                selectedModel.SetActive(false);
+            }
+        }
+        else if (!selectedModel.scene.IsValid())
         {
             activePlayerVisual = Instantiate(selectedModel, playerVisualRoot);
             activePlayerVisual.transform.localPosition = Vector3.zero;
@@ -959,6 +1034,34 @@ public class GamePlay : MonoBehaviour
         }
 
         PlayVisualAnimation(activePlayerVisual);
+
+        Animator foundAnimator = activePlayerVisual != null ? activePlayerVisual.GetComponentInChildren<Animator>(true) : null;
+        Animation foundLegacy = activePlayerVisual != null ? activePlayerVisual.GetComponentInChildren<Animation>(true) : null;
+
+        if (foundAnimator != null)
+        {
+            foundAnimator.enabled = true;
+            if (foundAnimator.runtimeAnimatorController != null)
+            {
+                try { foundAnimator.Play("Idle", 0, 0f); } catch { }
+            }
+        }
+        if (foundLegacy != null && foundLegacy.clip != null)
+        {
+            try { foundLegacy.Play(); } catch { }
+        }
+
+        if (playerSpriteRenderer != null)
+        {
+            bool visualIsChildOfRoot = playerVisualRoot != null && activePlayerVisual != null && activePlayerVisual.transform.IsChildOf(playerVisualRoot);
+            bool visualHasAnimator = foundAnimator != null && foundAnimator.runtimeAnimatorController != null;
+            try { playerSpriteRenderer.enabled = !(visualHasAnimator && visualIsChildOfRoot); } catch { }
+        }
+
+        if ((foundAnimator == null || foundAnimator.runtimeAnimatorController == null) && (foundLegacy == null || foundLegacy.clip == null))
+        {
+            Debug.LogWarning($"Player visual '{(activePlayerVisual != null ? activePlayerVisual.name : "null")}' for {currentAnimalType} has no Animator or Animation clip.");
+        }
     }
 
     void UpdateGoalVisual()
@@ -1218,6 +1321,8 @@ public class GamePlay : MonoBehaviour
     public void TakeDamage(int amount)
     {
         currentHealth -= amount;
+        currentHealth = Mathf.Max(0, currentHealth);
+        UpdateUI();
         Debug.Log($"Player took damage! Health: {currentHealth}/{maxHealth}");
         if (currentHealth <= 0)
         {

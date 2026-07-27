@@ -55,6 +55,7 @@ public class DeadEndQuestionTrigger : MonoBehaviour
                 }
                 else if (result == QuestionResult.Correct)
                 {
+                    gamePlay.AddScore(50);
                     Debug.Log("Dead-end trigger answered correctly. No damage.");
                 }
                 else if (result == QuestionResult.Incorrect)
