@@ -415,7 +415,6 @@ MonoBehaviour:
   - {fileID: 4677147336353972013, guid: 1218392460c1bac4b94b2b24ed1b53fc, type: 3}
   - {fileID: 8255306659921579853, guid: c65a1ef7ea2d9684fa87a790e6b34697, type: 3}
   - {fileID: 672327882639000751, guid: e4e53f37a44110c488535ba901c98071, type: 3}
-  - {fileID: 8414524185577265723, guid: 3f7c558abd5c44d41bbbe0984dd0fefd, type: 3}
   - {fileID: 7378601478647644575, guid: 6846341621f554f49b8f85094b17122c, type: 3}
   - {fileID: 7616757109688039055, guid: d2957fd7f76f80641a2449a201df90a0, type: 3}
   - {fileID: 6406567992869530830, guid: 299743441a0676c4b882d6841dbab141, type: 3}
@@ -441,7 +440,7 @@ MonoBehaviour:
   gameplayScoreText: {fileID: 1168634915}
   winScoreText: {fileID: 2013803486}
   loseScoreText: {fileID: 1183923065}
-  totalTime: 90
+  totalTime: 120
   comboThreshold: 2
   comboImage: {fileID: 701862321}
   comboSprite: {fileID: 5307882462097650756, guid: d2bafdd2c4286de4c9707c2480a63ea2, type: 3}
@@ -1095,7 +1094,7 @@ MonoBehaviour:
   m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 100, y: 100}
+  m_CellSize: {x: 250, y: 95}
   m_Spacing: {x: 1, y: 1}
   m_Constraint: 0
   m_ConstraintCount: 2

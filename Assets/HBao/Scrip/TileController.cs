@@ -33,6 +33,33 @@ public class TileController : MonoBehaviour
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(OnTileClicked);
         }
+
+        if (txtName != null)
+        {
+            if (!string.IsNullOrEmpty(txtName.text) && txtName.text.Contains("(H2O) là nước"))
+            {
+                txtName.text = "(H2O)\nlà nước";
+            }
+
+            txtName.transform.localScale = Vector3.one;
+            txtName.margin = Vector4.zero;
+
+            RectTransform rect = txtName.rectTransform;
+            if (rect != null)
+            {
+                rect.anchorMin = new Vector2(0.30f, 0.15f);
+                rect.anchorMax = new Vector2(0.88f, 0.85f);
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
+            }
+
+            txtName.enableAutoSizing = true;
+            txtName.fontSizeMin = 14f;
+            txtName.fontSizeMax = 24f;
+            txtName.fontStyle = FontStyles.Bold;
+            txtName.alignment = TextAlignmentOptions.Center;
+            txtName.raycastTarget = false;
+        }
     }
 
     void OnTileClicked()

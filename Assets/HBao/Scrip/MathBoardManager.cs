@@ -345,7 +345,7 @@ public class MathBoardManager : MonoBehaviour
 
         // Lấy các cài đặt từ GridLayoutGroup để dựng lưới
         GridLayoutGroup gridLayout = boardParent.GetComponent<GridLayoutGroup>();
-        Vector2 cellSize = new Vector2(100f, 100f);
+        Vector2 cellSize = new Vector2(250f, 95f);
         Vector2 spacing = Vector2.zero;
         RectOffset padding = null;
 
@@ -355,6 +355,11 @@ public class MathBoardManager : MonoBehaviour
             spacing = gridLayout.spacing;
             padding = gridLayout.padding;
             Destroy(gridLayout); // Xóa hẳn component để tránh việc Unity tự động bật lại làm xáo trộn vị trí
+        }
+
+        if (Mathf.Approximately(cellSize.x, cellSize.y) || cellSize.x < 200f)
+        {
+            cellSize = new Vector2(250f, 95f);
         }
 
         // Sử dụng trực tiếp cellSize từ GridLayoutGroup để đồng bộ kích thước tất cả các ô số
