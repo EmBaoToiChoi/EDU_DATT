@@ -43,4 +43,17 @@ public class handclick : MonoBehaviour
         hasBeenDismissed = true;
         gameObject.SetActive(false);
     }
+
+    public void ResetTutorial()
+    {
+        hasBeenDismissed = false;
+        if (targetPanel != null)
+        {
+            gameObject.SetActive(targetPanel.activeSelf);
+        }
+        else
+        {
+            gameObject.SetActive(true);
+        }
+    }
 }

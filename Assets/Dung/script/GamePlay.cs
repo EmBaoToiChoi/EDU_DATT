@@ -22,6 +22,10 @@ public class GamePlay : MonoBehaviour
     public QuestionManager questionManager;
     // SimpleUI reference removed to avoid compile-time dependency; UI interaction uses QuestionManager/SimpleUI at runtime.
     public GameObject startScreen;
+    public GameObject menuCanvas;
+    private Menu menuController;
+    [Header("Optional Tutorial Object")] 
+    public GameObject tutorialObject;
     public float speed = 2f;
     public float reachThreshold = 0.1f;
 
@@ -41,6 +45,16 @@ public class GamePlay : MonoBehaviour
     [Header("Game Over Settings")]
     public GameObject winScreen;
     public GameObject loseScreen;
+    [Header("End Screen UI")]
+    public GameObject endPanel;
+    public TextMeshProUGUI finalScoreText;
+    public TextMeshProUGUI finalLevelText;
+    public TextMeshProUGUI finalCorrectText;
+    public TextMeshProUGUI finalHealthText;
+    public Button homeButton;
+    public Button replayButton;
+    public GameObject homePanel;
+    public GameObject replayPanel;
 
     [Header("Endless Level Settings")]
     public bool endlessMode = true;
@@ -54,6 +68,7 @@ public class GamePlay : MonoBehaviour
     [Header("Score Settings")]
     public int currentScore;
     public int scoreFromPickup = 50;
+    public int scoreForLeaderboardSubmission = 0;
     public int scoreFromLevel = 100;
     public int scorePerLevelIncrease = 100;
     public int scorePickupsPerMap = 2;
@@ -164,6 +179,9 @@ public class GamePlay : MonoBehaviour
     private Vector3 originalLocalScale = Vector3.one;
     private float currentQuestionTimeLimit;
     private bool isTransitioningToNextLevel;
+    private int correctAnswerCount;
+    private bool isGameOver;
+    private int highestLevelReached = 1;
 
     Vector3Int currentCell;
     Vector3Int previousCell;
@@ -205,6 +223,33 @@ public class GamePlay : MonoBehaviour
         }
     }
 
+    public void ResolveQuestionManagerReference()
+    {
+        if (questionManager != null)
+        {
+            return;
+        }
+
+        questionManager = FindObjectOfType<QuestionManager>(true);
+        if (questionManager != null)
+        {
+            return;
+        }
+
+        foreach (var manager in Resources.FindObjectsOfTypeAll<QuestionManager>())
+        {
+            if (manager == null || !manager.gameObject.scene.IsValid())
+            {
+                continue;
+            }
+
+            questionManager = manager;
+            return;
+        }
+
+        Debug.LogWarning("GamePlay: QuestionManager reference could not be resolved automatically.");
+    }
+
     void Start()
     {
         animator = GetComponent<Animator>();
@@ -212,8 +257,13 @@ public class GamePlay : MonoBehaviour
         originalLocalScale = transform.localScale;
         basePlayerSpeed = speed;
 
+        ResolveEndScreenReferences();
+        ResolveMenuReference();
+        ResolveStartScreenReference();
+        EnsureStartButtonListener();
         if (winScreen != null) winScreen.SetActive(false);
         if (loseScreen != null) loseScreen.SetActive(false);
+        if (endPanel != null) endPanel.SetActive(false);
 
         FindEnemyInScene();
         if (enemy != null)
@@ -240,6 +290,7 @@ public class GamePlay : MonoBehaviour
             SpawnDeadEndQuestionTriggers();
             SpawnScorePickups();
             ResetSkillSpawnTimer(true);
+            SpawnSkillPickups();
             currentCell = navigator.GetStartCell();
             if (walkableTilemap != null)
             {
@@ -251,22 +302,25 @@ public class GamePlay : MonoBehaviour
                 visitedCells.Clear();
                 moveQueue.Clear();
                 visitedCells.Add(currentCell);
-                
-                if (startScreen != null)
-                {
-                    startScreen.SetActive(true);
-                }
             }
         }
 
+        if (startScreen != null && IsLikelyStartScreen(startScreen))
+        {
+            startScreen.SetActive(true);
+            EnsureStartCanvasSorting();
+        }
+
         SetupStatPanels();
+        EnsureHealthDisplayContainerExists();
         ApplyLevelSettings();
         UpdateUI();
     }
 
     void Update()
     {
-        if ((startScreen != null && startScreen.activeSelf) || 
+        if (isGameOver ||
+            (startScreen != null && startScreen.activeSelf) || 
             (winScreen != null && winScreen.activeSelf) || 
             (loseScreen != null && loseScreen.activeSelf) || 
             waitingForAnswer || walkableTilemap == null)
@@ -623,7 +677,11 @@ public class GamePlay : MonoBehaviour
                 pickup = CreateFallbackSkillPickup(worldPos, pickupRoot);
             }
 
-            pickup.name = "SkillPickup_" + cell.x + "_" + cell.y;
+            if (pickup != null)
+            {
+                pickup.SetActive(true);
+                pickup.name = "SkillPickup_" + cell.x + "_" + cell.y;
+            }
 
             var collider = pickup.GetComponent<Collider2D>();
             if (collider == null)
@@ -713,6 +771,7 @@ public class GamePlay : MonoBehaviour
     public void AddScore(int amount)
     {
         currentScore += amount;
+        scoreForLeaderboardSubmission = currentScore;
         UpdateUI();
         Debug.Log($"Score: {currentScore}");
     }
@@ -797,7 +856,7 @@ public class GamePlay : MonoBehaviour
 
     void UpdateSkillSpawnTimer()
     {
-        if (skillPickupPrefab == null || navigator == null || walkableTilemap == null)
+        if (navigator == null || walkableTilemap == null)
             return;
 
         skillSpawnTimer -= Time.deltaTime;
@@ -1193,6 +1252,7 @@ public class GamePlay : MonoBehaviour
         ResetEnemySpawnState();
         int levelScore = scoreFromLevel + (currentLevel - 1) * scorePerLevelIncrease;
         AddScore(levelScore);
+        highestLevelReached = Mathf.Max(highestLevelReached, currentLevel + 1);
         currentLevel++;
         ApplyLevelSettings();
 
@@ -1231,22 +1291,58 @@ public class GamePlay : MonoBehaviour
 
     public void StartGame()
     {
-        if (startScreen != null)
+        ResolveStartScreenReference();
+        ResolveMenuReference();
+
+        if (startScreen != null && IsLikelyStartScreen(startScreen))
         {
             startScreen.SetActive(false);
         }
-        if (winScreen != null) winScreen.SetActive(false);
-        if (loseScreen != null) loseScreen.SetActive(false);
+        if (menuController != null && menuController.menuCanvas != null)
+        {
+            menuController.menuCanvas.SetActive(false);
+        }
+        if (menuCanvas != null)
+        {
+            menuCanvas.SetActive(false);
+        }
+        if (homePanel != null)
+        {
+            homePanel.SetActive(false);
+        }
+        if (replayPanel != null)
+        {
+            replayPanel.SetActive(false);
+        }
+        HideStartMenuObjects();
 
+        // Ensure any tutorial UI (handclick) is hidden when starting the game
+        var tutorial = FindObjectOfType<handclick>();
+        if (tutorial != null)
+        {
+            tutorial.HideTutorial();
+        }
+        // Also hide a directly assigned tutorial image/object (if any)
+        if (tutorialObject != null)
+        {
+            tutorialObject.SetActive(false);
+        }
+        HideEndScreens();
+
+        isGameOver = false;
+        endlessMode = true;
+        correctAnswerCount = 0;
         currentHealth = maxHealth;
         currentScore = 0;
+        scoreForLeaderboardSubmission = 0;
         waitingForAnswer = false;
         consecutiveWrong = 0;
         currentLevel = 1;
+        highestLevelReached = 1;
         hasActiveSkill = false;
         activeSkillTimer = 0f;
         speed = basePlayerSpeed;
-        UpdateUI();
+        ApplyLevelSettings();
         isTransitioningToNextLevel = false;
 
         if (enemySpawnCoroutine != null) StopCoroutine(enemySpawnCoroutine);
@@ -1279,6 +1375,7 @@ public class GamePlay : MonoBehaviour
             SpawnDeadEndQuestionTriggers();
             SpawnScorePickups();
             ResetSkillSpawnTimer(true);
+            SpawnSkillPickups();
             currentCell = navigator.GetStartCell();
             if (walkableTilemap != null)
             {
@@ -1332,6 +1429,8 @@ public class GamePlay : MonoBehaviour
 
     public void WinGame()
     {
+        if (isGameOver) return;
+
         if (enemySpawnCoroutine != null) StopCoroutine(enemySpawnCoroutine);
         FindEnemyInScene();
         if (enemy != null)
@@ -1339,16 +1438,21 @@ public class GamePlay : MonoBehaviour
             enemy.gameObject.SetActive(false);
         }
         StopMovement();
+        waitingForAnswer = false;
 
-        if (winScreen != null)
+        if (LeaderboardManager.Instance != null)
         {
-            winScreen.SetActive(true);
+            LeaderboardManager.Instance.SubmitScore(scoreForLeaderboardSubmission > 0 ? scoreForLeaderboardSubmission : currentScore);
         }
+
+        ShowEndScreen(true);
         Debug.Log("Game Won!");
     }
 
     public void LoseGame()
     {
+        if (isGameOver) return;
+
         if (enemySpawnCoroutine != null) StopCoroutine(enemySpawnCoroutine);
         FindEnemyInScene();
         if (enemy != null)
@@ -1356,18 +1460,391 @@ public class GamePlay : MonoBehaviour
             enemy.gameObject.SetActive(false);
         }
         StopMovement();
+        waitingForAnswer = false;
+        isGameOver = true;
 
-        if (loseScreen != null)
+        if (LeaderboardManager.Instance != null)
         {
-            loseScreen.SetActive(true);
+            LeaderboardManager.Instance.SubmitScore(scoreForLeaderboardSubmission > 0 ? scoreForLeaderboardSubmission : currentScore);
         }
+
+        ShowEndScreen(false);
         endlessMode = false;
         Debug.Log("Game Lost!");
     }
 
+    public void RegisterQuestionResult(QuestionResult result)
+    {
+        if (result == QuestionResult.Correct)
+        {
+            correctAnswerCount++;
+        }
+    }
+
+    public void ShowMainMenu()
+    {
+        isGameOver = false;
+        endlessMode = true;
+        StopMovement();
+        HideEndScreens();
+        ResolveMenuReference();
+        ResetTutorialState();
+        if (menuController != null)
+        {
+            if (menuController.menuCanvas != null)
+            {
+                menuController.menuCanvas.SetActive(true);
+            }
+        }
+        if (menuCanvas != null)
+        {
+            menuCanvas.SetActive(true);
+        }
+        if (tutorialObject != null)
+        {
+            tutorialObject.SetActive(true);
+        }
+        if (startScreen != null) startScreen.SetActive(true);
+        if (homePanel != null) homePanel.SetActive(true);
+        if (replayPanel != null) replayPanel.SetActive(false);
+        if (winScreen != null) winScreen.SetActive(false);
+        if (loseScreen != null) loseScreen.SetActive(false);
+    }
+
+    public void RestartGameFromEndScreen()
+    {
+        StartGame();
+    }
+
+    void ResetTutorialState()
+    {
+        var tutorial = FindObjectOfType<handclick>();
+        if (tutorial != null)
+        {
+            tutorial.ResetTutorial();
+        }
+
+        if (tutorialObject != null)
+        {
+            tutorialObject.SetActive(true);
+        }
+    }
+
+    void InitializeEndScreenUI()
+    {
+        ResolveEndScreenReferences();
+        HideEndScreens();
+
+        Transform searchRoot = endPanel != null ? endPanel.transform : (loseScreen != null ? loseScreen.transform : (winScreen != null ? winScreen.transform : null));
+
+        if (homeButton == null)
+        {
+            homeButton = FindButtonInChildrenByKeywords(searchRoot, "HomeButton", "Home", "Trang", "Chu", "TrangChu");
+        }
+        if (replayButton == null)
+        {
+            replayButton = FindButtonInChildrenByKeywords(searchRoot, "ReplayButton", "Replay", "Choi", "Lai", "ChoiLai");
+        }
+
+        if (homeButton == null && loseScreen != null)
+        {
+            homeButton = FindButtonInChildrenByKeywords(loseScreen.transform, "HomeButton", "Home", "Trang", "Chu", "TrangChu");
+        }
+        if (replayButton == null && loseScreen != null)
+        {
+            replayButton = FindButtonInChildrenByKeywords(loseScreen.transform, "ReplayButton", "Replay", "Choi", "Lai", "ChoiLai");
+        }
+
+        if (homeButton != null)
+        {
+            homeButton.onClick.RemoveAllListeners();
+            homeButton.onClick.AddListener(ShowMainMenu);
+        }
+
+        if (replayButton != null)
+        {
+            replayButton.onClick.RemoveAllListeners();
+            replayButton.onClick.AddListener(RestartGameFromEndScreen);
+        }
+    }
+
+    void ResolveEndScreenReferences()
+    {
+        if (winScreen == null)
+        {
+            winScreen = FindObjectInSceneByName("WinScreen", "WinPanel", "WinPanelRoot");
+        }
+
+        if (loseScreen == null)
+        {
+            loseScreen = FindObjectInSceneByName("LoseScreen", "LosePanel", "LosePanelRoot", "EndScreen");
+        }
+
+        if (endPanel == null)
+        {
+            endPanel = FindObjectInSceneByName("EndPanel", "EndScreen", "LosePanel", "LoseScreen", "KETTHUC", "End");
+        }
+
+        ResolveMenuReference();
+
+        if (endPanel != null && loseScreen == null)
+        {
+            loseScreen = endPanel;
+        }
+
+        if (homeButton == null && loseScreen != null)
+        {
+            homeButton = FindButtonInChildren(loseScreen.transform, "HomeButton");
+        }
+
+        if (replayButton == null && loseScreen != null)
+        {
+            replayButton = FindButtonInChildren(loseScreen.transform, "ReplayButton");
+        }
+
+        if (homeButton == null)
+        {
+            homeButton = FindButtonByKeywords("Home", "Trang", "Chu");
+        }
+        if (replayButton == null)
+        {
+            replayButton = FindButtonByKeywords("Replay", "Choi", "Lai");
+        }
+    }
+
+    void ResolveMenuReference()
+    {
+        if (menuController == null)
+        {
+            foreach (var menu in Resources.FindObjectsOfTypeAll<Menu>())
+            {
+                if (!menu.gameObject.scene.IsValid())
+                    continue;
+                menuController = menu;
+                break;
+            }
+        }
+
+        if (menuController != null && menuCanvas == null)
+        {
+            menuCanvas = menuController.menuCanvas != null ? menuController.menuCanvas : menuController.gameObject;
+        }
+
+        if (menuCanvas == null)
+        {
+            string[] menuNames = new[] { "Menu", "MenuCanvas", "menuCanvas", "MainMenu", "StartMenu", "MenuPanel", "StartScreen" };
+            foreach (var name in menuNames)
+            {
+                var found = GameObject.Find(name);
+                if (found != null)
+                {
+                    menuCanvas = found;
+                    break;
+                }
+            }
+        }
+
+        if (menuCanvas == null)
+        {
+            foreach (var obj in Resources.FindObjectsOfTypeAll<Transform>())
+            {
+                if (obj == null || !obj.gameObject.scene.IsValid())
+                    continue;
+
+                string lowerName = obj.name.ToLowerInvariant();
+                if (lowerName.Contains("menu") && (lowerName.Contains("canvas") || lowerName.Contains("panel") || lowerName.Contains("screen")))
+                {
+                    menuCanvas = obj.gameObject;
+                    break;
+                }
+            }
+        }
+    }
+
+    Button FindButtonByKeywords(params string[] keywords)
+    {
+        foreach (var button in Resources.FindObjectsOfTypeAll<Button>())
+        {
+            if (!button.gameObject.scene.IsValid()) continue;
+            string name = button.gameObject.name.ToLowerInvariant();
+            string cleanedName = name.Replace(" ", string.Empty);
+            string label = GetButtonText(button)?.ToLowerInvariant() ?? string.Empty;
+            string cleanedLabel = label.Replace(" ", string.Empty);
+            foreach (var keyword in keywords)
+            {
+                string key = keyword.ToLowerInvariant();
+                if (name.Contains(key) || cleanedName.Contains(key) || label.Contains(key) || cleanedLabel.Contains(key))
+                {
+                    return button;
+                }
+            }
+        }
+        return null;
+    }
+
+    Button FindButtonInChildrenByKeywords(Transform root, params string[] keywords)
+    {
+        if (root == null) return null;
+
+        foreach (var child in root.GetComponentsInChildren<Transform>(true))
+        {
+            if (child == null) continue;
+            var button = child.GetComponent<Button>();
+            if (button == null) continue;
+
+            string name = child.name.ToLowerInvariant();
+            string cleanedName = name.Replace(" ", string.Empty);
+            string label = GetButtonText(button)?.ToLowerInvariant() ?? string.Empty;
+            string cleanedLabel = label.Replace(" ", string.Empty);
+
+            foreach (var keyword in keywords)
+            {
+                string key = keyword.ToLowerInvariant();
+                if (name.Contains(key) || cleanedName.Contains(key) || label.Contains(key) || cleanedLabel.Contains(key))
+                {
+                    return button;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    string GetButtonText(Button button)
+    {
+        if (button == null) return null;
+        var text = button.GetComponentInChildren<TextMeshProUGUI>(true);
+        if (text != null) return text.text;
+        var legacyText = button.GetComponentInChildren<Text>(true);
+        return legacyText != null ? legacyText.text : null;
+    }
+
+    GameObject FindObjectInSceneByName(params string[] names)
+    {
+        foreach (var name in names)
+        {
+            var found = GameObject.Find(name);
+            if (found != null)
+            {
+                return found;
+            }
+
+            foreach (var obj in Resources.FindObjectsOfTypeAll<Transform>())
+            {
+                if (obj != null && obj.name == name && obj.gameObject.scene.IsValid())
+                {
+                    return obj.gameObject;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    void HideEndScreens()
+    {
+        if (winScreen != null) winScreen.SetActive(false);
+        if (loseScreen != null) loseScreen.SetActive(false);
+        if (endPanel != null) endPanel.SetActive(false);
+        if (homeButton != null) homeButton.gameObject.SetActive(false);
+        if (replayButton != null) replayButton.gameObject.SetActive(false);
+        if (homePanel != null) homePanel.SetActive(false);
+        if (replayPanel != null) replayPanel.SetActive(false);
+    }
+
+    void ShowEndScreen(bool won)
+    {
+        isGameOver = true;
+        InitializeEndScreenUI();
+        if (startScreen != null) startScreen.SetActive(false);
+        if (winScreen != null) winScreen.SetActive(won);
+        if (loseScreen != null) loseScreen.SetActive(!won);
+        if (endPanel != null) endPanel.SetActive(true);
+        if (homePanel != null) homePanel.SetActive(true);
+        if (replayPanel != null) replayPanel.SetActive(true);
+        if (homeButton != null)
+        {
+            EnsureButtonHierarchyActive(homeButton);
+            homeButton.gameObject.SetActive(true);
+        }
+        if (replayButton != null)
+        {
+            EnsureButtonHierarchyActive(replayButton);
+            replayButton.gameObject.SetActive(true);
+        }
+        UpdateEndScreenStats();
+    }
+
+    void EnsureButtonHierarchyActive(Button button)
+    {
+        if (button == null) return;
+        Transform current = button.transform;
+        while (current != null)
+        {
+            if (!current.gameObject.activeSelf)
+            {
+                current.gameObject.SetActive(true);
+            }
+            current = current.parent;
+        }
+    }
+
+    void UpdateEndScreenStats()
+    {
+        if (finalScoreText != null)
+        {
+            finalScoreText.text = $"Điểm: {currentScore}";
+        }
+
+        if (finalLevelText != null)
+        {
+            finalLevelText.text = $"Level đạt được: {Mathf.Max(1, highestLevelReached)}";
+        }
+
+        if (finalCorrectText != null)
+        {
+            finalCorrectText.text = $"Đúng: {correctAnswerCount} câu";
+        }
+
+        if (finalHealthText != null)
+        {
+            finalHealthText.text = $"Máu còn: {currentHealth}/{maxHealth}";
+        }
+    }
+
+    Button FindButtonInChildren(Transform root, string buttonName)
+    {
+        if (root == null) return null;
+
+        Transform target = root.Find(buttonName);
+        if (target != null)
+        {
+            return target.GetComponent<Button>();
+        }
+
+        foreach (Transform child in root)
+        {
+            Button button = child.GetComponent<Button>();
+            if (button != null && child.name.Contains(buttonName))
+            {
+                return button;
+            }
+
+            button = FindButtonInChildren(child, buttonName);
+            if (button != null)
+            {
+                return button;
+            }
+        }
+
+        return null;
+    }
+
+    private Canvas uiOverlayCanvas;
+
     void SetupStatPanels()
     {
-        Canvas uiCanvas = FindAnyObjectByType<Canvas>();
+        Canvas uiCanvas = GetOrCreateOverlayCanvas();
         if (uiCanvas == null)
         {
             Debug.LogError("SetupStatPanels: No Canvas found in scene!");
@@ -1387,24 +1864,237 @@ public class GamePlay : MonoBehaviour
         SetupStatPanel(ref scorePanelImage, scoreText, scorePanelPosition, scorePanelSize, scorePanelScale, scoreTextScale, scoreTextPosition, scorePanelSprite, "ScorePanel", uiCanvas);
     }
 
+    bool IsMenuCanvas(Canvas canvas)
+    {
+        if (canvas == null) return false;
+        if (startScreen != null && canvas.gameObject == startScreen) return true;
+        if (menuCanvas != null && canvas.gameObject == menuCanvas) return true;
+        string lowerName = canvas.gameObject.name.ToLowerInvariant();
+        return lowerName.Contains("menu") || lowerName.Contains("start") || lowerName.Contains("title");
+    }
+
+    Canvas GetOrCreateOverlayCanvas()
+    {
+        if (uiOverlayCanvas != null && uiOverlayCanvas.gameObject != null)
+        {
+            uiOverlayCanvas.gameObject.SetActive(true);
+            return uiOverlayCanvas;
+        }
+
+        foreach (var canvas in FindObjectsOfType<Canvas>(true))
+        {
+            if (canvas == null)
+                continue;
+
+            if (canvas.renderMode == RenderMode.ScreenSpaceOverlay && !IsMenuCanvas(canvas))
+            {
+                uiOverlayCanvas = canvas;
+                uiOverlayCanvas.overrideSorting = true;
+                uiOverlayCanvas.sortingOrder = 1000;
+                uiOverlayCanvas.gameObject.SetActive(true);
+                if (uiOverlayCanvas.GetComponent<GraphicRaycaster>() == null)
+                {
+                    uiOverlayCanvas.gameObject.AddComponent<GraphicRaycaster>();
+                }
+                return uiOverlayCanvas;
+            }
+        }
+
+        GameObject canvasObject = new GameObject("PersistentOverlayCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        uiOverlayCanvas = canvasObject.GetComponent<Canvas>();
+        uiOverlayCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        uiOverlayCanvas.overrideSorting = true;
+        uiOverlayCanvas.sortingOrder = 1000;
+
+        CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
+        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+        scaler.referenceResolution = new Vector2(1920f, 1080f);
+        scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        scaler.matchWidthOrHeight = 0.5f;
+
+        int uiLayer = LayerMask.NameToLayer("UI");
+        if (uiLayer >= 0)
+        {
+            canvasObject.layer = uiLayer;
+        }
+
+        if (UnityEngine.EventSystems.EventSystem.current == null)
+        {
+            GameObject eventSystem = new GameObject("EventSystem");
+            eventSystem.AddComponent<UnityEngine.EventSystems.EventSystem>();
+            eventSystem.AddComponent<UnityEngine.EventSystems.StandaloneInputModule>();
+        }
+
+        return uiOverlayCanvas;
+    }
+
+    void EnsureStartCanvasSorting()
+    {
+        if (startScreen == null) return;
+
+        Canvas c = startScreen.GetComponent<Canvas>();
+        if (c == null)
+        {
+            c = startScreen.AddComponent<Canvas>();
+            // If this GameObject wasn't intended to be a root canvas, adding one may change layout.
+        }
+        c.overrideSorting = true;
+        c.sortingOrder = 100;
+
+        // Ensure raycasts still work for buttons
+        if (startScreen.GetComponent<UnityEngine.UI.GraphicRaycaster>() == null)
+            startScreen.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+    }
+
+    bool IsLikelyStartScreen(GameObject obj)
+    {
+        if (obj == null || !obj.scene.IsValid()) return false;
+        if (obj.GetComponent<Button>() != null && obj.GetComponent<Canvas>() == null)
+            return false;
+        if (obj.GetComponent<Canvas>() != null) return true;
+        if (obj.GetComponent<GraphicRaycaster>() != null) return true;
+        if (obj.GetComponent<RectTransform>() != null && obj.transform.childCount > 0)
+            return true;
+        return false;
+    }
+
+    void ResolveStartScreenReference()
+    {
+        if (startScreen != null) return;
+
+        string[] startNames = new[] { "startScreen", "StartScreen", "StartMenu", "MenuStart", "StartPanel", "MenuPanel" };
+        foreach (var name in startNames)
+        {
+            var found = GameObject.Find(name);
+            if (found != null && IsLikelyStartScreen(found))
+            {
+                startScreen = found;
+                return;
+            }
+        }
+
+        foreach (var obj in Resources.FindObjectsOfTypeAll<Transform>())
+        {
+            if (obj == null || !obj.gameObject.scene.IsValid()) continue;
+            string lower = obj.name.ToLowerInvariant();
+            if (lower.Contains("start") && (lower.Contains("screen") || lower.Contains("menu") || lower.Contains("panel")))
+            {
+                if (IsLikelyStartScreen(obj.gameObject))
+                {
+                    startScreen = obj.gameObject;
+                    return;
+                }
+            }
+        }
+    }
+
+    void EnsureStartButtonListener()
+    {
+        ResolveStartScreenReference();
+
+        Button startButton = null;
+        if (startScreen != null)
+        {
+            startButton = FindButtonInChildrenByKeywords(startScreen.transform, "Start", "Bắt Đầu", "Bat Dau", "PLAY", "Chơi", "Choi");
+        }
+
+        if (startButton == null)
+        {
+            startButton = FindButtonByKeywords("Start", "Bắt Đầu", "Bat Dau", "PLAY", "Chơi", "Choi");
+        }
+
+        if (startButton != null)
+        {
+            startButton.onClick.AddListener(StartGame);
+        }
+    }
+
+    void HideStartMenuObjects()
+    {
+        ResolveStartScreenReference();
+
+        if (startScreen != null && IsLikelyStartScreen(startScreen))
+        {
+            startScreen.SetActive(false);
+        }
+
+        if (menuCanvas != null)
+        {
+            menuCanvas.SetActive(false);
+        }
+
+        if (menuController != null && menuController.menuCanvas != null)
+        {
+            menuController.menuCanvas.SetActive(false);
+        }
+
+        if (homePanel != null)
+        {
+            homePanel.SetActive(false);
+        }
+
+        if (replayPanel != null)
+        {
+            replayPanel.SetActive(false);
+        }
+
+        if (winScreen != null)
+        {
+            winScreen.SetActive(false);
+        }
+
+        if (loseScreen != null)
+        {
+            loseScreen.SetActive(false);
+        }
+
+        foreach (var obj in Resources.FindObjectsOfTypeAll<Transform>())
+        {
+            if (obj == null || !obj.gameObject.scene.IsValid()) continue;
+            if (obj.gameObject == this.gameObject || obj.gameObject == startScreen || obj.gameObject == menuCanvas) continue;
+
+            string lower = obj.name.ToLowerInvariant();
+            if (!(lower.Contains("start") || lower.Contains("menu") || lower.Contains("play") || lower.Contains("intro") || lower.Contains("title")))
+                continue;
+
+            var go = obj.gameObject;
+            bool isLikelyMenu = IsLikelyStartScreen(go) || go.GetComponent<Canvas>() != null || go.GetComponent<GraphicRaycaster>() != null;
+            if (!isLikelyMenu) continue;
+
+            if (go.activeSelf)
+            {
+                go.SetActive(false);
+            }
+        }
+    }
+
     TextMeshProUGUI CreateStatText(Canvas canvas, string textName)
     {
         GameObject textObj = new GameObject(textName, typeof(RectTransform), typeof(TextMeshProUGUI));
         textObj.transform.SetParent(canvas.transform, false);
-        
+        textObj.layer = canvas.gameObject.layer;
+        textObj.SetActive(true);
+
         TextMeshProUGUI tmp = textObj.GetComponent<TextMeshProUGUI>();
         var rect = textObj.GetComponent<RectTransform>();
-        
+
         rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
         rect.pivot = new Vector2(0.5f, 0.5f);
         rect.anchoredPosition = Vector2.zero;
         rect.sizeDelta = new Vector2(300f, 60f);
-        
+
         tmp.text = textName;
         tmp.alignment = TextAlignmentOptions.Center;
         tmp.fontSize = 26;
-        tmp.textWrappingMode = TextWrappingModes.NoWrap;
-        
+        tmp.color = Color.white;
+        tmp.enableWordWrapping = false;
+        tmp.raycastTarget = false;
+
+        if (tmp.font == null && TMPro.TMP_Settings.defaultFontAsset != null)
+        {
+            tmp.font = TMPro.TMP_Settings.defaultFontAsset;
+        }
+
         return tmp;
     }
 
@@ -1433,6 +2123,9 @@ public class GamePlay : MonoBehaviour
                 statRoot.transform.SetParent(canvas.transform, false);
                 panelImage.transform.SetParent(statRoot.transform, false);
             }
+            statRoot.layer = canvas.gameObject.layer;
+            statRoot.SetActive(true);
+            panelImage.gameObject.SetActive(true);
 
             Vector2 finalPosition = panelPosition;
             if (useHalfScreenPositions)
@@ -1446,10 +2139,19 @@ public class GamePlay : MonoBehaviour
             }
 
             panelImage.color = statPanelColor;
-            panelImage.sprite = panelSprite;
-            panelImage.type = Image.Type.Sliced;
+            if (panelSprite != null)
+            {
+                panelImage.sprite = panelSprite;
+                panelImage.type = Image.Type.Sliced;
+            }
+            else
+            {
+                panelImage.sprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), new Vector2(0.5f, 0.5f), 100f);
+                panelImage.type = Image.Type.Simple;
+            }
             panelImage.preserveAspect = false;
             panelImage.raycastTarget = false;
+            panelImage.gameObject.layer = canvas.gameObject.layer;
 
             var panelRect = panelImage.rectTransform;
             panelRect.anchorMin = panelRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -1471,6 +2173,7 @@ public class GamePlay : MonoBehaviour
         {
             statText.transform.SetParent(statRoot.transform, false);
         }
+        statText.gameObject.SetActive(true);
 
         var textRect = statText.rectTransform;
         textRect.anchorMin = textRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -1489,59 +2192,96 @@ public class GamePlay : MonoBehaviour
         if (scoreText != null)
         {
             scoreText.text = $"Điểm: {currentScore}";
+            scoreText.gameObject.SetActive(true);
         }
 
         if (levelText != null)
         {
             levelText.text = $"Lv: {currentLevel}";
+            levelText.gameObject.SetActive(true);
         }
 
         if (timeText != null)
         {
             timeText.text = $"Time: {currentQuestionTimeLimit:F1}s";
+            timeText.gameObject.SetActive(true);
+        }
+
+        if (healthText != null)
+        {
+            healthText.gameObject.SetActive(true);
         }
 
         // Update health display with heart icons
         UpdateHealthDisplay();
     }
 
-    void UpdateHealthDisplay()
+    void EnsureHealthDisplayContainerExists()
     {
-        if (healthText == null) return;
+        if (healthText == null)
+        {
+            Canvas canvas = GetOrCreateOverlayCanvas();
+            if (canvas == null) return;
+            healthText = CreateStatText(canvas, "HealthText");
+        }
 
-        // Create or find health container
+        Canvas targetCanvas = GetOrCreateOverlayCanvas();
+        if (targetCanvas == null) return;
+
+        Transform healthPanelRoot = null;
+        if (healthPanelImage != null && healthPanelImage.transform.parent != null)
+        {
+            healthPanelRoot = healthPanelImage.transform.parent;
+        }
+
         if (healthDisplayContainer == null)
         {
             GameObject containerObj = new GameObject("HealthDisplayContainer", typeof(RectTransform));
-            containerObj.transform.SetParent(healthText.transform.parent, false);
-            
+            containerObj.transform.SetParent(healthPanelRoot != null ? healthPanelRoot : targetCanvas.transform, false);
+            containerObj.layer = (healthPanelRoot != null ? healthPanelRoot.gameObject.layer : targetCanvas.gameObject.layer);
+
             var rect = containerObj.GetComponent<RectTransform>();
             rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
             rect.pivot = new Vector2(0.5f, 0.5f);
-            rect.anchoredPosition = healthTextPosition;
+            rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = new Vector2(200f, 50f);
             rect.localScale = Vector3.one;
-            
+
             healthDisplayContainer = containerObj.transform;
-            
-            // Hide the text component if it exists
-            healthText.gameObject.SetActive(false);
+        }
+        else if (healthPanelRoot != null && healthDisplayContainer.parent != healthPanelRoot)
+        {
+            healthDisplayContainer.SetParent(healthPanelRoot, false);
+        }
+        else if (healthPanelRoot == null && healthDisplayContainer.parent != targetCanvas.transform)
+        {
+            healthDisplayContainer.SetParent(targetCanvas.transform, false);
         }
 
         if (healthDisplayContainer != null)
         {
+            healthDisplayContainer.gameObject.SetActive(true);
             healthDisplayContainer.localScale = healthPanelScale;
             var heartContainerRect = healthDisplayContainer.GetComponent<RectTransform>();
-            heartContainerRect.anchoredPosition = healthTextPosition;
+            heartContainerRect.anchorMin = heartContainerRect.anchorMax = new Vector2(0.5f, 0.5f);
+            heartContainerRect.pivot = new Vector2(0.5f, 0.5f);
+            heartContainerRect.anchoredPosition = Vector2.zero;
+            heartContainerRect.sizeDelta = new Vector2(maxHealth * (heartSize + heartSpacing) + 20f, heartSize + 20f);
         }
+    }
 
-        // Clear existing hearts
+    void UpdateHealthDisplay()
+    {
+        if (healthText == null) return;
+
+        EnsureHealthDisplayContainerExists();
+        if (healthDisplayContainer == null) return;
+
         foreach (Transform child in healthDisplayContainer)
         {
             Destroy(child.gameObject);
         }
 
-        // Create heart icons
         float size = heartSize;
         float spacing = heartSpacing;
         float startX = -(maxHealth * (size + spacing)) / 2f;
@@ -1550,12 +2290,13 @@ public class GamePlay : MonoBehaviour
         {
             GameObject heartObj = new GameObject($"Heart_{i}", typeof(RectTransform), typeof(Image));
             heartObj.transform.SetParent(healthDisplayContainer, false);
-            
+            heartObj.layer = healthDisplayContainer.gameObject.layer;
+
             var heartRect = heartObj.GetComponent<RectTransform>();
             heartRect.sizeDelta = new Vector2(size, size);
             heartRect.anchoredPosition = new Vector3(startX + i * (size + spacing), 0f, 0f);
             heartRect.localScale = heartScale;
-            
+
             var heartImage = heartObj.GetComponent<Image>();
             heartImage.sprite = (i < currentHealth) ? fullHeartSprite : emptyHeartSprite;
             heartImage.color = Color.white;
@@ -1616,7 +2357,7 @@ public class GamePlay : MonoBehaviour
         consecutiveWrong = 0;
         waitingForAnswer = false;
 
-        if (startScreen != null)
+        if (startScreen != null && IsLikelyStartScreen(startScreen))
         {
             startScreen.SetActive(true);
         }

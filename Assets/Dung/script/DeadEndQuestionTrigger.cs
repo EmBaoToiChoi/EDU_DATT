@@ -16,6 +16,11 @@ public class DeadEndQuestionTrigger : MonoBehaviour
         if (gamePlay == null) gamePlay = FindAnyObjectByType<GamePlay>();
         if (gamePlay == null) return;
 
+        if (gamePlay.questionManager == null)
+        {
+            gamePlay.ResolveQuestionManagerReference();
+        }
+
         if (other.gameObject == gamePlay.gameObject || other.transform.IsChildOf(gamePlay.transform))
         {
             TriggerQuestion();
@@ -27,6 +32,11 @@ public class DeadEndQuestionTrigger : MonoBehaviour
         if (isUsed) return;
         if (gamePlay == null) gamePlay = FindAnyObjectByType<GamePlay>();
         if (gamePlay == null) return;
+
+        if (gamePlay.questionManager == null)
+        {
+            gamePlay.ResolveQuestionManagerReference();
+        }
 
         if (other.gameObject == gamePlay.gameObject || other.transform.IsChildOf(gamePlay.transform))
         {
@@ -55,6 +65,7 @@ public class DeadEndQuestionTrigger : MonoBehaviour
                 }
                 else if (result == QuestionResult.Correct)
                 {
+                    gamePlay.RegisterQuestionResult(result);
                     gamePlay.AddScore(50);
                     Debug.Log("Dead-end trigger answered correctly. No damage.");
                 }

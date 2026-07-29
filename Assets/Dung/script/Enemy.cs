@@ -189,6 +189,11 @@ public class Enemy : MonoBehaviour
         // Safety check to ensure we only trigger when game is not already asking a question
         if (gamePlay == null || gamePlay.waitingForAnswer || isStunned) return;
 
+        if (gamePlay.questionManager == null)
+        {
+            gamePlay.ResolveQuestionManagerReference();
+        }
+
         gamePlay.waitingForAnswer = true;
         gamePlay.StopMovement();
 
@@ -198,6 +203,7 @@ public class Enemy : MonoBehaviour
             {
                 if (result == QuestionResult.Correct)
                 {
+                    gamePlay.RegisterQuestionResult(result);
                     gamePlay.AddScore(50);
                     Debug.Log("Enemy touched player: Answered CORRECT. Enemy resets to start.");
                     ResetToStart();

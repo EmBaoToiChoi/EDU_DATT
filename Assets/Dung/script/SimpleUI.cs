@@ -237,12 +237,49 @@ public class SimpleUI : MonoBehaviour
     {
         if (uiCanvas != null) return;
 
-        uiCanvas = UnityEngine.Object.FindAnyObjectByType<Canvas>();
+        // First, try to find the PersistentOverlayCanvas created by GamePlay
+        GamePlay gamePlay = FindObjectOfType<GamePlay>();
+        if (gamePlay != null)
+        {
+            // Access GamePlay's overlay canvas through GetOrCreateOverlayCanvas (if accessible)
+            // For now, let's find any active screen-space overlay canvas
+            Canvas[] allCanvases = UnityEngine.Object.FindObjectsOfType<Canvas>(true);
+            foreach (var canvas in allCanvases)
+            {
+                if (canvas == null) continue;
+                if (!canvas.gameObject.activeInHierarchy) continue;
+                if (canvas.name == "PersistentOverlayCanvas")
+                {
+                    uiCanvas = canvas;
+                    break;
+                }
+            }
+        }
+
+        // Prefer an active screen-space overlay canvas if one exists.
         if (uiCanvas == null)
         {
-            GameObject canvasObject = new GameObject("SimpleUICanvas");
+            Canvas[] allCanvases = UnityEngine.Object.FindObjectsOfType<Canvas>(true);
+            foreach (var canvas in allCanvases)
+            {
+                if (canvas == null) continue;
+                if (!canvas.gameObject.activeInHierarchy) continue;
+                if (canvas.renderMode == RenderMode.ScreenSpaceOverlay)
+                {
+                    uiCanvas = canvas;
+                    break;
+                }
+            }
+        }
+
+        // If no active overlay canvas found, create one
+        if (uiCanvas == null)
+        {
+            GameObject canvasObject = new GameObject("PersistentOverlayCanvas");
             uiCanvas = canvasObject.AddComponent<Canvas>();
             uiCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            uiCanvas.overrideSorting = true;
+            uiCanvas.sortingOrder = 1000;
             var scaler = canvasObject.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920, 1080);
@@ -252,6 +289,13 @@ public class SimpleUI : MonoBehaviour
         }
         else
         {
+            uiCanvas.gameObject.SetActive(true);
+            uiCanvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            uiCanvas.overrideSorting = true;
+            if (uiCanvas.sortingOrder < 1000)
+            {
+                uiCanvas.sortingOrder = 1000;
+            }
             if (uiCanvas.GetComponent<GraphicRaycaster>() == null)
             {
                 uiCanvas.gameObject.AddComponent<GraphicRaycaster>();
